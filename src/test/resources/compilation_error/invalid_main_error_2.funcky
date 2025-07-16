@@ -1,0 +1,3 @@
+numbers: "funcky:numbers"
+
+main = numbers.add 1

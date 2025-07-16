@@ -1,0 +1,16 @@
+# Convert character to uppercase
+# "funcky:types".Function "funcky:types".Character "funcky:types".Character
+# uppercase = ...
+
+# Convert character to lowercase
+# "funcky:types".Function "funcky:types".Character "funcky:types".Character
+# lowercase = ...
+
+# Convert character to corresponding Unicode code point
+# "funcky:types".Function "funcky:types".Character "funcky:types".Number
+# number = ...
+
+# Convert Unicode code point to character
+# "funcky:types".Function "funcky:types".Number "funcky:types".Character
+#   throws error if argument is invalid Unicode code point
+# character = ...

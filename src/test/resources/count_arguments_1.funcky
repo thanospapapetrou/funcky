@@ -1,0 +1,8 @@
+l: "funcky:lists"
+countArguments1: "./count_arguments/count_arguments_2.funcky"
+countArguments2: "file:///C:/Users/apapapet/Projects/funcky/target/test-classes/count_arguments/count_arguments_2.funcky"
+
+foo = l.size
+bar = countArguments1.foo
+buz = "../test-classes/count_arguments/count_arguments_2.funcky".bar
+main = countArguments2.buz

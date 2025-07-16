@@ -1,0 +1,2 @@
+numbers: "funcky:numbers"
+foo = numbers.add bar.buz

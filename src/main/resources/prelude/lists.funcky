@@ -1,0 +1,89 @@
+booleans: "funcky:booleans"
+commons: "funcky:commons"
+numbers: "funcky:numbers"
+
+# Get head of given list
+#   throws error if argument is empty
+# "funcky:types".Function ("funcky:types".List $_7) $_7
+# head = ...
+
+# Get tail of given list
+#   throws error if argument is empty
+# "funcky:types".Function ("funcky:types".List $_7) ("funcky:types".List $_7)
+# tail = ...
+
+# Prepend given element to given list
+# "funcky:types".Function ("funcky:types".List $_7) ("funcky:types".Function $_7 ("funcky:types".List $_7))
+# prepend = ...
+
+# Append given element to given list
+# "funcky:types".Function ("funcky:types".List $_115d) ("funcky:types".Function $_115d ("funcky:types".List $_115d))
+append = $$ 2 (commons.if (empty ($ 0)) (prepend [] ($ 1)) (prepend (append (tail ($ 0)) ($ 1)) (head ($ 0))))
+
+# Concatenate given lists
+# "funcky:types".Function ("funcky:types".List $_1f63) ("funcky:types".Function ("funcky:types".List $_1f63) ("funcky:types".List $_1f63))
+concat = $$ 2 (commons.if (empty ($ 0)) ($ 1) (prepend (concat (tail ($ 0)) ($ 1)) (head ($ 0))))
+
+# Create a singleton list containing given element
+# "funcky:types".Function $_2054 ("funcky:types".List $_2054)
+singleton = $$ 1 (prepend [] ($ 0))
+
+# Check if given list is empty
+# "funcky:types".Function ("funcky:types".List $_15) "funcky:types".Boolean
+empty = commons.equal []
+
+# Get given list size
+# "funcky:types".Function ("funcky:types".List $_1ec) "funcky:types".Number
+size = $$ 1 (commons.if (empty ($ 0)) 0 (numbers.add 1 (size (tail ($ 0)))))
+
+# Get the index of the given element in the given list or -1 if given list does not contain given element
+# "funcky:types".Function ("funcky:types".List $_31aa) ("funcky:types".Function $_31aa "funcky:types".Number)
+index = $$ 2 (commons.if (empty ($ 0)) -1 (commons.if (commons.equal (head ($ 0)) ($ 1)) 0 (commons.if (commons.equal (index (tail ($ 0)) ($ 1)) -1) -1 (numbers.add (index (tail ($ 0)) ($ 1)) 1))))
+
+# Check if given list contains given element
+# "funcky:types".Function ("funcky:types".List $_2d52) ("funcky:types".Function $_2d52 "funcky:types".Boolean)
+contains = $$ 2 (booleans.not (commons.equal -1 (index ($ 0) ($ 1))))
+
+# Filter given list using given predicate
+# "funcky:types".Function ("funcky:types".List $_110e8) ("funcky:types".Function ("funcky:types".Function $_110e8 "funcky:types".Boolean) ("funcky:types".List $_110e8))
+filter = $$ 2 (commons.if (empty ($ 0)) [] (concat (commons.if (($ 1) (head ($ 0))) (singleton (head ($ 0))) []) (filter (tail ($ 0)) ($ 1))))
+
+# Map given function to given list
+# "funcky:types".Function ("funcky:types".List $_a98) ("funcky:types".Function ("funcky:types".Function $_a98 $_a96) ("funcky:types".List $_a96))
+map = $$ 2 (commons.if (empty ($ 0)) [] (prepend (map (tail ($ 0)) ($ 1)) (($ 1) (head ($ 0)))))
+
+# Reduce given list using given function and initial value
+# "funcky:types".Function ("funcky:types".List $_1252b) ("funcky:types".Function ("funcky:types".Function $_1252b ("funcky:types".Function $_1252c $_1252c)) ("funcky:types".Function $_1252c $_1252c))
+reduce = $$ 3 (commons.if (empty ($ 0)) ($ 2) (reduce (tail ($ 0)) ($ 1) (($ 1) (head ($ 0)) ($ 2))))
+
+# Sort given list
+# "funcky:types".Function ("funcky:types".List $_3396) ("funcky:types".List $_3396)
+sort = $$ 1 (commons.if (empty ($ 0)) [] (concat (sort (filter (tail ($ 0)) (commons.greaterThan (head ($ 0))))) (prepend (sort (filter (tail ($ 0)) (commons.lessEqual (head ($ 0))))) (head ($ 0)))))
+
+# Create an infinite list repeating the given element
+# "funcky:types".Function $_1382 ("funcky:types".List $_1382)
+repeat = $$ 1 (prepend (repeat ($ 0)) ($ 0))
+
+# Take the first n elements of given list and discard the rest (return a list with size less than n if given list contains less elements)
+# "funcky:types".Function ("funcky:types".List $_176a) ("funcky:types".Function "funcky:types".Number ("funcky:types".List $_176a))
+#   throws error if second argument is not a non-negative int
+take = $$ 2 (commons.if (commons.equal (_validateNonNegativeInt ($ 1) (_nonNegativeIntError ($ 1))) 0) [] (commons.if (empty ($ 0)) [] (prepend (take (tail ($ 0)) (numbers.subtract ($ 1) 1)) (head ($ 0)))))
+
+# Drop the first n elements of given list and keep the rest (return empty list if given list contains less elements)
+# "funcky:types".Function ("funcky:types".List $_1f83) ("funcky:types".Function "funcky:types".Number ("funcky:types".List $_1f83))
+#   throws error if second argument is not a non-negative int
+drop = $$ 2 (commons.if (commons.equal (_validateNonNegativeInt ($ 1) (_nonNegativeIntError ($ 1))) 0) ($ 0) (commons.if (empty ($ 0)) [] (drop (tail ($ 0)) (numbers.subtract ($ 1) 1))))
+
+# Get a sublist of given list between start index (inclusive) and end index (exclusive)
+#   throws error if start is not a non-negative int or is greater than end or if end is not a non-negative int or is greater than list size
+sublist = $$ 3 (take (drop ($ 0) (_validateStart ($ 1) (_validateEnd ($ 0) ($ 2)))) (numbers.subtract ($ 2) ($ 1)))
+
+# TODO get set insert remove zip unzip
+# TODO eager validations?
+
+_validateNonNegativeInt = $$ 2 (commons.if (booleans.or (booleans.not (commons.equal ($ 0) (numbers.int ($ 0)))) (commons.lessThan ($ 0) 0)) ($ 1) ($ 0))
+_validateStart = $$ 2 (commons.if (commons.greaterThan (_validateNonNegativeInt ($ 0) (_startError ($ 0) ($ 1))) ($ 1)) (_startError ($ 0) ($ 1)) ($ 0))
+_validateEnd = $$ 2 (commons.if (commons.greaterThan (_validateNonNegativeInt ($ 1) (_endError ($ 1) (size ($ 0)))) (size ($ 0))) (_endError ($ 1) (size ($ 0))) ($ 1))
+_nonNegativeIntError = $$ 1 (commons.error (concat "Invalid n `" (concat (commons.string ($ 0)) "`, should be a non-negative int")))
+_startError = $$ 2 (commons.error (concat "Invalid start `" (concat (commons.string ($ 0)) (concat "`, should be an int between `0` and `" (concat (commons.string ($ 1)) "`")))))
+_endError = $$ 2 (commons.error (concat "Invalid end `" (concat (commons.string ($ 0)) (concat "`, should be an int between `0` and `" (concat (commons.string ($ 1)) "`")))))

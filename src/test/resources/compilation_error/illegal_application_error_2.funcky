@@ -1,0 +1,4 @@
+booleans: "funcky:booleans"
+numbers: "funcky:numbers"
+
+foo = numbers.add 1 booleans.false

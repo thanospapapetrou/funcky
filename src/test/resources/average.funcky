@@ -1,0 +1,5 @@
+commons: "funcky:commons"
+lists: "funcky:lists"
+numbers: "funcky:numbers"
+
+main = $$ 1 (numbers.divide (numbers.sum (lists.map ($ 0) commons.number)) (lists.size ($ 0)) 2 numbers.HALF_UP)

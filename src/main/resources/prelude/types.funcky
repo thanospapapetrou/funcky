@@ -1,0 +1,84 @@
+# Type of types
+# "funcky:types".Type
+# Type = ...
+
+# Type of numbers
+# "funcky:types".Type
+# Number = ...
+
+# Type of booleans
+# "funcky:types".Type
+# Boolean = ...
+
+# Type of characters
+# "funcky:types".Type
+# Character = ...
+
+# Construct a new function type with given domain and range
+# "funcky:types".Function "funcky:types".Type ("funcky:types".Function "funcky:types".Type "funcky:types".Type)
+# Function = ...
+
+# Get domain of a function type
+#   throws error if argument is not a function type
+# "funcky:types".Function "funcky:types".Type "funcky:types".Type
+# domain = ...
+
+# Get range of a function type
+#   throws error if argument is not a function type
+# "funcky:types".Function "funcky:types".Type "funcky:types".Type
+# range = ...
+
+# Construct a new list type with given element
+# "funcky:types".Function "funcky:types".Type "funcky:types".Type
+# List = ...
+
+# Get element of a list type
+#   throws error if argument is not a list type
+# "funcky:types".Function "funcky:types".Type "funcky:types".Type
+# element = ...
+
+# Strings are represented as lists of characters
+# "funcky:types".Type
+String = List Character
+
+# Construct a new record type with given list of types as components
+# "funcky:types".Function ("funcky:types".List "funcky:types".Type) "funcky:types".Type
+# Record = ...
+
+# Get components of a record type
+#   throws error if argument is not a record type
+# "funcky:types".Function "funcky:types".Type ("funcky:types".List "funcky:types".Type)
+# components = ...
+
+# Unit type (type of empty record {})
+# "funcky:types".Type
+Unit = Record []
+
+# Get type of a value
+# "funcky:types".Function $_0 "funcky:types".Type
+# type = ...
+
+# Check if given type is a type variable
+# "funcky:types".Function "funcky:types".Type "funcky:types".Boolean
+# typeVariable = ...
+
+# Check if given type is a function type
+# "funcky:types".Function "funcky:types".Type "funcky:types".Boolean
+# functionType = ...
+
+# Check if given type is a list type
+# "funcky:types".Function "funcky:types".Type "funcky:types".Boolean
+# listType = ...
+
+# Check if given type is a record type
+# "funcky:types".Function "funcky:types".Type "funcky:types".Boolean
+# recordType = ...
+
+# Free given type by replacing any type variables it contains with fresh instances
+# "funcky:types".Function "funcky:types".Type "funcky:types".Type
+# free = ...
+
+# Unify given types
+#   throws error if arguments can not be unified
+# "funcky:types".Function "funcky:types".Type ("funcky:types".Function "funcky:types".Type "funcky:types".Type)
+# unify = ...

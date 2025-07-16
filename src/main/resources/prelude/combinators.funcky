@@ -1,0 +1,23 @@
+# Substitution (S x y z = x z (y z))
+# "funcky:types".Function ("funcky:types".Function $_7 ("funcky:types".Function $_8 $_9)) ("funcky:types".Function ("funcky:types".Function $_7 $_8) ("funcky:types".Function $_7 $_9))
+# s = ...
+
+# Constant (K x y = x)
+# "funcky:types".Function $_7 ("funcky:types".Function $_8 $_7)
+# k = ...
+
+# Identity (I x = x)
+# "funcky:types".Function $_7 $_7
+i = s k k
+
+# Composition (B x y z = x (y z))
+# "funcky:types".Function ("funcky:types".Function $_ab $_ac) ("funcky:types".Function ("funcky:types".Function $_aa $_ab) ("funcky:types".Function $_aa $_ac))
+b = s (k s) k
+
+# Flip (C x y z = x z y)
+# "funcky:types".Function ("funcky:types".Function $_f8 ("funcky:types".Function $_f7 $_fc)) ("funcky:types".Function $_f7 ("funcky:types".Function $_f8 $_fc))
+c = s (s (k (s (k s) k)) s) (k k)
+
+# Duplication (W x y = x y y)
+# "funcky:types".Function ("funcky:types".Function $_b0 ("funcky:types".Function $_b0 $_b2)) ("funcky:types".Function $_b0 $_b2)
+w = s s (s k)

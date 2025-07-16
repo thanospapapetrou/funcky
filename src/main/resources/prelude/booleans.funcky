@@ -1,0 +1,34 @@
+commons: "funcky:commons"
+lists: "funcky:lists"
+
+# Boolean false
+# "funcky:types".Boolean
+# false = ...
+
+# Boolean true
+# "funcky:types".Boolean
+# true = ...
+
+# Boolean negation
+# "funcky:types".Function "funcky:types".Boolean "funcky:types".Boolean
+not = $$ 1 (commons.if ($ 0) false true)
+
+# Boolean conjunction
+# "funcky:types".Function "funcky:types".Boolean ("funcky:types".Function "funcky:types".Boolean "funcky:types".Boolean)
+and = $$ 2 (commons.if ($ 0) ($ 1) false)
+
+# Boolean disjunction
+# "funcky:types".Function "funcky:types".Boolean ("funcky:types".Function "funcky:types".Boolean "funcky:types".Boolean)
+or = $$ 2 (commons.if ($ 0) true ($ 1))
+
+# Boolean exclusive disjunction
+# "funcky:types".Function "funcky:types".Boolean ("funcky:types".Function "funcky:types".Boolean "funcky:types".Boolean)
+xor = $$ 2 (and (or ($ 0) ($ 1)) (not (and ($ 0) ($ 1))))
+
+# Boolean intersection
+# "funcky:types".Function ("funcky:types".List "funcky:types".Boolean) "funcky:types".Boolean
+all = $$ 1 (lists.reduce ($ 0) and true)
+
+# Boolean union
+# "funcky:types".Function ("funcky:types".List "funcky:types".Boolean) "funcky:types".Boolean
+any = $$ 1 (lists.reduce ($ 0) or false)

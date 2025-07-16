@@ -1,0 +1,6 @@
+countArguments1: "../count_arguments_1.funcky"
+countArguments2: "file:///C:/Users/apapapet/Projects/funcky/target/test-classes/count_arguments_1.funcky"
+
+foo = countArguments1.foo
+bar = "../../test-classes/count_arguments_1.funcky".bar
+buz = countArguments2.buz

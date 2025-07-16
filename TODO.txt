@@ -1,0 +1,12 @@
+log durations
+reconsider SEVERE log messages
+    should ERROR_LOADING_LIBRARY in Linker be an instance of compilation excepttion?
+        no, because it's not expected to be thrown normally by user input
+higher order function types inferred from function and argument
+test with URLs from CLI
+add description when throwing IOException as compilation exception?
+run tests with http and https scripts
+records
+
+Nice to Have
+linker link expression -> _

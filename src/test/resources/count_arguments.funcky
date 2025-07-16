@@ -1,0 +1,3 @@
+l: "funcky:lists"
+
+main = l.size
