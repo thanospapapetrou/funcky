@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.netcompany.apapapet</groupId>
+    <groupId>io.github.thanospapapetrou</groupId>
     <artifactId>funcky</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <properties>
@@ -40,7 +40,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.github.thanospapapetrou.funcky.Funcky</mainClass>
+                            <mainClass>io.github.thanospapapetrou.funcky.Funcky</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
