@@ -10,3 +10,5 @@ records
 
 Nice to Have
 linker link expression -> _
+
+Do not log multiple configuration when running standalone
