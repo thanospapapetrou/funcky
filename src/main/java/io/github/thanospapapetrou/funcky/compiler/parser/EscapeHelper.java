@@ -5,6 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import io.github.thanospapapetrou.funcky.compiler.tokenizer.Radix;
+
 public class EscapeHelper {
     private static final Map<Pattern, Character> ESCAPE_CHARACTERS = Map.of(
             "\\\\", '\\',
@@ -19,8 +21,8 @@ public class EscapeHelper {
             entry -> Pattern.compile(Pattern.quote(entry.getKey())),
             Map.Entry::getValue));
     private static final Map<Pattern, Integer> ESCAPE_SEQUENCE = Map.of(
-            "\\\\(?<value>[0-3]?[0-7]{1,2})", 8,
-            "\\\\u(?<value>[0-9A-Fa-f]{4})", 16
+            "\\\\(?<value>[0-3]?[0-7]{1,2})", Radix.OCTAL.getRadix(),
+            "\\\\u(?<value>[0-9A-Fa-f]{4})", Radix.HEXADECIMAL.getRadix()
     ).entrySet().stream().collect(Collectors.toMap(
             entry -> Pattern.compile(entry.getKey()),
             Map.Entry::getValue));
