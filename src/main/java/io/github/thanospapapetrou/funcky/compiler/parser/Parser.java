@@ -39,16 +39,16 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 public class Parser {
-    private static final String DEFINITION = "%1$sDefinition `%2$s` %3$s %4$d 1";
-    private static final String EXPRESSION = "%1$s%2$s `%3$s` %4$s %5$d %6$d";
+    private static final String FINER_DEFINITION = "%1$sDefinition `%2$s` %3$s %4$d 1";
+    private static final String FINER_EXPRESSION = "%1$s%2$s `%3$s` %4$s %5$d %6$d";
+    private static final String FINER_IMPORT = "%1$sImport `%2$s` %3$s %4$d 1";
+    private static final String FINER_SCRIPT = "Script %1$s 1 1";
     private static final Set<TokenType> FIRST = Set.of(TokenType.BINARY_NUMBER, TokenType.OCTAL_NUMBER,
             TokenType.DECIMAL_NUMBER, TokenType.HEXADECIMAL_NUMBER, TokenType.CHARACTER, TokenType.OCTAL_CHARACTER,
             TokenType.HEXADECIMAL_CHARACTER, TokenType.STRING, TokenType.SYMBOL, TokenType.LEFT_PARENTHESIS,
             TokenType.LEFT_SQUARE_BRACKET, TokenType.LEFT_CURLY_BRACKET);
-    private static final String IMPORT = "%1$sImport `%2$s` %3$s %4$d 1";
     private static final String INDENTATION = "  ";
     private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
-    private static final String SCRIPT = "Script %1$s 1 1";
     private static final String TYPE_VARIABLE = "$_";
 
     private final FunckyEngine engine;
@@ -63,7 +63,7 @@ public class Parser {
     private static void log(final FunckyExpression expression, final int indentation) {
         if (expression != null) {
             LOGGER.finer(
-                    String.format(EXPRESSION, INDENTATION.repeat(indentation), expression.getClass().getSimpleName(),
+                    String.format(FINER_EXPRESSION, INDENTATION.repeat(indentation), expression.getClass().getSimpleName(),
                             expression, expression.getFile(), expression.getLine(), expression.getColumn()));
             if (expression instanceof FunckyApplication) {
                 log(((FunckyApplication) expression).getFunction(), indentation + 1);
@@ -76,12 +76,12 @@ public class Parser {
     }
 
     private static void log(final FunckyScript script) {
-        LOGGER.finer(String.format(SCRIPT, script.getFile()));
+        LOGGER.finer(String.format(FINER_SCRIPT, script.getFile()));
         for (final FunckyImport imp : script.getImports()) {
-            LOGGER.finer(String.format(IMPORT, INDENTATION, imp, imp.getFile(), imp.getLine()));
+            LOGGER.finer(String.format(FINER_IMPORT, INDENTATION, imp, imp.getFile(), imp.getLine()));
         }
         for (final FunckyDefinition definition : script.getDefinitions()) {
-            LOGGER.finer(String.format(DEFINITION, INDENTATION, definition, definition.getFile(),
+            LOGGER.finer(String.format(FINER_DEFINITION, INDENTATION, definition, definition.getFile(),
                     definition.getLine()));
             log(definition.getExpression(), 2);
         }
@@ -92,7 +92,7 @@ public class Parser {
         this.engine = engine;
     }
 
-    public FunckyExpression parseExpression(final Queue<Token> input) throws CompilationException {
+    public FunckyExpression parse(final Queue<Token> input) throws CompilationException {
         final FunckyExpression expression =
                 (peek(input, union(FIRST, Set.of(TokenType.EOL))).getType() == TokenType.EOL) ? null
                         : parseComplexExpression(input, Set.of(TokenType.EOL));
@@ -102,7 +102,7 @@ public class Parser {
         return expression;
     }
 
-    public FunckyScript parseScript(final Queue<Token> input, final URI file) throws CompilationException {
+    public FunckyScript parse(final Queue<Token> input, final URI file) throws CompilationException {
         final FunckyScript script = new FunckyScript(engine, file);
         while (true) {
             final Token token = consume(input, Set.of(TokenType.SYMBOL, TokenType.EOL, TokenType.EOF));
