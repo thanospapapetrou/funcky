@@ -69,6 +69,10 @@ public class Linker {
 
     private final FunckyEngine engine;
 
+    public static URI normalize(final URI base, final URI namespace) {
+        return namespace.isAbsolute() ? namespace : (base.equals(STDIN) ? USER_DIR : base).resolve(namespace);
+    }
+
     public static URI getNamespace(final Class<? extends FunckyLibrary> library) {
         try {
             return new URI(PRELUDE_SCHEME, library.getSimpleName().toLowerCase(Locale.ROOT), null);
@@ -107,10 +111,6 @@ public class Linker {
         return ((getLibrary(file) != null)
                 ? Linker.class.getResource(String.format(PRELUDE_SCRIPT, file.getSchemeSpecificPart()))
                 : file.toURL()).openStream();
-    }
-
-    public URI normalize(final URI base, final URI namespace) {
-        return namespace.isAbsolute() ? namespace : (base.equals(STDIN) ? USER_DIR : base).resolve(namespace);
     }
 
     private void validateImports(final FunckyScript script) throws PrefixAlreadyBoundException {

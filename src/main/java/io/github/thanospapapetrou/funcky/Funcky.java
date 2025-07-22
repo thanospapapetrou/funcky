@@ -63,7 +63,7 @@ public class Funcky {
         engine.getContext().setFile(script);
         engine.getContext().setArguments(arguments);
         try (final InputStreamReader reader = new InputStreamReader(
-                engine.getLinker().normalize(Linker.STDIN, new URI(script)).toURL().openStream())) {
+                Linker.normalize(Linker.STDIN, new URI(script)).toURL().openStream())) {
             System.exit(engine.eval(reader).getValue().intValue());
         } catch (final CompilationException | FunckyRuntimeException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
