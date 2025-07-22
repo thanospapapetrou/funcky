@@ -3,6 +3,8 @@ package io.github.thanospapapetrou.funcky.compiler.linker;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.script.ScriptContext;
 import javax.script.SimpleScriptContext;
@@ -11,7 +13,8 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
-public class FunckyScriptContext extends SimpleScriptContext {
+public class FunckyScriptContext extends SimpleScriptContext { // TODO get rid of this class
+    private static final Map<String, Object> CONTEXT = new HashMap<>();
     private static final String DEFINITION_EXPRESSION = "%1$s$definition$%2$s$expression";
     private static final String DEFINITION_TYPE = "%1$s$definition$%2$s$type";
     private static final String IMPORT = "%1$s$import$%2$s";
@@ -47,36 +50,35 @@ public class FunckyScriptContext extends SimpleScriptContext {
         setAttribute(FunckyEngine.ARGV, arguments, ScriptContext.ENGINE_SCOPE);
     }
 
-    public boolean isLoaded(final URI script) {
-        return getAttribute(script.toString(), ScriptContext.ENGINE_SCOPE) != null;
+    public static boolean isLoaded(final URI script) {
+        return CONTEXT.get(script.toString()) != null;
     }
 
-    public void setLoaded(final URI script) {
-        setAttribute(script.toString(), true, ScriptContext.ENGINE_SCOPE);
+    public static void setLoaded(final URI script) {
+        CONTEXT.put(script.toString(), true);
     }
 
-    public URI getImport(final URI script, final String prefix) {
-        return (URI) getAttribute(String.format(IMPORT, script, prefix), ScriptContext.ENGINE_SCOPE);
+    public static URI getImport(final URI script, final String prefix) {
+        return (URI) CONTEXT.get(String.format(IMPORT, script, prefix));
     }
 
-    public void setImport(final URI script, final String prefix, final URI namespace) {
-        setAttribute(String.format(IMPORT, script, prefix), namespace, ScriptContext.ENGINE_SCOPE);
+    public static void setImport(final URI script, final String prefix, final URI namespace) {
+        CONTEXT.put(String.format(IMPORT, script, prefix), namespace);
     }
 
-    public FunckyExpression getDefinitionExpression(final URI namespace, final String name) {
-        return (FunckyExpression) getAttribute(String.format(DEFINITION_EXPRESSION, namespace, name),
-                ScriptContext.ENGINE_SCOPE);
+    public static FunckyExpression getDefinitionExpression(final URI namespace, final String name) {
+        return (FunckyExpression) CONTEXT.get(String.format(DEFINITION_EXPRESSION, namespace, name));
     }
 
-    public void setDefinitionExpression(final URI script, final String name, final FunckyExpression expression) {
-        setAttribute(String.format(DEFINITION_EXPRESSION, script, name), expression, ScriptContext.ENGINE_SCOPE);
+    public static void setDefinitionExpression(final URI script, final String name, final FunckyExpression expression) {
+        CONTEXT.put(String.format(DEFINITION_EXPRESSION, script, name), expression);
     }
 
-    public FunckyType getDefinitionType(final URI namespace, final String name) {
-        return (FunckyType) getAttribute(String.format(DEFINITION_TYPE, namespace, name), ScriptContext.ENGINE_SCOPE);
+    public static FunckyType getDefinitionType(final URI namespace, final String name) {
+        return (FunckyType) CONTEXT.get(String.format(DEFINITION_TYPE, namespace, name));
     }
 
-    public void setDefinitionType(final URI script, final String name, final FunckyType type) {
-        setAttribute(String.format(DEFINITION_TYPE, script, name), type, ScriptContext.ENGINE_SCOPE);
+    public static void setDefinitionType(final URI script, final String name, final FunckyType type) {
+        CONTEXT.put(String.format(DEFINITION_TYPE, script, name), type);
     }
 }

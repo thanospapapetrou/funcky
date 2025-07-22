@@ -87,7 +87,7 @@ public class Linker {
     }
 
     public FunckyExpression link(final FunckyExpression expression) throws CompilationException {
-        engine.getContext().setLoaded(Linker.STDIN);
+        FunckyScriptContext.setLoaded(Linker.STDIN);
         if (expression != null) {
             LOGGER.fine(expression.getType().toString());
             LOGGER.fine("");
@@ -122,7 +122,7 @@ public class Linker {
             if (otherImport.isPresent()) {
                 throw new PrefixAlreadyBoundException(inport, otherImport.get());
             }
-            engine.getContext().setImport(inport.getFile(), inport.getPrefix(),
+            FunckyScriptContext.setImport(inport.getFile(), inport.getPrefix(),
                     normalize(script.getFile(), inport.getNamespace()));
         }
     }
@@ -141,10 +141,10 @@ public class Linker {
             if (otherDefinition.isPresent()) {
                 throw new NameAlreadyDefinedException(definition, otherDefinition.get());
             }
-            engine.getContext()
-                    .setDefinitionExpression(definition.getFile(), definition.getName(), definition.getExpression());
+            FunckyScriptContext.setDefinitionExpression(definition.getFile(), definition.getName(),
+                    definition.getExpression());
         }
-        engine.getContext().setLoaded(script.getFile());
+        FunckyScriptContext.setLoaded(script.getFile());
         for (final FunckyDefinition definition : script.getDefinitions()) {
             definitionTypes.put(definition.getName(), definition.getExpression().getType());
         }

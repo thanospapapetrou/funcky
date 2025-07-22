@@ -11,6 +11,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyScriptContext;
 
 public class FunckyRuntimeException extends ScriptException {
     private static final String APPLICATION = "%n    in `%1$s` in %2$s at line %3$d at column %4$d";
@@ -78,9 +79,9 @@ public class FunckyRuntimeException extends ScriptException {
 
     private String formatStackTrace(final FunckyReference reference) {
         try {
-            final FunckyExpression expression = reference.getEngine().getContext()
-                    .getDefinitionExpression(reference.resolveNamespace(reference.getEngine().getContext()),
-                            reference.getName());
+            final FunckyExpression expression = FunckyScriptContext.getDefinitionExpression(
+                    reference.resolveNamespace(),
+                    reference.getName());
             return String.format(DEFINITION,
                     new FunckyDefinition(expression.getFile(), expression.getLine(), reference.getName(), expression),
                     expression.getFile(), expression.getLine(), 1);

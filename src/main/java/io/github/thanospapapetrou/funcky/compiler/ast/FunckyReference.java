@@ -68,40 +68,40 @@ public class FunckyReference extends FunckyExpression {
         return name;
     }
 
-    public URI resolveNamespace(final ScriptContext context) throws UnboundPrefixException {
+    public URI resolveNamespace() throws UnboundPrefixException {
         if (namespace == null) {
             if (prefix == null) {
                 return file;
             } else {
-                final URI namespace = FunckyScriptContext.getContext(context).getImport(file, prefix);
+                final URI namespace = FunckyScriptContext.getImport(file, prefix);
                 if (namespace == null) {
                     throw new UnboundPrefixException(this);
                 }
                 return namespace;
             }
         } else {
-            return engine.getLinker().normalize(file, namespace);
+            return Linker.normalize(file, namespace);
         }
     }
 
     @Override
     public FunckyReference normalize() throws UnboundPrefixException {
-        return new FunckyReference(engine, file, line, column, resolveNamespace(engine.getContext()), name);
+        return new FunckyReference(engine, file, line, column, resolveNamespace(), name);
     }
 
     @Override
     public FunckyType getType() throws CompilationException {
-        final URI namespace = resolveNamespace(engine.getContext());
-        if (engine.getContext().getDefinitionType(namespace, name) == null) {
-            engine.getContext().setDefinitionType(namespace, name, super.getType());
+        final URI namespace = resolveNamespace();
+        if (FunckyScriptContext.getDefinitionType(namespace, name) == null) {
+            FunckyScriptContext.setDefinitionType(namespace, name, super.getType());
         }
-        return engine.getContext().getDefinitionType(namespace, name);
+        return FunckyScriptContext.getDefinitionType(namespace, name);
     }
 
     @Override
     public FunckyValue eval(final ScriptContext context) throws FunckyRuntimeException {
         try {
-            return resolveExpression(context).eval(context);
+            return resolveExpression().eval(context);
         } catch (final CompilationException e) {
             throw new FunckyRuntimeException(e);
         } catch (final SneakyFunckyRuntimeException e) {
@@ -127,16 +127,16 @@ public class FunckyReference extends FunckyExpression {
         }
         final Map<FunckyReference, FunckyTypeVariable> newAssumptions = new HashMap<>(assumptions);
         newAssumptions.put(this, new FunckyTypeVariable());
-        return resolveExpression(engine.getContext()).getType(newAssumptions);
+        return resolveExpression().getType(newAssumptions);
     }
 
-    private FunckyExpression resolveExpression(final ScriptContext context) throws CompilationException {
-        final URI namespace = resolveNamespace(context);
-        if (!FunckyScriptContext.getContext(context).isLoaded(namespace)) {
+    private FunckyExpression resolveExpression() throws CompilationException {
+        final URI namespace = resolveNamespace();
+        if (!FunckyScriptContext.isLoaded(namespace)) {
             engine.compile(namespace);
         }
         final FunckyExpression expression =
-                FunckyScriptContext.getContext(context).getDefinitionExpression(namespace, name);
+                FunckyScriptContext.getDefinitionExpression(namespace, name);
         if (expression == null) {
             throw new UndefinedNameException(namespace, this);
         }
