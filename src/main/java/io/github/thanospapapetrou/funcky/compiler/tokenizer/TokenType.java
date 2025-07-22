@@ -27,8 +27,8 @@ public enum TokenType {
     EOL(null, null),
     EOF(null, null);
 
-    public static final String SIGN = "sign";
-    public static final String VALUE = "value";
+    public static final String GROUP_SIGN = "sign";
+    public static final String GROUP_VALUE = "value";
 
     private final Pattern pattern;
     private final Radix radix;

@@ -12,12 +12,12 @@ import java.util.regex.Matcher;
 
 import io.github.thanospapapetrou.funcky.compiler.CompilationException;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
-import io.github.thanospapapetrou.funcky.logging.FunckyLoggerFactory;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.exceptions.UnrecognizedInputException;
+import io.github.thanospapapetrou.funcky.logging.FunckyLoggerFactory;
 
 public class Tokenizer {
+    private static final String FINEST_TOKEN = "%1$s %2$s %3$d %4$d";
     private static final Logger LOGGER = FunckyLoggerFactory.getLogger(Tokenizer.class);
-    private static final String TOKEN = "%1$s %2$s %3$d %4$d";
 
     public List<Token> tokenize(final String expression) throws UnrecognizedInputException {
         final List<Token> tokens = new ArrayList<>();
@@ -75,6 +75,6 @@ public class Tokenizer {
 
     private void addToken(final List<Token> tokens, final Token token) {
         tokens.add(token);
-        LOGGER.finest(String.format(TOKEN, token, token.getFile(), token.getLine(), token.getColumn()));
+        LOGGER.finest(String.format(FINEST_TOKEN, token, token.getFile(), token.getLine(), token.getColumn()));
     }
 }

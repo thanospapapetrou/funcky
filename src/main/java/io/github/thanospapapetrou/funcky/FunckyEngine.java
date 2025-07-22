@@ -22,6 +22,7 @@ import io.github.thanospapapetrou.funcky.compiler.linker.FunckyScriptContext;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.Parser;
 import io.github.thanospapapetrou.funcky.compiler.preprocessor.Preprocessor;
+import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Tokenizer;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
@@ -29,9 +30,9 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 
 public class FunckyEngine extends AbstractScriptEngine implements Compilable, Invocable {
-    public static final String EXTENSIONS = "io.github.thanospapapetrou.funcky.extensions";
-    public static final String MIME_TYPES = "io.github.thanospapapetrou.funcky.mime_types";
-    public static final String THREADING = "THREADING";
+    public static final String PARAMETER_EXTENSIONS = "io.github.thanospapapetrou.funcky.extensions";
+    public static final String PARAMETER_MIME_TYPES = "io.github.thanospapapetrou.funcky.mime_types";
+    public static final String PARAMETER_THREADING = "THREADING";
 
     private final FunckyFactory factory;
     private final Tokenizer tokenizer;
@@ -162,13 +163,13 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     }
 
     @Override
-    public <T> T getInterface(final Class<T> clasz) {
+    public <T> T getInterface(final Class<T> clazz) {
         // TODO
         return null;
     }
 
     @Override
-    public <T> T getInterface(final Object object, final Class<T> clasz) {
+    public <T> T getInterface(final Object object, final Class<T> clazz) {
         // TODO
         return null;
     }

@@ -15,3 +15,6 @@ Do not log multiple configuration when running standalone
 
 logging improvements
 remove engine from ast, these are not compiled scripts any more
+
+tokenizer is OK
+logging except FunckyLoggerFactory is OK

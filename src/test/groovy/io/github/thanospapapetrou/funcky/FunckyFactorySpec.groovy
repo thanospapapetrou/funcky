@@ -39,9 +39,9 @@ class FunckyFactorySpec extends Specification {
         factory.getParameter(FunckyEngine.ENGINE) == ENGINE_NAME
         factory.getParameter(FunckyEngine.ENGINE_VERSION) == ENGINE_VERSION
         factory.getParameter(FunckyEngine.NAME) == NAMES[0]
-        factory.getParameter(FunckyEngine.MIME_TYPES) == MIME_TYPES[0]
-        factory.getParameter(FunckyEngine.EXTENSIONS) == EXTENSIONS[0]
-        factory.getParameter(FunckyEngine.THREADING) == MULTITHREADED
+        factory.getParameter(FunckyEngine.PARAMETER_MIME_TYPES) == MIME_TYPES[0]
+        factory.getParameter(FunckyEngine.PARAMETER_EXTENSIONS) == EXTENSIONS[0]
+        factory.getParameter(FunckyEngine.PARAMETER_THREADING) == MULTITHREADED
         factory.getParameter(INVALID_PARAMETER) == null
     }
 
@@ -65,7 +65,7 @@ class FunckyFactorySpec extends Specification {
     @Unroll('Test get program (statements: #statements)')
     def 'Test get program'(final String[] statements) {
         expect:
-        factory.getProgram(statements) == statements.join(FunckyFactory.STATEMENT_DELIMITER)
+        factory.getProgram(statements) == statements.join(FunckyFactory.DELIMITER_STATEMENT)
         where:
         statements << [[] as String[], STATEMENTS]
     }

@@ -81,7 +81,7 @@ class CompilationErrorSpec extends BaseSpec {
         then:
         final UnexpectedTokenException e = thrown()
         e.message
-        e.message.startsWith(String.format(UnexpectedTokenException.MESSAGE, (value == null) ? type : String.format(Token.TOKEN, type, value), expected*.toString().join(UnexpectedTokenException.DELIMITER)))
+        e.message.startsWith(String.format(UnexpectedTokenException.MESSAGE, (value == null) ? type : String.format(Token.FORMAT, type, value), expected*.toString().join(UnexpectedTokenException.DELIMITER)))
         e.fileName == Linker.STDIN.toString()
         e.lineNumber == 1
         e.columnNumber == column
@@ -119,7 +119,7 @@ class CompilationErrorSpec extends BaseSpec {
         then:
         final UnexpectedTokenException e = thrown()
         e.message
-        e.message.startsWith(String.format(UnexpectedTokenException.MESSAGE, (value == null) ? type : String.format(Token.TOKEN, type, value), expected*.toString().join(UnexpectedTokenException.DELIMITER)))
+        e.message.startsWith(String.format(UnexpectedTokenException.MESSAGE, (value == null) ? type : String.format(Token.FORMAT, type, value), expected*.toString().join(UnexpectedTokenException.DELIMITER)))
         e.fileName == CompilationErrorSpec.getResource(script).toURI().toString()
         e.lineNumber == line
         e.columnNumber == column

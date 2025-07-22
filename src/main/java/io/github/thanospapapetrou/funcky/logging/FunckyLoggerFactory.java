@@ -4,7 +4,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FunckyLoggerFactory {
+public class FunckyLoggerFactory { // TODO remove class
     public static Logger getLogger(final Class<?> clazz) {
         return Logger.getLogger(clazz.getName());
     }

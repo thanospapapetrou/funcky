@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 
 public class Token {
-    private static final String TOKEN = "%1$s `%2$s`";
+    private static final String FORMAT = "%1$s `%2$s`";
 
     private final TokenType type;
     private final String value;
@@ -32,11 +32,11 @@ public class Token {
 
     public String getSignedValue() {
         final Matcher matcher = getMatcher();
-        return matcher.group(TokenType.SIGN) + matcher.group(TokenType.VALUE);
+        return matcher.group(TokenType.GROUP_SIGN) + matcher.group(TokenType.GROUP_VALUE);
     }
 
     public String getUnsignedValue() {
-        return getMatcher().group(TokenType.VALUE);
+        return getMatcher().group(TokenType.GROUP_VALUE);
     }
 
     public String getStringValue() {
@@ -57,7 +57,7 @@ public class Token {
 
     @Override
     public String toString() {
-        return (value == null) ? type.toString() : String.format(TOKEN, type, value);
+        return (value == null) ? type.toString() : String.format(FORMAT, type, value);
     }
 
     private Matcher getMatcher() {

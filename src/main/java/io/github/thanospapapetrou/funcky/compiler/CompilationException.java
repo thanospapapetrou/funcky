@@ -12,6 +12,7 @@ public class CompilationException extends ScriptException {
         super(e);
     }
 
+    // TODO remove
     public CompilationException(final FunckyRuntimeException e) {
         super(e);
     }
