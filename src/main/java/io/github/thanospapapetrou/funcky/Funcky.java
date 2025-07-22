@@ -19,7 +19,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 
 public class Funcky {
-    private static final Logger LOGGER = FunckyLoggerFactory.getLogger(Funcky.class);
+    private static final Logger LOGGER = Logger.getLogger(Funcky.class.getName());
     private static final String PROMPT = "%n%1$s> ";
 
     public static void main(final String[] arguments) {

@@ -27,7 +27,6 @@ import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.InvalidUriEx
 import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.UnexpectedTokenException;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType;
-import io.github.thanospapapetrou.funcky.logging.FunckyLoggerFactory;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
@@ -48,7 +47,7 @@ public class Parser {
             TokenType.LEFT_SQUARE_BRACKET, TokenType.LEFT_CURLY_BRACKET);
     private static final String IMPORT = "%1$sImport `%2$s` %3$s %4$d 1";
     private static final String INDENTATION = "  ";
-    private static final Logger LOGGER = FunckyLoggerFactory.getLogger(Parser.class);
+    private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
     private static final String SCRIPT = "Script %1$s 1 1";
     private static final String TYPE_VARIABLE = "$_";
 

@@ -22,7 +22,6 @@ import io.github.thanospapapetrou.funcky.compiler.linker.FunckyScriptContext;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.Parser;
 import io.github.thanospapapetrou.funcky.compiler.preprocessor.Preprocessor;
-import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Tokenizer;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;

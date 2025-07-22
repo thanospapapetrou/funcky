@@ -5,12 +5,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FunckyLoggerFactory { // TODO remove class
-    public static Logger getLogger(final Class<?> clazz) {
-        return Logger.getLogger(clazz.getName());
-    }
-
     public static void configureLogger(final Class<?> clazz, final Level level) {
-        final Logger logger = getLogger(clazz);
+        final Logger logger = Logger.getLogger(clazz.getName());
         logger.setLevel(level);
         logger.setUseParentHandlers(false);
         logger.addHandler(getHandler(level));

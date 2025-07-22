@@ -24,7 +24,6 @@ import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidMainE
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
-import io.github.thanospapapetrou.funcky.logging.FunckyLoggerFactory;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Characters;
@@ -48,7 +47,7 @@ public class Linker {
     private static final String ERROR_RESOLVING_LIBRARY_NAMESPACE = "Error resolving library namespace";
     private static final String ERROR_RESOLVING_STDIN = "Error resolving standard input";
     private static final String ERROR_RESOLVING_USER_DIR = "Error resolving user directory";
-    private static final Logger LOGGER = FunckyLoggerFactory.getLogger(Linker.class);
+    private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
     private static final Set<Class<? extends FunckyLibrary>> PRELUDE = Set.of(Types.class, Numbers.class,
             Booleans.class, Characters.class, Lists.class, Commons.class, Combinators.class);
     private static final String PRELUDE_SCHEME = new FunckyFactory().getLanguageName().toLowerCase(Locale.ROOT);

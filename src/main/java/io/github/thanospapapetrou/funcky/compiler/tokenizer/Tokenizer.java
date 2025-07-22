@@ -13,11 +13,10 @@ import java.util.regex.Matcher;
 import io.github.thanospapapetrou.funcky.compiler.CompilationException;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.exceptions.UnrecognizedInputException;
-import io.github.thanospapapetrou.funcky.logging.FunckyLoggerFactory;
 
 public class Tokenizer {
     private static final String FINEST_TOKEN = "%1$s %2$s %3$d %4$d";
-    private static final Logger LOGGER = FunckyLoggerFactory.getLogger(Tokenizer.class);
+    private static final Logger LOGGER = Logger.getLogger(Tokenizer.class.getName());
 
     public List<Token> tokenize(final String expression) throws UnrecognizedInputException {
         final List<Token> tokens = new ArrayList<>();

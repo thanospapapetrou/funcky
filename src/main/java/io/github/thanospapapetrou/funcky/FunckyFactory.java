@@ -9,8 +9,6 @@ import java.util.logging.Logger;
 
 import javax.script.ScriptEngineFactory;
 
-import io.github.thanospapapetrou.funcky.logging.FunckyLoggerFactory;
-
 public class FunckyFactory implements ScriptEngineFactory {
     public static final FunckyEngine ENGINE = new FunckyFactory().getScriptEngine();
 
@@ -29,7 +27,7 @@ public class FunckyFactory implements ScriptEngineFactory {
 
     public FunckyFactory() {
         this(new Properties());
-        final Logger logger = FunckyLoggerFactory.getLogger(FunckyFactory.class);
+        final Logger logger = Logger.getLogger(FunckyFactory.class.getName());
         try (final InputStream parameters = FunckyFactory.class.getResourceAsStream(PARAMETERS)) {
             this.parameters.load(parameters);
             logger.config(String.format(CONFIG_LANGUAGE_NAME_VERSION, getLanguageName(), getLanguageVersion()));
