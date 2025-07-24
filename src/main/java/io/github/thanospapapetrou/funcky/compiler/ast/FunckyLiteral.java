@@ -16,8 +16,8 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 public class FunckyLiteral extends FunckyExpression {
-    private static final String CHARACTER = "'%1$s'";
-    private static final String STRING = "\"%1$s\"";
+    private static final String FORMAT_CHARACTER = "'%1$s'";
+    private static final String FORMAT_STRING = "\"%1$s\"";
 
     private final FunckyValue value;
 
@@ -52,10 +52,10 @@ public class FunckyLiteral extends FunckyExpression {
     @Override
     public String toString() {
         if (value.getType().equals(FunckySimpleType.CHARACTER)) {
-            return String.format(CHARACTER, EscapeHelper.escape(value.toString()));
+            return String.format(FORMAT_CHARACTER, EscapeHelper.escape(value.toString()));
         }
         if (value.getType().equals(FunckyListType.STRING)) {
-            return String.format(STRING, EscapeHelper.escape(value.toString()));
+            return String.format(FORMAT_STRING, EscapeHelper.escape(value.toString()));
         }
         if (value.getType() instanceof FunckyListType) {
             return ((FunckyList) value).toString(FunckyExpression::toString);

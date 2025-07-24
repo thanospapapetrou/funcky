@@ -22,8 +22,8 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 public class FunckyReference extends FunckyExpression {
-    private static final String NAMESPACE_REFERENCE = "\"%1$s\".%2$s";
-    private static final String PREFIX_REFERENCE = "%1$s.%2$s";
+    private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
+    private static final String FORMAT_PREFIX = "%1$s.%2$s";
 
     private final URI namespace;
     private final String prefix;
@@ -80,7 +80,7 @@ public class FunckyReference extends FunckyExpression {
                 return namespace;
             }
         } else {
-            return engine.getLinker().normalize(file, namespace);
+            return Linker.normalize(file, namespace);
         }
     }
 
@@ -115,8 +115,8 @@ public class FunckyReference extends FunckyExpression {
     @Override
     public String toString() {
         return (namespace == null)
-                ? ((prefix == null) ? name : String.format(PREFIX_REFERENCE, prefix, name))
-                : String.format(NAMESPACE_REFERENCE, EscapeHelper.escape(namespace.toString()), name);
+                ? ((prefix == null) ? name : String.format(FORMAT_PREFIX, prefix, name))
+                : String.format(FORMAT_NAMESPACE, EscapeHelper.escape(namespace.toString()), name);
     }
 
     @Override

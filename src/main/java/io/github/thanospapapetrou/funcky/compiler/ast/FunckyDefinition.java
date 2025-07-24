@@ -3,7 +3,7 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 import java.net.URI;
 
 public class FunckyDefinition {
-    private static final String DEFINITION = "%1$s = %2$s";
+    private static final String FORMAT = "%1$s = %2$s";
 
     private final URI file;
     private final int line;
@@ -35,6 +35,6 @@ public class FunckyDefinition {
 
     @Override
     public String toString() {
-        return String.format(DEFINITION, name, expression);
+        return String.format(FORMAT, name, expression);
     }
 }

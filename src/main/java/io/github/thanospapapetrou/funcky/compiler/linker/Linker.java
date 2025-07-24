@@ -180,7 +180,7 @@ public class Linker {
             return library.getDeclaredConstructor().newInstance();
         } catch (final ReflectiveOperationException e) {
             LOGGER.log(Level.SEVERE, String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
-            throw new ExceptionInInitializerError(e); // TOOD throw compilation exception instead
+            throw new ExceptionInInitializerError(e); // TODO throw compilation exception instead
         }
     }
 }

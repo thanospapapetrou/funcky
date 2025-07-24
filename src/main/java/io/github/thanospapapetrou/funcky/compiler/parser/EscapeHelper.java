@@ -26,12 +26,12 @@ public class EscapeHelper {
     ).entrySet().stream().collect(Collectors.toMap(
             entry -> Pattern.compile(entry.getKey()),
             Map.Entry::getValue));
-    private static final String HEXADECIMAL_ESCAPE = "\\u%1$04x";
-    private static final String VALUE = "value";
+    private static final String FORMAT_HEXADECIMAL_ESCAPE = "\\u%1$04x";
+    private static final String GROUP_VALUE = "value";
 
     public static String escape(final String unescaped) {
         return unescaped.isEmpty() ? ""
-                : ((Character.isISOControl(unescaped.charAt(0)) ? String.format(HEXADECIMAL_ESCAPE,
+                : ((Character.isISOControl(unescaped.charAt(0)) ? String.format(FORMAT_HEXADECIMAL_ESCAPE,
                         (int) unescaped.charAt(0)) : unescaped.charAt(0)) + escape(unescaped.substring(1)));
     }
 
@@ -48,7 +48,7 @@ public class EscapeHelper {
         for (final Map.Entry<Pattern, Integer> escapeSequence : ESCAPE_SEQUENCE.entrySet()) {
             final Matcher matcher = escapeSequence.getKey().matcher(escaped);
             if (matcher.lookingAt()) {
-                return ((char) Integer.parseInt(matcher.group(VALUE), escapeSequence.getValue()))
+                return ((char) Integer.parseInt(matcher.group(GROUP_VALUE), escapeSequence.getValue()))
                         + unescape(escaped.substring(matcher.group(0).length()));
             }
         }

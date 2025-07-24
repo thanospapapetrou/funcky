@@ -44,17 +44,15 @@ public class TypeInferenceContext {
             FunckyList taComponents = (FunckyList) ((FunckyRecordType) ta).getComponents().eval();
             FunckyList tbComponents = (FunckyList) ((FunckyRecordType) tb).getComponents().eval();
             while ((taComponents.getHead() != null) && (tbComponents.getHead() != null)) {
-                final boolean unify = unify((FunckyType) taComponents.getHead().eval(), (FunckyType) tbComponents.getHead().eval());
+                final boolean unify =
+                        unify((FunckyType) taComponents.getHead().eval(), (FunckyType) tbComponents.getHead().eval());
                 if (!unify) {
                     return false;
                 }
                 taComponents = (FunckyList) taComponents.getTail().eval();
                 tbComponents = (FunckyList) tbComponents.getTail().eval();
             }
-            if ((taComponents.getHead() != null) || (tbComponents.getHead() != null)) {
-                return false;
-            }
-            return true;
+            return ((taComponents.getHead() == null) && (tbComponents.getHead() == null));
         } else if ((ta instanceof FunckyTypeVariable) || (tb instanceof FunckyTypeVariable)) {
             return union(ta, tb);
         }

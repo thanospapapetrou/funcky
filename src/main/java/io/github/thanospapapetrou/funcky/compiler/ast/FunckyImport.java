@@ -5,7 +5,7 @@ import java.net.URI;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 
 public class FunckyImport {
-    private static final String IMPORT = "%1$s: \"%2$s\"";
+    private static final String FORMAT = "%1$s: \"%2$s\"";
 
     private final URI file;
     private final int line;
@@ -37,6 +37,6 @@ public class FunckyImport {
 
     @Override
     public String toString() {
-        return String.format(IMPORT, prefix, EscapeHelper.escape(namespace.toString()));
+        return String.format(FORMAT, prefix, EscapeHelper.escape(namespace.toString()));
     }
 }

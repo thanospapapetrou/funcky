@@ -16,7 +16,7 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 public class FunckyApplication extends FunckyExpression {
-    private static final String APPLICATION = "%1$s %2$s";
+    private static final String FORMAT_APPLICATION = "%1$s %2$s";
     private static final String NESTED_APPLICATION = "%1$s (%2$s)";
 
     private final FunckyExpression function;
@@ -59,7 +59,7 @@ public class FunckyApplication extends FunckyExpression {
                 || ((argument instanceof FunckyLiteral)
                 && (((FunckyLiteral) argument).getValue().toExpression() instanceof FunckyApplication)))
                 ? NESTED_APPLICATION
-                : APPLICATION, function, argument);
+                : FORMAT_APPLICATION, function, argument);
     }
 
     @Override

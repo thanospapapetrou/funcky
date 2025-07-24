@@ -19,3 +19,5 @@ remove engine from ast, these are not compiled scripts any more
 tokenizer is OK
 logging except FunckyLoggerFactory is OK
 parser is OK, except for engine removal
+cleanup linker
+remove static engines and factories

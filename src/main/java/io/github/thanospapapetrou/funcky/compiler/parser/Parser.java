@@ -63,7 +63,8 @@ public class Parser {
     private static void log(final FunckyExpression expression, final int indentation) {
         if (expression != null) {
             LOGGER.finer(
-                    String.format(FINER_EXPRESSION, INDENTATION.repeat(indentation), expression.getClass().getSimpleName(),
+                    String.format(FINER_EXPRESSION, INDENTATION.repeat(indentation),
+                            expression.getClass().getSimpleName(),
                             expression, expression.getFile(), expression.getLine(), expression.getColumn()));
             if (expression instanceof FunckyApplication) {
                 log(((FunckyApplication) expression).getFunction(), indentation + 1);
