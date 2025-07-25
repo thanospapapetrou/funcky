@@ -1,14 +1,15 @@
-log durations
 reconsider SEVERE log messages
 higher order function types inferred from function and argument
 test with URLs from CLI
 add description when throwing IOException as compilation exception?
 run tests with http and https scripts
-records
 
 Nice to Have
 linker link expression -> _
 
+test records
+monads
 logging improvements
 remove engine from ast, these are not compiled scripts any more
 logging except FunckyLoggerFactory is OK
+thread safety
