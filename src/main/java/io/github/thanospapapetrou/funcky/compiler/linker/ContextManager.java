@@ -8,12 +8,16 @@ import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyFactory;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
 public class ContextManager {
+    private static final String APPLICATION_VALUE = "application$%1$s";
     private static final String DEFINITION_EXPRESSION = "%1$s$definition$%2$s$expression";
     private static final String DEFINITION_TYPE = "%1$s$definition$%2$s$type";
+    private static final String DEFINITION_VALUE = "%1$s$definition$%2$s$value";
     private static final String IMPORT = "%1$s$import$%2$s";
 
     private final ScriptContext context;
@@ -23,8 +27,9 @@ public class ContextManager {
     }
 
     public URI getFile() throws IOException {
-        return new File((String) context.getAttribute(FunckyEngine.FILENAME, ScriptContext.ENGINE_SCOPE))
-                .getCanonicalFile().toURI();
+        return new File(
+                (String) context.getAttribute(FunckyEngine.FILENAME, ScriptContext.ENGINE_SCOPE)).getCanonicalFile()
+                .toURI();
     }
 
     public void setFile(final String file) {
@@ -72,5 +77,23 @@ public class ContextManager {
 
     public void setDefinitionType(final URI script, final String name, final FunckyType type) {
         context.setAttribute(String.format(DEFINITION_TYPE, script, name), type, ScriptContext.GLOBAL_SCOPE);
+    }
+
+    public FunckyValue getDefinitionValue(final URI namespace, final String name) {
+        return (FunckyValue) context.getAttribute(String.format(DEFINITION_VALUE, namespace, name),
+                ScriptContext.GLOBAL_SCOPE);
+    }
+
+    public void setDefinitionValue(final URI script, final String name, final FunckyValue value) {
+        context.setAttribute(String.format(DEFINITION_VALUE, script, name), value, ScriptContext.GLOBAL_SCOPE);
+    }
+
+    public FunckyValue getApplicationValue(final FunckyApplication application) {
+        return (FunckyValue) context.getAttribute(String.format(APPLICATION_VALUE, application),
+                ScriptContext.GLOBAL_SCOPE);
+    }
+
+    public void setApplicationValue(final FunckyApplication application, final FunckyValue value) {
+        context.setAttribute(String.format(APPLICATION_VALUE, application), value, ScriptContext.GLOBAL_SCOPE);
     }
 }

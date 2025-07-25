@@ -1,5 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
+import java.net.URI;
 import java.util.Map;
 
 import javax.script.ScriptContext;
@@ -44,7 +45,10 @@ public class FunckyApplication extends FunckyExpression {
     @Override
     public FunckyValue eval(final ScriptContext context) throws FunckyRuntimeException {
         try {
-            return ((FunckyFunction) function.eval(context)).apply(argument, context);
+            if (engine.getManager().getApplicationValue(this) == null) {
+                engine.getManager().setApplicationValue(this, ((FunckyFunction) function.eval(context)).apply(argument, context));
+            }
+            return engine.getManager().getApplicationValue(this);
         } catch (final SneakyFunckyRuntimeException e) {
             throw (FunckyRuntimeException) e.getCause();
         } catch (final FunckyRuntimeException e) {

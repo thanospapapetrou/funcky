@@ -102,7 +102,11 @@ public class FunckyReference extends FunckyExpression {
     @Override
     public FunckyValue eval(final ScriptContext context) throws FunckyRuntimeException {
         try {
-            return resolveExpression().eval(context);
+            final URI namespace = resolveNamespace();
+            if (engine.getManager().getDefinitionValue(namespace, name) == null) {
+                engine.getManager().setDefinitionValue(namespace, name, resolveExpression().eval(context));
+            }
+            return engine.getManager().getDefinitionValue(namespace, name);
         } catch (final CompilationException e) {
             throw new FunckyRuntimeException(e);
         } catch (final SneakyFunckyRuntimeException e) {
