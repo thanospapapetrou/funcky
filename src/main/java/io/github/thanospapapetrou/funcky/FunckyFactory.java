@@ -24,34 +24,32 @@ public class FunckyFactory implements ScriptEngineFactory {
     private static final String DELIMITER_PARAMETER = ",";
     private static final String DELIMITER_STATEMENT = "\n";
     private static final String ERROR_LOADING_PARAMETERS = "Error loading parameters";
-    private static final String PARAMETERS = "/funcky.properties";
-
-    private final Properties parameters;
+    private static final Logger LOGGER = Logger.getLogger(FunckyFactory.class.getName());
+    private static final Properties PARAMETERS = new Properties();
 
     static {
         GLOBAL.setBindings(new SimpleBindings(), ScriptContext.GLOBAL_SCOPE);
-    }
-
-    public FunckyFactory() {
-        this(new Properties());
-        final Logger logger = Logger.getLogger(FunckyFactory.class.getName());
-        try (final InputStream parameters = FunckyFactory.class.getResourceAsStream(PARAMETERS)) {
-            this.parameters.load(parameters);
-            logger.config(String.format(CONFIG_LANGUAGE_NAME_VERSION, getLanguageName(), getLanguageVersion()));
-            logger.config(String.format(CONFIG_ENGINE_NAME_VERSION, getEngineName(), getEngineVersion()));
-            logger.config(String.format(CONFIG_NAMES, getNames()));
-            logger.config(String.format(CONFIG_MIME_TYPES, getMimeTypes()));
-            logger.config(String.format(CONFIG_EXTENSIONS, getExtensions()));
-            logger.config(String.format(CONFIG_THREADING, getParameter(FunckyEngine.PARAMETER_THREADING)));
-            logger.config("");
+        try (final InputStream parameters = FunckyFactory.class.getResourceAsStream("/funcky.properties")) {
+            PARAMETERS.load(parameters);
         } catch (final IOException e) {
-            logger.log(Level.SEVERE, ERROR_LOADING_PARAMETERS, e);
+            LOGGER.log(Level.SEVERE, ERROR_LOADING_PARAMETERS, e);
             throw new ExceptionInInitializerError(e);
         }
     }
 
-    private FunckyFactory(final Properties parameters) {
-        this.parameters = parameters;
+    public static List<String> getParameters(final String key) {
+        final String parameters = PARAMETERS.getProperty(key);
+        return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
+    }
+
+    public FunckyFactory() {
+        LOGGER.config(String.format(CONFIG_LANGUAGE_NAME_VERSION, getLanguageName(), getLanguageVersion()));
+        LOGGER.config(String.format(CONFIG_ENGINE_NAME_VERSION, getEngineName(), getEngineVersion()));
+        LOGGER.config(String.format(CONFIG_NAMES, getNames()));
+        LOGGER.config(String.format(CONFIG_MIME_TYPES, getMimeTypes()));
+        LOGGER.config(String.format(CONFIG_EXTENSIONS, getExtensions()));
+        LOGGER.config(String.format(CONFIG_THREADING, getParameter(FunckyEngine.PARAMETER_THREADING)));
+        LOGGER.config("");
     }
 
     @Override
@@ -117,10 +115,5 @@ public class FunckyFactory implements ScriptEngineFactory {
         final FunckyEngine engine = new FunckyEngine(this);
         engine.setBindings(GLOBAL.getBindings(ScriptContext.GLOBAL_SCOPE), ScriptContext.GLOBAL_SCOPE);
         return engine;
-    }
-
-    private List<String> getParameters(final String key) {
-        final String parameters = this.parameters.getProperty(key);
-        return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
     }
 }

@@ -39,8 +39,8 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
 public class Linker {
-    public static final FunckyFunctionType MAIN_TYPE = new FunckyFunctionType(
-            new FunckyListType(FunckyListType.STRING), FunckySimpleType.NUMBER);
+    public static final FunckyFunctionType MAIN_TYPE = new FunckyFunctionType(new FunckyListType(FunckyListType.STRING),
+            FunckySimpleType.NUMBER);
     public static final URI STDIN;
 
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
@@ -49,16 +49,10 @@ public class Linker {
     private static final String ERROR_RESOLVING_USER_DIR = "Error resolving user directory";
     private static final String FINE_DEFINITION = "  %1$s %2$s";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
-    private static final Set<Class<? extends FunckyLibrary>> PRELUDE = Set.of(
-            Types.class,
-            Numbers.class,
-            Booleans.class,
-            Characters.class,
-            Lists.class,
-            Commons.class,
-            Combinators.class
-    );
-    private static final String PRELUDE_SCHEME = new FunckyFactory().getLanguageName().toLowerCase(Locale.ROOT);
+    private static final Set<Class<? extends FunckyLibrary>> PRELUDE = Set.of(Types.class, Numbers.class,
+            Booleans.class, Characters.class, Lists.class, Commons.class, Combinators.class);
+    private static final String PRELUDE_SCHEME =
+            FunckyFactory.getParameters(FunckyEngine.LANGUAGE).get(0).toLowerCase(Locale.ROOT);
     private static final String PRELUDE_SCRIPT = "/prelude/%1$s.funcky";
     private static final URI USER_DIR;
 
@@ -116,9 +110,8 @@ public class Linker {
     }
 
     public InputStream getScript(final URI file) throws IOException {
-        return ((getLibrary(file) != null)
-                ? Linker.class.getResource(String.format(PRELUDE_SCRIPT, file.getSchemeSpecificPart()))
-                : file.toURL()).openStream();
+        return ((getLibrary(file) != null) ? Linker.class.getResource(String.format(PRELUDE_SCRIPT,
+                file.getSchemeSpecificPart())) : file.toURL()).openStream();
     }
 
     private void validateImports(final FunckyScript script) throws PrefixAlreadyBoundException {
@@ -130,8 +123,8 @@ public class Linker {
             if (otherImport.isPresent()) {
                 throw new PrefixAlreadyBoundException(inport, otherImport.get());
             }
-            engine.getManager().setImport(inport.getFile(), inport.getPrefix(),
-                    normalize(script.getFile(), inport.getNamespace()));
+            engine.getManager().setImport(inport.getFile(), inport.getPrefix(), normalize(script.getFile(),
+                    inport.getNamespace()));
         }
     }
 
@@ -149,8 +142,8 @@ public class Linker {
             if (otherDefinition.isPresent()) {
                 throw new NameAlreadyDefinedException(definition, otherDefinition.get());
             }
-            engine.getManager()
-                    .setDefinitionExpression(definition.getFile(), definition.getName(), definition.getExpression());
+            engine.getManager().setDefinitionExpression(definition.getFile(), definition.getName(),
+                    definition.getExpression());
         }
         engine.getManager().setLoaded(script.getFile());
         for (final FunckyDefinition definition : script.getDefinitions()) {
@@ -179,8 +172,7 @@ public class Linker {
     private Class<? extends FunckyLibrary> getLibrary(final URI file) {
         return PRELUDE.stream()
                 .filter(library -> getNamespace(library).equals(file))
-                .findFirst()
-                .orElse(null);
+                .findFirst().orElse(null);
     }
 
     private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {
@@ -188,7 +180,7 @@ public class Linker {
             return library.getDeclaredConstructor().newInstance();
         } catch (final ReflectiveOperationException e) {
             LOGGER.log(Level.SEVERE, String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
-            throw new IllegalStateException(e); // TODO throw compilation exception instead
+            throw new IllegalStateException(e);
         }
     }
 }
