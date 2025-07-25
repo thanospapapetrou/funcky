@@ -21,3 +21,6 @@ logging except FunckyLoggerFactory is OK
 parser is OK, except for engine removal
 cleanup linker
 remove static engines and factories
+
+remove static ENGINE from factory
+remove factory instance from PRELUDE_SCHEME in Linker

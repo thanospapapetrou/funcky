@@ -71,7 +71,7 @@ public class FunckyJavaConverter {
             return convert((boolean) object);
         } else if (object instanceof Character) {
             return convert((char) object);
-        } else if (object instanceof Iterable<?>) {
+        } else if (object instanceof Iterable<?>) { // TODO add support for streams and Maps
             return convert((Iterable<?>) object);
         } else if (object instanceof String) {
             return convert((String) object);
