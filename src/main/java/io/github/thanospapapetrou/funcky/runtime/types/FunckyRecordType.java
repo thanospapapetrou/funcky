@@ -72,7 +72,8 @@ public class FunckyRecordType extends FunckyType {
     @Override
     protected Set<FunckyTypeVariable> getTypeVariables() throws FunckyRuntimeException {
         final Set<FunckyTypeVariable> typeVariables = new HashSet<>();
-        for (FunckyList list = (FunckyList) components.eval(); list.getTail() != null; list = (FunckyList) list.getTail().eval()) {
+        for (FunckyList list = (FunckyList) components.eval(); list.getTail() != null;
+                list = (FunckyList) list.getTail().eval()) {
             typeVariables.addAll(((FunckyType) list.getHead().eval()).getTypeVariables());
         }
         return typeVariables;
@@ -82,7 +83,8 @@ public class FunckyRecordType extends FunckyType {
     protected FunckyRecordType bind(final Map<FunckyTypeVariable, FunckyType> bindings)
             throws FunckyRuntimeException {
         final List<FunckyType> types = new ArrayList<>();
-        for (FunckyList list = (FunckyList) components.eval(); list.getTail() != null; list = (FunckyList) list.getTail().eval()) {
+        for (FunckyList list = (FunckyList) components.eval(); list.getTail() != null;
+                list = (FunckyList) list.getTail().eval()) {
             types.add(((FunckyType) list.getHead().eval()).bind(bindings));
         }
         return new FunckyRecordType(FunckyFactory.ENGINE.getConverter().convert(types));

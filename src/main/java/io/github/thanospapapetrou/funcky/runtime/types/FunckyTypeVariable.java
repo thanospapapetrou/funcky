@@ -8,7 +8,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
 public class FunckyTypeVariable extends FunckyType {
     private static final AtomicInteger HASH = new AtomicInteger();
-    private static final String TYPE_VARIABLE = "$_%1$x";
+    private static final String FORMAT = "$_%1$x";
 
     private final int hash;
 
@@ -43,7 +43,7 @@ public class FunckyTypeVariable extends FunckyType {
 
     @Override
     public String toString() {
-        return String.format(TYPE_VARIABLE, hash);
+        return String.format(FORMAT, hash);
     }
 
     @Override

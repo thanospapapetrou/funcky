@@ -1,8 +1,8 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
 public class FunckyBoolean extends FunckyValue implements Comparable<FunckyBoolean> {
     public static final FunckyBoolean FALSE = new FunckyBoolean(false);

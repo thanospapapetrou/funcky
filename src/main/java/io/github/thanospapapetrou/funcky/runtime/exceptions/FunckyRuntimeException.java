@@ -22,7 +22,7 @@ public class FunckyRuntimeException extends ScriptException {
         this(message, null, -1, -1, new ArrayList<>());
     }
 
-    public FunckyRuntimeException(final CompilationException e) {
+    public FunckyRuntimeException(final CompilationException e) { // TODO remove
         this(String.format(RUNTIME_COMPILATION_ERROR, e.getMessage()), e.getFileName(), e.getLineNumber(),
                 e.getColumnNumber(), new ArrayList<>());
     }
