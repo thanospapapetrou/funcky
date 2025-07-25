@@ -225,7 +225,7 @@ public class Parser {
                     consume(input, TokenType.SPACE);
                 }
         }
-        return null;
+        return null; // TODO illegal state exception
     }
 
     private FunckyLiteral parseString(final String string, final Token token) {

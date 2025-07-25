@@ -67,7 +67,7 @@ public class FunckyRuntimeException extends ScriptException {
         } else if (expression instanceof FunckyReference) {
             return formatStackTrace((FunckyReference) expression);
         } else {
-            return null;
+            return null; // TODO IllegalStateException?
         }
     }
 

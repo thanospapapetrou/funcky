@@ -42,14 +42,22 @@ public class Linker {
     public static final FunckyFunctionType MAIN_TYPE = new FunckyFunctionType(
             new FunckyListType(FunckyListType.STRING), FunckySimpleType.NUMBER);
     public static final URI STDIN;
-    private static final String DEFINITION = "  %1$s %2$s";
+
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
     private static final String ERROR_RESOLVING_LIBRARY_NAMESPACE = "Error resolving library namespace";
     private static final String ERROR_RESOLVING_STDIN = "Error resolving standard input";
     private static final String ERROR_RESOLVING_USER_DIR = "Error resolving user directory";
+    private static final String FINE_DEFINITION = "  %1$s %2$s";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
-    private static final Set<Class<? extends FunckyLibrary>> PRELUDE = Set.of(Types.class, Numbers.class,
-            Booleans.class, Characters.class, Lists.class, Commons.class, Combinators.class);
+    private static final Set<Class<? extends FunckyLibrary>> PRELUDE = Set.of(
+            Types.class,
+            Numbers.class,
+            Booleans.class,
+            Characters.class,
+            Lists.class,
+            Commons.class,
+            Combinators.class
+    );
     private static final String PRELUDE_SCHEME = new FunckyFactory().getLanguageName().toLowerCase(Locale.ROOT);
     private static final String PRELUDE_SCRIPT = "/prelude/%1$s.funcky";
     private static final URI USER_DIR;
@@ -102,7 +110,7 @@ public class Linker {
             validateMain(script);
         }
         LOGGER.fine(script.getFile().toString());
-        definitionTypes.forEach((definition, type) -> LOGGER.fine(String.format(DEFINITION, definition, type)));
+        definitionTypes.forEach((definition, type) -> LOGGER.fine(String.format(FINE_DEFINITION, definition, type)));
         LOGGER.fine("");
         return script;
     }
@@ -180,7 +188,7 @@ public class Linker {
             return library.getDeclaredConstructor().newInstance();
         } catch (final ReflectiveOperationException e) {
             LOGGER.log(Level.SEVERE, String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
-            throw new ExceptionInInitializerError(e); // TODO throw compilation exception instead
+            throw new IllegalStateException(e); // TODO throw compilation exception instead
         }
     }
 }
