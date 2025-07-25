@@ -14,6 +14,7 @@ import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.compiler.CompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
@@ -274,7 +275,7 @@ public class Parser {
         }
         return new FunckyLiteral(engine, leftCurlyBracket.getFile(), leftCurlyBracket.getLine(),
                 leftCurlyBracket.getColumn(),
-                new FunckyRecord(new FunckyRecordType(engine.getConverter().convert(types)), components));
+                new FunckyRecord(new FunckyRecordType(FunckyJavaConverter.convert(types)), components));
     }
 
     private Token consume(final Queue<Token> input, final Set<TokenType> expected) throws UnexpectedTokenException {

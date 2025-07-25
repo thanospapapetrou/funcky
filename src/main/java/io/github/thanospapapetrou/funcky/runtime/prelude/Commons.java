@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
+import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
@@ -73,7 +74,7 @@ public class Commons extends FunckyLibrary {
         protected FunckyList apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
             try {
-                return arguments.get(0).getEngine().getConverter().convert(arguments.get(0).eval(context).toString());
+                return FunckyJavaConverter.convert(arguments.get(0).eval(context).toString());
             } catch (final SneakyFunckyRuntimeException e) {
                 throw (FunckyRuntimeException) e.getCause();
             }

@@ -78,9 +78,8 @@ public class FunckyRuntimeException extends ScriptException {
 
     private String formatStackTrace(final FunckyReference reference) {
         try {
-            final FunckyExpression expression = reference.getEngine().getContext()
-                    .getDefinitionExpression(reference.resolveNamespace(reference.getEngine().getContext()),
-                            reference.getName());
+            final FunckyExpression expression = reference.getEngine().getManager()
+                    .getDefinitionExpression(reference.resolveNamespace(), reference.getName());
             return String.format(DEFINITION,
                     new FunckyDefinition(expression.getFile(), expression.getLine(), reference.getName(), expression),
                     expression.getFile(), expression.getLine(), 1);

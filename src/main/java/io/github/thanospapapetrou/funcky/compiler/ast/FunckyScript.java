@@ -11,6 +11,7 @@ import javax.script.ScriptContext;
 import javax.script.SimpleScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
@@ -57,7 +58,7 @@ public class FunckyScript extends CompiledScript {
         try {
             return (FunckyNumber) new FunckyApplication(new FunckyReference(engine, getFile(), -1, -1, getFile(), MAIN),
                     new FunckyLiteral(engine,
-                            engine.getConverter().convert(Arrays.asList(engine.getContext().getArguments())))).eval(
+                            FunckyJavaConverter.convert(Arrays.asList(engine.getManager().getArguments())))).eval(
                     context);
         } catch (final SneakyFunckyRuntimeException e) {
             throw (FunckyRuntimeException) e.getCause();

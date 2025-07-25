@@ -1,6 +1,7 @@
 package io.github.thanospapapetrou.funcky.prelude
 
 import io.github.thanospapapetrou.funcky.BaseSpec
+import io.github.thanospapapetrou.funcky.FunckyJavaConverter
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber
@@ -26,7 +27,7 @@ class CommonsSpec extends BaseSpec {
         '"funcky:types".range ("funcky:types".range ("funcky:types".type "funcky:commons".equal))'                                                                                                || FunckySimpleType.BOOLEAN
         '"funcky:types".type ("funcky:commons".equal "funcky:types".Type)'                                                                                                                        || new FunckyFunctionType(FunckySimpleType.TYPE, FunckySimpleType.BOOLEAN)
         '"funcky:types".type ("funcky:commons".equal 0)'                                                                                                                                          || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.BOOLEAN)
-        '"funcky:commons".string ("funcky:commons".equal ("funcky:commons".error "foo"))'                                                                                                         || engine.converter.convert('"funcky:commons".equal ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:commons".equal ("funcky:commons".error "foo"))'                                                                                                         || FunckyJavaConverter.convert('"funcky:commons".equal ("funcky:commons".error "foo")')
         '"funcky:commons".equal "funcky:types".Type "funcky:types".Type'                                                                                                                          || FunckyBoolean.TRUE
         '"funcky:commons".equal "funcky:types".Type "funcky:types".Number'                                                                                                                        || FunckyBoolean.FALSE
         '"funcky:commons".equal "funcky:types".Type "funcky:types".Boolean'                                                                                                                       || FunckyBoolean.FALSE
@@ -454,7 +455,7 @@ class CommonsSpec extends BaseSpec {
         '"funcky:types".range ("funcky:types".range ("funcky:types".type "funcky:commons".compare))'                                                                                                  || FunckySimpleType.NUMBER
         '"funcky:types".type ("funcky:commons".compare "funcky:types".Type)'                                                                                                                          || new FunckyFunctionType(FunckySimpleType.TYPE, FunckySimpleType.NUMBER)
         '"funcky:types".type ("funcky:commons".compare 0)'                                                                                                                                            || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:commons".string ("funcky:commons".compare ("funcky:commons".error "foo"))'                                                                                                           || engine.converter.convert('"funcky:commons".compare ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:commons".compare ("funcky:commons".error "foo"))'                                                                                                           || FunckyJavaConverter.convert('"funcky:commons".compare ("funcky:commons".error "foo")')
         '"funcky:commons".compare "funcky:types".Type "funcky:types".Type'                                                                                                                            || new FunckyNumber(0.0G)
         '"funcky:commons".compare "funcky:types".Type "funcky:types".Number'                                                                                                                          || new FunckyNumber(-1.0G)
         '"funcky:commons".compare "funcky:types".Type "funcky:types".Boolean'                                                                                                                         || new FunckyNumber(-1.0G)
@@ -830,10 +831,10 @@ class CommonsSpec extends BaseSpec {
         '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".range ("funcky:types".range ("funcky:types".type "funcky:commons".if))))'                                                                                      || FunckyBoolean.TRUE
         '"funcky:commons".equal ("funcky:types".domain ("funcky:types".range ("funcky:types".type "funcky:commons".if))) ("funcky:types".domain ("funcky:types".range ("funcky:types".range ("funcky:types".type "funcky:commons".if))))' || FunckyBoolean.TRUE
         '"funcky:commons".equal ("funcky:types".domain ("funcky:types".range ("funcky:types".type "funcky:commons".if))) ("funcky:types".range ("funcky:types".range ("funcky:types".range ("funcky:types".type "funcky:commons".if))))'  || FunckyBoolean.TRUE
-        '"funcky:commons".string ("funcky:commons".if ("funcky:commons".error "foo"))'                                                                                                                                                    || engine.converter.convert('"funcky:commons".if ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:commons".if ("funcky:commons".error "foo"))'                                                                                                                                                    || FunckyJavaConverter.convert('"funcky:commons".if ("funcky:commons".error "foo")')
         '"funcky:types".type ("funcky:commons".if "funcky:booleans".false 1)'                                                                                                                                                             || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
         '"funcky:types".type ("funcky:commons".if "funcky:booleans".false \'a\')'                                                                                                                                                         || new FunckyFunctionType(FunckySimpleType.CHARACTER, FunckySimpleType.CHARACTER)
-        '"funcky:commons".string ("funcky:commons".if "funcky:booleans".false ("funcky:commons".error "foo"))'                                                                                                                            || engine.converter.convert('"funcky:commons".if "funcky:booleans".false ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:commons".if "funcky:booleans".false ("funcky:commons".error "foo"))'                                                                                                                            || FunckyJavaConverter.convert('"funcky:commons".if "funcky:booleans".false ("funcky:commons".error "foo")')
         '"funcky:commons".if "funcky:booleans".false 0 1'                                                                                                                                                                                 || new FunckyNumber(1.0G)
         '"funcky:commons".if "funcky:booleans".true 0 1'                                                                                                                                                                                  || new FunckyNumber(0.0G)
         '"funcky:commons".if "funcky:booleans".false \'a\' \'b\''                                                                                                                                                                         || new FunckyCharacter('b' as char)
@@ -853,35 +854,35 @@ class CommonsSpec extends BaseSpec {
         '"funcky:commons".string'                                                                           || Commons.STRING
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".type "funcky:commons".string))' || FunckyBoolean.TRUE
         '"funcky:types".range ("funcky:types".type "funcky:commons".string)'                                || FunckyListType.STRING
-        '"funcky:commons".string "funcky:types".Type'                                                       || engine.converter.convert('"funcky:types".Type')
-        '"funcky:commons".string "funcky:types".Number'                                                     || engine.converter.convert('"funcky:types".Number')
-        '"funcky:commons".string "funcky:types".Boolean'                                                    || engine.converter.convert('"funcky:types".Boolean')
-        '"funcky:commons".string "funcky:types".Character'                                                  || engine.converter.convert('"funcky:types".Character')
-        '"funcky:commons".string ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'       || engine.converter.convert('"funcky:types".Function "funcky:types".Type "funcky:types".Number')
-        '"funcky:commons".string ("funcky:types".List "funcky:types".Type)'                                 || engine.converter.convert('"funcky:types".List "funcky:types".Type')
-        '"funcky:commons".string "funcky:types".String'                                                     || engine.converter.convert('"funcky:types".List "funcky:types".Character')
-        '"funcky:commons".string ("funcky:types".Record [])'                                                || engine.converter.convert('"funcky:types".Record []')
-        '"funcky:commons".string ("funcky:types".Record ["funcky:types".Type])'                             || engine.converter.convert('"funcky:types".Record ["funcky:types".Type]')
-        '"funcky:commons".string "funcky:types".Unit'                                                       || engine.converter.convert('"funcky:types".Record []')
+        '"funcky:commons".string "funcky:types".Type'                                                       || FunckyJavaConverter.convert('"funcky:types".Type')
+        '"funcky:commons".string "funcky:types".Number'                                                     || FunckyJavaConverter.convert('"funcky:types".Number')
+        '"funcky:commons".string "funcky:types".Boolean'                                                    || FunckyJavaConverter.convert('"funcky:types".Boolean')
+        '"funcky:commons".string "funcky:types".Character'                                                  || FunckyJavaConverter.convert('"funcky:types".Character')
+        '"funcky:commons".string ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'       || FunckyJavaConverter.convert('"funcky:types".Function "funcky:types".Type "funcky:types".Number')
+        '"funcky:commons".string ("funcky:types".List "funcky:types".Type)'                                 || FunckyJavaConverter.convert('"funcky:types".List "funcky:types".Type')
+        '"funcky:commons".string "funcky:types".String'                                                     || FunckyJavaConverter.convert('"funcky:types".List "funcky:types".Character')
+        '"funcky:commons".string ("funcky:types".Record [])'                                                || FunckyJavaConverter.convert('"funcky:types".Record []')
+        '"funcky:commons".string ("funcky:types".Record ["funcky:types".Type])'                             || FunckyJavaConverter.convert('"funcky:types".Record ["funcky:types".Type]')
+        '"funcky:commons".string "funcky:types".Unit'                                                       || FunckyJavaConverter.convert('"funcky:types".Record []')
         '"funcky:lists".empty ("funcky:commons".string $_)'                                                 || FunckyBoolean.FALSE
-        '"funcky:commons".string 0'                                                                         || engine.converter.convert('0')
-        '"funcky:commons".string 1'                                                                         || engine.converter.convert('1')
-        '"funcky:commons".string "funcky:booleans".false'                                                   || engine.converter.convert('"funcky:booleans".false')
-        '"funcky:commons".string "funcky:booleans".true'                                                    || engine.converter.convert('"funcky:booleans".true')
-        '"funcky:commons".string \'a\''                                                                     || engine.converter.convert('a')
-        '"funcky:commons".string \'b\''                                                                     || engine.converter.convert('b')
-        '"funcky:commons".string "funcky:types".type'                                                       || engine.converter.convert('"funcky:types".type')
-        '"funcky:commons".string ("funcky:numbers".add 0)'                                                  || engine.converter.convert('"funcky:numbers".add 0')
-        '"funcky:commons".string ("funcky:numbers".add ("funcky:commons".error "foo"))'                     || engine.converter.convert('"funcky:numbers".add ("funcky:commons".error "foo")')
-        '"funcky:commons".string []'                                                                        || engine.converter.convert('[]')
-        '"funcky:commons".string [0]'                                                                       || engine.converter.convert('[0]')
-        '"funcky:commons".string [0, 1]'                                                                    || engine.converter.convert('[0, 1]')
-        '"funcky:commons".string ["funcky:numbers".add 1 2]'                                                || engine.converter.convert('[3]')
-        '"funcky:commons".string ""'                                                                        || engine.converter.convert('')
-        '"funcky:commons".string "foo"'                                                                     || engine.converter.convert('foo')
-        '"funcky:commons".string {}'                                                                        || engine.converter.convert('{}')
-        '"funcky:commons".string {0}'                                                                       || engine.converter.convert('{0}')
-        '"funcky:commons".string {0, \'a\'}'                                                                || engine.converter.convert('{0, a}')
+        '"funcky:commons".string 0'                                                                         || FunckyJavaConverter.convert('0')
+        '"funcky:commons".string 1'                                                                         || FunckyJavaConverter.convert('1')
+        '"funcky:commons".string "funcky:booleans".false'                                                   || FunckyJavaConverter.convert('"funcky:booleans".false')
+        '"funcky:commons".string "funcky:booleans".true'                                                    || FunckyJavaConverter.convert('"funcky:booleans".true')
+        '"funcky:commons".string \'a\''                                                                     || FunckyJavaConverter.convert('a')
+        '"funcky:commons".string \'b\''                                                                     || FunckyJavaConverter.convert('b')
+        '"funcky:commons".string "funcky:types".type'                                                       || FunckyJavaConverter.convert('"funcky:types".type')
+        '"funcky:commons".string ("funcky:numbers".add 0)'                                                  || FunckyJavaConverter.convert('"funcky:numbers".add 0')
+        '"funcky:commons".string ("funcky:numbers".add ("funcky:commons".error "foo"))'                     || FunckyJavaConverter.convert('"funcky:numbers".add ("funcky:commons".error "foo")')
+        '"funcky:commons".string []'                                                                        || FunckyJavaConverter.convert('[]')
+        '"funcky:commons".string [0]'                                                                       || FunckyJavaConverter.convert('[0]')
+        '"funcky:commons".string [0, 1]'                                                                    || FunckyJavaConverter.convert('[0, 1]')
+        '"funcky:commons".string ["funcky:numbers".add 1 2]'                                                || FunckyJavaConverter.convert('[3]')
+        '"funcky:commons".string ""'                                                                        || FunckyJavaConverter.convert('')
+        '"funcky:commons".string "foo"'                                                                     || FunckyJavaConverter.convert('foo')
+        '"funcky:commons".string {}'                                                                        || FunckyJavaConverter.convert('{}')
+        '"funcky:commons".string {0}'                                                                       || FunckyJavaConverter.convert('{0}')
+        '"funcky:commons".string {0, \'a\'}'                                                                || FunckyJavaConverter.convert('{0, a}')
     }
 
     @Unroll('Test number (expression: #expression)')

@@ -70,7 +70,7 @@ public abstract class FunckyExpression extends CompiledScript {
 
     @Override
     public FunckyValue eval() throws FunckyRuntimeException {
-        return eval(((engine == null) ? FunckyFactory.ENGINE : engine).getContext());
+        return eval((engine == null) ? FunckyFactory.GLOBAL : engine.getContext());
     }
 
     protected abstract FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions)

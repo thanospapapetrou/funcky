@@ -18,7 +18,7 @@ import javax.script.SimpleBindings;
 import io.github.thanospapapetrou.funcky.compiler.CompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.linker.FunckyScriptContext;
+import io.github.thanospapapetrou.funcky.compiler.linker.ContextManager;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.Parser;
 import io.github.thanospapapetrou.funcky.compiler.preprocessor.Preprocessor;
@@ -38,7 +38,7 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     private final Parser parser;
     private final Preprocessor preprocessor;
     private final Linker linker;
-    private final FunckyJavaConverter converter;
+    private final ContextManager manager;
 
     FunckyEngine(final FunckyFactory factory) {
         this.factory = factory;
@@ -46,31 +46,20 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
         parser = new Parser(this);
         preprocessor = new Preprocessor();
         linker = new Linker(this);
-        converter = new FunckyJavaConverter();
-        setContext(FunckyScriptContext.getContext(context));
+        manager = new ContextManager(this.getContext());
     }
 
     public Linker getLinker() {
         return linker;
     }
 
-    public FunckyJavaConverter getConverter() {
-        return converter;
+    public ContextManager getManager() {
+        return manager;
     }
 
     @Override
     public FunckyFactory getFactory() {
         return factory;
-    }
-
-    @Override
-    public FunckyScriptContext getContext() {
-        return (FunckyScriptContext) context;
-    }
-
-    @Override
-    public void setContext(final ScriptContext context) {
-        this.context = FunckyScriptContext.getContext(context);
     }
 
     @Override
@@ -126,14 +115,14 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     @Override
     public FunckyExpression compile(final String expression) throws CompilationException {
         return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
-                        .filter(token -> !token.getType().equals(TokenType.COMMENT))
-                        .collect(Collectors.toCollection(ArrayDeque::new)))));
+                .filter(token -> !token.getType().equals(TokenType.COMMENT))
+                .collect(Collectors.toCollection(ArrayDeque::new)))));
     }
 
     @Override
     public FunckyScript compile(final Reader script) throws CompilationException {
         try {
-            return compile(script, getContext().getFile(), true);
+            return compile(script, getManager().getFile(), true);
         } catch (final IOException e) {
             throw new CompilationException(e);
         }
@@ -141,8 +130,8 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
 
     private FunckyScript compile(final Reader script, final URI file, final boolean main) throws CompilationException {
         return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(script, file).stream()
-                        .filter(token -> !token.getType().equals(TokenType.COMMENT))
-                        .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
+                .filter(token -> !token.getType().equals(TokenType.COMMENT))
+                .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
     }
 
     @Override

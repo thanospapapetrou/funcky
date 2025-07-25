@@ -32,7 +32,7 @@ public class FunckyLiteral extends FunckyExpression {
     }
 
     public FunckyLiteral(final FunckyValue value) {
-        this(FunckyFactory.ENGINE, value);
+        this(null, value);
     }
 
     public FunckyValue getValue() {

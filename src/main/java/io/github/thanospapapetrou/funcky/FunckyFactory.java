@@ -7,10 +7,13 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.script.ScriptContext;
 import javax.script.ScriptEngineFactory;
+import javax.script.SimpleBindings;
+import javax.script.SimpleScriptContext;
 
 public class FunckyFactory implements ScriptEngineFactory {
-    public static final FunckyEngine ENGINE = new FunckyFactory().getScriptEngine();
+    public static final ScriptContext GLOBAL = new SimpleScriptContext();
 
     private static final String CONFIG_ENGINE_NAME_VERSION = "Engine: %1$s %2$s";
     private static final String CONFIG_EXTENSIONS = "Extensions: %1$s";
@@ -24,6 +27,10 @@ public class FunckyFactory implements ScriptEngineFactory {
     private static final String PARAMETERS = "/funcky.properties";
 
     private final Properties parameters;
+
+    static {
+        GLOBAL.setBindings(new SimpleBindings(), ScriptContext.GLOBAL_SCOPE);
+    }
 
     public FunckyFactory() {
         this(new Properties());
@@ -107,7 +114,9 @@ public class FunckyFactory implements ScriptEngineFactory {
 
     @Override
     public FunckyEngine getScriptEngine() {
-        return new FunckyEngine(this);
+        final FunckyEngine engine = new FunckyEngine(this);
+        engine.setBindings(GLOBAL.getBindings(ScriptContext.GLOBAL_SCOPE), ScriptContext.GLOBAL_SCOPE);
+        return engine;
     }
 
     private List<String> getParameters(final String key) {

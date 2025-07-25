@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.github.thanospapapetrou.funcky.FunckyFactory;
+import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
@@ -87,6 +87,6 @@ public class FunckyRecordType extends FunckyType {
                 list = (FunckyList) list.getTail().eval()) {
             types.add(((FunckyType) list.getHead().eval()).bind(bindings));
         }
-        return new FunckyRecordType(FunckyFactory.ENGINE.getConverter().convert(types));
+        return new FunckyRecordType(FunckyJavaConverter.convert(types));
     }
 }

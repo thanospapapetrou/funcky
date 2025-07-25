@@ -60,8 +60,8 @@ public class Funcky {
 
     private static void runScript(final String script, final String... arguments) {
         final FunckyEngine engine = new FunckyFactory().getScriptEngine();
-        engine.getContext().setFile(script);
-        engine.getContext().setArguments(arguments);
+        engine.getManager().setFile(script);
+        engine.getManager().setArguments(arguments);
         try (final InputStreamReader reader = new InputStreamReader(
                 Linker.normalize(Linker.STDIN, new URI(script)).toURL().openStream())) {
             System.exit(engine.eval(reader).getValue().intValue());

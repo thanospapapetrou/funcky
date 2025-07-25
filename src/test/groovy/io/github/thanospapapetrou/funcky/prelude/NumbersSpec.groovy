@@ -3,6 +3,7 @@ package io.github.thanospapapetrou.funcky.prelude
 import java.math.RoundingMode
 
 import io.github.thanospapapetrou.funcky.BaseSpec
+import io.github.thanospapapetrou.funcky.FunckyJavaConverter
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue
@@ -91,7 +92,7 @@ class NumbersSpec extends BaseSpec {
         '"funcky:numbers".add'                                                          || Numbers.ADD
         '"funcky:types".type "funcky:numbers".add'                                      || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
         '"funcky:types".type ("funcky:numbers".add 1)'                                  || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:commons".string ("funcky:numbers".add ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:numbers".add ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:numbers".add ("funcky:commons".error "foo"))' || FunckyJavaConverter.convert('"funcky:numbers".add ("funcky:commons".error "foo")')
         '"funcky:numbers".add 0 0'                                                      || new FunckyNumber(0.0G)
         '"funcky:numbers".add 0 1'                                                      || new FunckyNumber(1.0G)
         '"funcky:numbers".add 1 1'                                                      || new FunckyNumber(2.0G)
@@ -107,7 +108,7 @@ class NumbersSpec extends BaseSpec {
         '"funcky:numbers".subtract'                                                          || Numbers.SUBTRACT
         '"funcky:types".type "funcky:numbers".subtract'                                      || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
         '"funcky:types".type ("funcky:numbers".subtract 1)'                                  || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:commons".string ("funcky:numbers".subtract ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:numbers".subtract ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:numbers".subtract ("funcky:commons".error "foo"))' || FunckyJavaConverter.convert('"funcky:numbers".subtract ("funcky:commons".error "foo")')
         '"funcky:numbers".subtract 0 0'                                                      || new FunckyNumber(0.0G)
         '"funcky:numbers".subtract 0 1'                                                      || new FunckyNumber(-1.0G)
         '"funcky:numbers".subtract 1 1'                                                      || new FunckyNumber(0.0G)
@@ -123,7 +124,7 @@ class NumbersSpec extends BaseSpec {
         '"funcky:numbers".multiply'                                                          || Numbers.MULTIPLY
         '"funcky:types".type "funcky:numbers".multiply'                                      || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
         '"funcky:types".type ("funcky:numbers".multiply 1)'                                  || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:commons".string ("funcky:numbers".multiply ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:numbers".multiply ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:numbers".multiply ("funcky:commons".error "foo"))' || FunckyJavaConverter.convert('"funcky:numbers".multiply ("funcky:commons".error "foo")')
         '"funcky:numbers".multiply 0 0'                                                      || new FunckyNumber(0.0G)
         '"funcky:numbers".multiply 0 1'                                                      || new FunckyNumber(0.0G)
         '"funcky:numbers".multiply 1 1'                                                      || new FunckyNumber(1.0G)
@@ -141,9 +142,9 @@ class NumbersSpec extends BaseSpec {
         '"funcky:types".type ("funcky:numbers".divide 1)'                                      || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
         '"funcky:types".type ("funcky:numbers".divide 1 2)'                                    || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
         '"funcky:types".type ("funcky:numbers".divide 1 2 3)'                                  || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:commons".string ("funcky:numbers".divide ("funcky:commons".error "foo"))'     || engine.converter.convert('"funcky:numbers".divide ("funcky:commons".error "foo")')
-        '"funcky:commons".string ("funcky:numbers".divide 1 ("funcky:commons".error "foo"))'   || engine.converter.convert('"funcky:numbers".divide 1 ("funcky:commons".error "foo")')
-        '"funcky:commons".string ("funcky:numbers".divide 1 2 ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:numbers".divide 1 2 ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:numbers".divide ("funcky:commons".error "foo"))'     || FunckyJavaConverter.convert('"funcky:numbers".divide ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:numbers".divide 1 ("funcky:commons".error "foo"))'   || FunckyJavaConverter.convert('"funcky:numbers".divide 1 ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:numbers".divide 1 2 ("funcky:commons".error "foo"))' || FunckyJavaConverter.convert('"funcky:numbers".divide 1 2 ("funcky:commons".error "foo")')
         '"funcky:numbers".divide 1 3 4 "funcky:numbers".UP'                                    || new FunckyNumber(0.3334G)
         '"funcky:numbers".divide 123 4 -1 "funcky:numbers".UP'                                 || new FunckyNumber(40.0G)
         '"funcky:numbers".divide 1 3 2 "funcky:numbers".UP'                                    || new FunckyNumber(0.34G)

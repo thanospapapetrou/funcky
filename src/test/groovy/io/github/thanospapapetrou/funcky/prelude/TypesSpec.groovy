@@ -3,6 +3,7 @@ package io.github.thanospapapetrou.funcky.prelude
 import java.util.regex.Pattern
 
 import io.github.thanospapapetrou.funcky.BaseSpec
+import io.github.thanospapapetrou.funcky.FunckyJavaConverter
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean
 import io.github.thanospapapetrou.funcky.runtime.FunckyList
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue
@@ -40,9 +41,9 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".Function'                                                                              || Types.FUNCTION
         '"funcky:types".type "funcky:types".Function'                                                          || new FunckyFunctionType(FunckySimpleType.TYPE, FunckySimpleType.TYPE, FunckySimpleType.TYPE)
         '"funcky:types".type ("funcky:types".Function "funcky:types".Type)'                                    || new FunckyFunctionType(FunckySimpleType.TYPE, FunckySimpleType.TYPE)
-        '"funcky:commons".string ("funcky:types".Function ("funcky:commons".error "foo"))'                     || engine.converter.convert('"funcky:types".Function ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:types".Function ("funcky:commons".error "foo"))'                     || FunckyJavaConverter.convert('"funcky:types".Function ("funcky:commons".error "foo")')
         '"funcky:types".Function "funcky:types".Type "funcky:types".Number'                                    || new FunckyFunctionType(FunckySimpleType.TYPE, FunckySimpleType.NUMBER)
-        '"funcky:commons".string ("funcky:types".Function "funcky:types".Type ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:types".Function "funcky:types".Type ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:types".Function "funcky:types".Type ("funcky:commons".error "foo"))' || FunckyJavaConverter.convert('"funcky:types".Function "funcky:types".Type ("funcky:commons".error "foo")')
     }
 
     @Unroll('Test domain (expression: #expression)')
@@ -94,7 +95,7 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".List'                                                          || Types.LIST
         '"funcky:types".type "funcky:types".List'                                      || new FunckyFunctionType(FunckySimpleType.TYPE, FunckySimpleType.TYPE)
         '"funcky:types".List "funcky:types".Type'                                      || new FunckyListType(FunckySimpleType.TYPE)
-        '"funcky:commons".string ("funcky:types".List ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:types".List ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:types".List ("funcky:commons".error "foo"))' || FunckyJavaConverter.convert('"funcky:types".List ("funcky:commons".error "foo")')
     }
 
     @Unroll('Test element (expression: #expression)')
@@ -148,8 +149,8 @@ class TypesSpec extends BaseSpec {
         expression                                                                || result
         '"funcky:types".components'                                               || Types.COMPONENTS
         '"funcky:types".type "funcky:types".components'                           || new FunckyFunctionType(FunckySimpleType.TYPE, new FunckyListType(FunckySimpleType.TYPE))
-        '"funcky:types".components ("funcky:types".Record [])'                    || engine.converter.convert([])
-        '"funcky:types".components ("funcky:types".Record ["funcky:types".Type])' || engine.converter.convert([FunckySimpleType.TYPE])
+        '"funcky:types".components ("funcky:types".Record [])'                    || FunckyJavaConverter.convert([])
+        '"funcky:types".components ("funcky:types".Record ["funcky:types".Type])' || FunckyJavaConverter.convert([FunckySimpleType.TYPE])
     }
 
     def 'Test components (runtime error)'() {
@@ -167,7 +168,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                || result
-        '"funcky:types".Unit'                     || new FunckyRecordType(engine.converter.convert(([])))
+        '"funcky:types".Unit'                     || new FunckyRecordType(FunckyJavaConverter.convert(([])))
         '"funcky:types".type "funcky:types".Unit' || FunckySimpleType.TYPE
     }
 
@@ -189,8 +190,8 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".type [1]'                                                                       || new FunckyListType(FunckySimpleType.NUMBER)
         '"funcky:types".type ""'                                                                        || FunckyListType.STRING
         '"funcky:types".type {}'                                                                        || FunckyRecordType.UNIT
-        '"funcky:types".type {1}'                                                                       || new FunckyRecordType(engine.converter.convert([FunckySimpleType.NUMBER]))
-        '"funcky:types".type {1, \'a\'}'                                                                || new FunckyRecordType(engine.converter.convert([FunckySimpleType.NUMBER, FunckySimpleType.CHARACTER]))
+        '"funcky:types".type {1}'                                                                       || new FunckyRecordType(FunckyJavaConverter.convert([FunckySimpleType.NUMBER]))
+        '"funcky:types".type {1, \'a\'}'                                                                || new FunckyRecordType(FunckyJavaConverter.convert([FunckySimpleType.NUMBER, FunckySimpleType.CHARACTER]))
     }
 
     @Unroll('Test typeVariable (expression: #expression)')
@@ -301,7 +302,7 @@ class TypesSpec extends BaseSpec {
         '"funcky:commons".equal ("funcky:types".element ("funcky:types".free ("funcky:types".List $_))) ("funcky:types".element ("funcky:types".List $_))'                                               || FunckyBoolean.FALSE
         '"funcky:types".free "funcky:types".String'                                                                                                                                                      || FunckyListType.STRING
         '"funcky:types".free ("funcky:types".Record [])'                                                                                                                                                 || FunckyRecordType.UNIT
-        '"funcky:types".free ("funcky:types".Record ["funcky:types".Type])'                                                                                                                              || new FunckyRecordType(engine.converter.convert([FunckySimpleType.TYPE]))
+        '"funcky:types".free ("funcky:types".Record ["funcky:types".Type])'                                                                                                                              || new FunckyRecordType(FunckyJavaConverter.convert([FunckySimpleType.TYPE]))
         '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".free ("funcky:types".Record [$_]))))'                                                               || FunckyBoolean.TRUE
         '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".free ("funcky:types".Record [$_]))))'                                                                      || FunckyBoolean.TRUE
         '"funcky:types".free "funcky:types".Unit'                                                                                                                                                        || FunckyRecordType.UNIT
@@ -318,7 +319,7 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".unify'                                                                                                                                                             || Types.UNIFY
         '"funcky:types".type "funcky:types".unify'                                                                                                                                         || new FunckyFunctionType(FunckySimpleType.TYPE, FunckySimpleType.TYPE, FunckySimpleType.TYPE)
         '"funcky:types".type ("funcky:types".unify "funcky:types".Type)'                                                                                                                   || new FunckyFunctionType(FunckySimpleType.TYPE, FunckySimpleType.TYPE)
-        '"funcky:commons".string ("funcky:types".unify ("funcky:commons".error "foo"))'                                                                                                    || engine.converter.convert('"funcky:types".unify ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:types".unify ("funcky:commons".error "foo"))'                                                                                                    || FunckyJavaConverter.convert('"funcky:types".unify ("funcky:commons".error "foo")')
         '"funcky:types".unify "funcky:types".Type "funcky:types".Type'                                                                                                                     || FunckySimpleType.TYPE
         '"funcky:types".unify "funcky:types".Type $_'                                                                                                                                      || FunckySimpleType.TYPE
         '"funcky:types".unify "funcky:types".Number "funcky:types".Number'                                                                                                                 || FunckySimpleType.NUMBER
@@ -368,10 +369,10 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".unify ("funcky:types".Record []) ("funcky:types".Record [])'                                                                                                       || FunckyRecordType.UNIT
         '"funcky:types".unify ("funcky:types".Record []) "funcky:types".Unit'                                                                                                              || FunckyRecordType.UNIT
         '"funcky:types".unify ("funcky:types".Record []) $_'                                                                                                                               || FunckyRecordType.UNIT
-        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) ("funcky:types".Record ["funcky:types".Type])'                                                                 || new FunckyRecordType(engine.converter.convert([FunckySimpleType.TYPE]))
-        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) ("funcky:types".Record [$_])'                                                                                  || new FunckyRecordType(engine.converter.convert([FunckySimpleType.TYPE]))
-        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) $_'                                                                                                            || new FunckyRecordType(engine.converter.convert([FunckySimpleType.TYPE]))
-        '"funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record ["funcky:types".Type])'                                                                                  || new FunckyRecordType(engine.converter.convert([FunckySimpleType.TYPE]))
+        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) ("funcky:types".Record ["funcky:types".Type])'                                                                 || new FunckyRecordType(FunckyJavaConverter.convert([FunckySimpleType.TYPE]))
+        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) ("funcky:types".Record [$_])'                                                                                  || new FunckyRecordType(FunckyJavaConverter.convert([FunckySimpleType.TYPE]))
+        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) $_'                                                                                                            || new FunckyRecordType(FunckyJavaConverter.convert([FunckySimpleType.TYPE]))
+        '"funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record ["funcky:types".Type])'                                                                                  || new FunckyRecordType(FunckyJavaConverter.convert([FunckySimpleType.TYPE]))
         '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record [$_]))))'                   || FunckyBoolean.TRUE
         '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record [$_]))))'                          || FunckyBoolean.TRUE
         '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) $_)))'                                             || FunckyBoolean.TRUE
@@ -394,7 +395,7 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".unify $_ ("funcky:types".List $_)))'                                                                          || FunckyBoolean.TRUE
         '"funcky:types".unify $_ "funcky:types".String'                                                                                                                                    || FunckyListType.STRING
         '"funcky:types".unify $_ ("funcky:types".Record [])'                                                                                                                               || FunckyRecordType.UNIT
-        '"funcky:types".unify $_ ("funcky:types".Record ["funcky:types".Type])'                                                                                                            || new FunckyRecordType(engine.converter.convert([FunckySimpleType.TYPE]))
+        '"funcky:types".unify $_ ("funcky:types".Record ["funcky:types".Type])'                                                                                                            || new FunckyRecordType(FunckyJavaConverter.convert([FunckySimpleType.TYPE]))
         '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify $_ ("funcky:types".Record [$_]))))'                                             || FunckyBoolean.TRUE
         '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify $_ ("funcky:types".Record [$_]))))'                                                    || FunckyBoolean.TRUE
         '"funcky:types".unify $_ "funcky:types".Unit'                                                                                                                                      || FunckyRecordType.UNIT

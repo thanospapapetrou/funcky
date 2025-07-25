@@ -109,6 +109,6 @@ abstract class BaseSpec extends Specification {
     }
 
     protected Map<String, FunckyList> getStrings() {
-        STRINGS.collectEntries { [(it.key): engine.converter.convert(it.value)] }
+        STRINGS.collectEntries { [(it.key): FunckyJavaConverter.convert(it.value)] }
     }
 }

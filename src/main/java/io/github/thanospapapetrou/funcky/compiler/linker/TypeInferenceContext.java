@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
+import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
@@ -34,8 +35,8 @@ public class TypeInferenceContext {
             return true;
         } else if ((ta instanceof FunckyFunctionType) && (tb instanceof FunckyFunctionType)) {
             return unify((FunckyType) ((FunckyFunctionType) ta).getDomain().eval(),
-                    (FunckyType) ((FunckyFunctionType) tb).getDomain().eval())
-                    && unify((FunckyType) ((FunckyFunctionType) ta).getRange().eval(),
+                    (FunckyType) ((FunckyFunctionType) tb).getDomain().eval()) && unify(
+                    (FunckyType) ((FunckyFunctionType) ta).getRange().eval(),
                     (FunckyType) ((FunckyFunctionType) tb).getRange().eval());
         } else if ((ta instanceof FunckyListType) && (tb instanceof FunckyListType)) {
             return unify((FunckyType) ((FunckyListType) ta).getElement().eval(),
@@ -73,8 +74,7 @@ public class TypeInferenceContext {
                     list.getTail() != null; list = (FunckyList) list.getTail().eval()) {
                 components.add(find((FunckyType) list.getHead().eval()));
             }
-            return new FunckyRecordType(
-                    ((FunckyRecordType) type).getComponents().getEngine().getConverter().convert(components));
+            return new FunckyRecordType(FunckyJavaConverter.convert(components));
         } else if (type instanceof FunckyTypeVariable) {
             final FunckyType found = findRepresentative(findSet(type));
             if (found instanceof FunckyFunctionType) {
@@ -88,8 +88,7 @@ public class TypeInferenceContext {
                         list.getTail() != null; list = (FunckyList) list.getTail().eval()) {
                     components.add(find((FunckyType) list.getHead().eval()));
                 }
-                return new FunckyRecordType(
-                        ((FunckyRecordType) found).getComponents().getEngine().getConverter().convert(components));
+                return new FunckyRecordType(FunckyJavaConverter.convert(components));
             }
             return found;
         }
@@ -99,8 +98,8 @@ public class TypeInferenceContext {
     private boolean union(final FunckyType a, final FunckyType b) {
         final Set<FunckyType> setA = findSet(a);
         final Set<FunckyType> setB = findSet(b);
-        if ((findRepresentative(setA) instanceof FunckyTypeVariable)
-                || (findRepresentative(setB) instanceof FunckyTypeVariable)) {
+        if ((findRepresentative(setA) instanceof FunckyTypeVariable) || (findRepresentative(
+                setB) instanceof FunckyTypeVariable)) {
             context.remove(setB);
             context.remove(setA);
             setA.addAll(setB);
@@ -111,23 +110,16 @@ public class TypeInferenceContext {
     }
 
     private Set<FunckyType> findSet(final FunckyType type) {
-        return context.stream()
-                .filter(ts -> ts.contains(type))
-                .findFirst()
-                .orElseGet(() -> {
-                    final Set<FunckyType> types = new TreeSet<>();
-                    types.add(type);
-                    this.context.add(types);
-                    return types;
-                });
+        return context.stream().filter(ts -> ts.contains(type)).findFirst().orElseGet(() -> {
+            final Set<FunckyType> types = new TreeSet<>();
+            types.add(type);
+            this.context.add(types);
+            return types;
+        });
     }
 
     private FunckyType findRepresentative(final Set<FunckyType> types) {
-        return types.stream()
-                .filter(Predicate.not(FunckyTypeVariable.class::isInstance))
-                .findFirst()
-                .orElse(types.stream()
-                        .findFirst()
-                        .orElse(null));
+        return types.stream().filter(Predicate.not(FunckyTypeVariable.class::isInstance)).findFirst()
+                .orElse(types.stream().findFirst().orElse(null));
     }
 }
