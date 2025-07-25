@@ -32,6 +32,7 @@ public class Funcky {
     private static final String DURATION_PREFIX = "(";
     private static final String DURATION_SECONDS = "%1$d s";
     private static final String DURATION_SUFFIX = ")";
+    private static final String ERROR_READING = "Error reading %1$s";
     private static final Logger LOGGER = Logger.getLogger(Funcky.class.getName());
     private static final String PROMPT = "%n%1$s> ";
 
@@ -94,18 +95,20 @@ public class Funcky {
                 System.out.printf(PROMPT, factory.getLanguageName());
             }
         } catch (final IOException e) {
-            throw new RuntimeException(e); // TODO
+            LOGGER.log(Level.SEVERE, String.format(ERROR_READING, Linker.STDIN), e);
         }
     }
 
     private void runScript(final String script, final String... arguments) {
         try (final InputStreamReader reader = new InputStreamReader(Linker.normalize(Linker.STDIN,
                 new URI(script)).toURL().openStream())) {
+            engine.getManager().setFile(script);
+            engine.getManager().setArguments(arguments);
             System.exit(engine.eval(reader).getValue().intValue());
         } catch (final CompilationException | FunckyRuntimeException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
         } catch (final URISyntaxException | IOException e) {
-            throw new RuntimeException(e); // TODO
+            LOGGER.log(Level.SEVERE, String.format(ERROR_READING, script), e);
         }
     }
 
