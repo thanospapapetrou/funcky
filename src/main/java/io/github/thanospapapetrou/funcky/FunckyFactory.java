@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.script.ScriptContext;
@@ -23,7 +22,6 @@ public class FunckyFactory implements ScriptEngineFactory {
     private static final String CONFIG_THREADING = "Threading: %1$s";
     private static final String DELIMITER_PARAMETER = ",";
     private static final String DELIMITER_STATEMENT = "\n";
-    private static final String ERROR_LOADING_PARAMETERS = "Error loading parameters";
     private static final Logger LOGGER = Logger.getLogger(FunckyFactory.class.getName());
     private static final Properties PARAMETERS = new Properties();
 
@@ -32,7 +30,6 @@ public class FunckyFactory implements ScriptEngineFactory {
         try (final InputStream parameters = FunckyFactory.class.getResourceAsStream("/funcky.properties")) {
             PARAMETERS.load(parameters);
         } catch (final IOException e) {
-            LOGGER.log(Level.SEVERE, ERROR_LOADING_PARAMETERS, e);
             throw new ExceptionInInitializerError(e);
         }
     }

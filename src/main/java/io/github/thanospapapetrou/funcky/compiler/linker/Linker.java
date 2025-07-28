@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
@@ -24,6 +26,7 @@ import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidMainE
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
+import io.github.thanospapapetrou.funcky.logging.DurationFormatter;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Characters;
@@ -45,14 +48,21 @@ public class Linker {
 
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
     private static final String ERROR_RESOLVING_LIBRARY_NAMESPACE = "Error resolving library namespace";
-    private static final String ERROR_RESOLVING_STDIN = "Error resolving standard input";
-    private static final String ERROR_RESOLVING_USER_DIR = "Error resolving user directory";
-    private static final String FINE_DEFINITION = "  %1$s %2$s";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
-    private static final Set<Class<? extends FunckyLibrary>> PRELUDE = Set.of(Types.class, Numbers.class,
-            Booleans.class, Characters.class, Lists.class, Commons.class, Combinators.class);
-    private static final String PRELUDE_SCHEME =
-            FunckyFactory.getParameters(FunckyEngine.LANGUAGE).get(0).toLowerCase(Locale.ROOT);
+    private static final String MESSAGE_DEFINITION = "  %1$s %2$s";
+    private static final String MESSAGE_LINKED = "Linked %1$s in %2$s";
+    private static final String MESSAGE_LINKING = "Linking %1$s";
+    private static final Set<Class<? extends FunckyLibrary>> PRELUDE = Set.of(
+            Types.class,
+            Numbers.class,
+            Booleans.class,
+            Characters.class,
+            Lists.class,
+            Commons.class,
+            Combinators.class
+    );
+    private static final String PRELUDE_SCHEME = FunckyFactory.getParameters(FunckyEngine.LANGUAGE).get(0)
+                    .toLowerCase(Locale.ROOT);
     private static final String PRELUDE_SCRIPT = "/prelude/%1$s.funcky";
     private static final URI USER_DIR;
 
@@ -60,16 +70,13 @@ public class Linker {
         try {
             STDIN = new URI(PRELUDE_SCHEME, "stdin", null);
             USER_DIR = new File(System.getProperty("user.dir")).getCanonicalFile().toURI();
-        } catch (final URISyntaxException e) {
-            LOGGER.log(Level.SEVERE, ERROR_RESOLVING_STDIN, e);
-            throw new ExceptionInInitializerError(e);
-        } catch (final IOException e) {
-            LOGGER.log(Level.SEVERE, ERROR_RESOLVING_USER_DIR, e);
+        } catch (final IOException | URISyntaxException e) {
             throw new ExceptionInInitializerError(e);
         }
     }
 
     private final FunckyEngine engine;
+    private final Clock clock;
 
     public static URI normalize(final URI base, final URI namespace) {
         return namespace.isAbsolute() ? namespace : (base.equals(STDIN) ? USER_DIR : base).resolve(namespace);
@@ -79,33 +86,43 @@ public class Linker {
         try {
             return new URI(PRELUDE_SCHEME, library.getSimpleName().toLowerCase(Locale.ROOT), null);
         } catch (final URISyntaxException e) {
-            LOGGER.log(Level.SEVERE, ERROR_RESOLVING_LIBRARY_NAMESPACE, e);
             throw new IllegalStateException(ERROR_RESOLVING_LIBRARY_NAMESPACE, e);
         }
     }
 
     public Linker(final FunckyEngine engine) {
+        this(engine, Clock.systemUTC());
+    }
+
+    private Linker(final FunckyEngine engine, final Clock clock) {
         this.engine = engine;
+        this.clock = clock;
     }
 
     public FunckyExpression link(final FunckyExpression expression) throws CompilationException {
+        LOGGER.fine(String.format(MESSAGE_LINKING, Linker.STDIN));
+        final Instant start = clock.instant();
         engine.getManager().setLoaded(Linker.STDIN);
         if (expression != null) {
             LOGGER.fine(expression.getType().toString());
-            LOGGER.fine("");
         }
+        LOGGER.fine(String.format(MESSAGE_LINKED, Linker.STDIN,
+                DurationFormatter.format(Duration.between(start, clock.instant()))));
         return expression;
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) throws CompilationException {
+        LOGGER.fine(String.format(MESSAGE_LINKING, script.getFile()));
+        final Instant start = clock.instant();
         validateImports(script);
         final Map<String, FunckyType> definitionTypes = validateDefinitions(script);
         if (main) {
             validateMain(script);
         }
         LOGGER.fine(script.getFile().toString());
-        definitionTypes.forEach((definition, type) -> LOGGER.fine(String.format(FINE_DEFINITION, definition, type)));
-        LOGGER.fine("");
+        definitionTypes.forEach((definition, type) -> LOGGER.fine(String.format(MESSAGE_DEFINITION, definition, type)));
+        LOGGER.fine(String.format(MESSAGE_LINKED, script.getFile(),
+                DurationFormatter.format(Duration.between(start, clock.instant()))));
         return script;
     }
 
@@ -179,8 +196,7 @@ public class Linker {
         try {
             return library.getDeclaredConstructor().newInstance();
         } catch (final ReflectiveOperationException e) {
-            LOGGER.log(Level.SEVERE, String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
-            throw new IllegalStateException(e);
+            throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
         }
     }
 }
