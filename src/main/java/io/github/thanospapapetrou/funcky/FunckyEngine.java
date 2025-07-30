@@ -62,10 +62,6 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
         clock = Clock.systemUTC();
     }
 
-    public Linker getLinker() { // TODO remove
-        return linker;
-    }
-
     public ContextManager getManager() {
         return manager;
     }

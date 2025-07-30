@@ -57,6 +57,7 @@ public class Parser {
     private static final String MESSAGE_PARSED = "Parsed %1$s in %2$s";
     private static final String MESSAGE_PARSING = "Parsing %1$s";
     private static final String MESSAGE_SCRIPT = "Script %1$s 1 1";
+    private static final String MESSAGE_UNEXPECTED_TOKEN = "Unexpected token %1$s";
     private static final String TYPE_VARIABLE = "$_";
 
     private final FunckyEngine engine;
@@ -243,7 +244,7 @@ public class Parser {
                     consume(input, TokenType.SPACE);
                 }
         }
-        return null; // TODO illegal state exception
+        throw new IllegalStateException(String.format(MESSAGE_UNEXPECTED_TOKEN, token));
     }
 
     private FunckyLiteral parseString(final String string, final Token token) {
