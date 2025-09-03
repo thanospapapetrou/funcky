@@ -15,6 +15,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 public class FunckyRuntimeException extends ScriptException {
     private static final String APPLICATION = "%n    in `%1$s` in %2$s at line %3$d at column %4$d";
     private static final String DEFINITION = "%n  in `%1$s` in %2$s at line %3$d at column %4$d";
+    private static final String ERROR_FORMATTING_STACK_TRACE = "Error formatting stack trace for %1$s";
     private static final String RUNTIME_COMPILATION_ERROR = "Compilation error detected at runtime: %1$s";
     private final List<FunckyExpression> stackTrace;
 
@@ -67,7 +68,7 @@ public class FunckyRuntimeException extends ScriptException {
         } else if (expression instanceof FunckyReference) {
             return formatStackTrace((FunckyReference) expression);
         } else {
-            return null; // TODO IllegalStateException?
+            throw new IllegalStateException(String.format(ERROR_FORMATTING_STACK_TRACE, expression));
         }
     }
 
