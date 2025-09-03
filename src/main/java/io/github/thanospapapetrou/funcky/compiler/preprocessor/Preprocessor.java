@@ -73,7 +73,6 @@ public class Preprocessor {
                 .getFunction()).getPrefix() == null)
                 && (((FunckyReference) ((FunckyApplication) ((FunckyApplication) expression).getFunction())
                 .getFunction()).getName().equals(REFERENCE_FUNCTION))) {
-            // TODO validate
             final int arguments = ((FunckyNumber) ((FunckyLiteral) ((FunckyApplication) ((FunckyApplication) expression)
                     .getFunction()).getArgument()).getValue()).getValue().intValue();
             final FunckyExpression body = ((FunckyApplication) expression).getArgument();
