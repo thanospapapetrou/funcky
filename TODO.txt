@@ -13,3 +13,28 @@ thread safety
 
 Funcky> "funcky:records".unit
 java.net.MalformedURLException: unknown protocol: funcky
+
+Java 21
+records and sealed classes
+convert inner exceptions to runtime exceptions and reduce exception constructor arguments and addStackTrace
+cleanup funcky, factory, engine and reduce eval methods
+engine in values
+engine always in expressions
+cleanup linker, parser, tokenizer etc
+separate bindings in context into scripts, imports, definitions etc
+transpile
+generics
+new methods and tests for records
+monads
+java
+
+-cleanup
+-    contextmanager
+-    linker
+-    ast
+-    runtime
+-remove
+-    funckyjavaconverter
+-
+-Funcky> exit
+-java.net.MalformedURLException: unknown protocol: funcky

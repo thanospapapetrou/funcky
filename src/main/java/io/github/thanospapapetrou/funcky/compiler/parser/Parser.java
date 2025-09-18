@@ -4,9 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,13 +23,11 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.InvalidListLiteralException;
 import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.InvalidUriException;
 import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.UnexpectedTokenException;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType;
-import io.github.thanospapapetrou.funcky.logging.DurationFormatter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
@@ -45,23 +40,30 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 public class Parser {
-    private static final Set<TokenType> FIRST = Set.of(TokenType.BINARY_NUMBER, TokenType.OCTAL_NUMBER,
-            TokenType.DECIMAL_NUMBER, TokenType.HEXADECIMAL_NUMBER, TokenType.CHARACTER, TokenType.OCTAL_CHARACTER,
-            TokenType.HEXADECIMAL_CHARACTER, TokenType.STRING, TokenType.SYMBOL, TokenType.LEFT_PARENTHESIS,
-            TokenType.LEFT_SQUARE_BRACKET, TokenType.LEFT_CURLY_BRACKET);
+    private static final String DEFINITION = "%1$sDefinition `%2$s` %3$s %4$d 1";
+    private static final String EXPRESSION = "%1$s%2$s `%3$s` %4$s %5$d %6$d";
+    private static final Set<TokenType> FIRST = Set.of(
+            TokenType.BINARY_NUMBER,
+            TokenType.OCTAL_NUMBER,
+            TokenType.DECIMAL_NUMBER,
+            TokenType.HEXADECIMAL_NUMBER,
+            TokenType.CHARACTER,
+            TokenType.OCTAL_CHARACTER,
+            TokenType.HEXADECIMAL_CHARACTER,
+            TokenType.STRING,
+            TokenType.SYMBOL,
+            TokenType.LEFT_PARENTHESIS,
+            TokenType.LEFT_SQUARE_BRACKET,
+            TokenType.LEFT_CURLY_BRACKET
+    );
+    private static final String IMPORT = "%1$sImport `%2$s` %3$s %4$d 1";
     private static final String INDENTATION = "  ";
     private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
-    private static final String MESSAGE_DEFINITION = "%1$sDefinition `%2$s` %3$s %4$d 1";
-    private static final String MESSAGE_EXPRESSION = "%1$s%2$s `%3$s` %4$s %5$d %6$d";
-    private static final String MESSAGE_IMPORT = "%1$sImport `%2$s` %3$s %4$d 1";
-    private static final String MESSAGE_PARSED = "Parsed %1$s in %2$s";
-    private static final String MESSAGE_PARSING = "Parsing %1$s";
-    private static final String MESSAGE_SCRIPT = "Script %1$s 1 1";
-    private static final String MESSAGE_UNEXPECTED_TOKEN = "Unexpected token %1$s";
+    private static final String SCRIPT = "Script %1$s 1 1";
     private static final String TYPE_VARIABLE = "$_";
+    private static final String UNEXPECTED_TOKEN = "Unexpected token %1$s";
 
     private final FunckyEngine engine;
-    private final Clock clock;
 
     private static Set<TokenType> union(final Set<TokenType> a, final Set<TokenType> b) {
         final Set<TokenType> result = new HashSet<>();
@@ -73,7 +75,7 @@ public class Parser {
     private static void log(final FunckyExpression expression, final int indentation) {
         if (expression != null) {
             LOGGER.finer(
-                    String.format(MESSAGE_EXPRESSION, INDENTATION.repeat(indentation),
+                    String.format(EXPRESSION, INDENTATION.repeat(indentation),
                             expression.getClass().getSimpleName(),
                             expression, expression.getFile(), expression.getLine(), expression.getColumn()));
             if (expression instanceof FunckyApplication) {
@@ -84,43 +86,32 @@ public class Parser {
     }
 
     private static void log(final FunckyScript script) {
-        LOGGER.finer(String.format(MESSAGE_SCRIPT, script.getFile()));
+        LOGGER.finer(String.format(SCRIPT, script.getFile()));
         for (final FunckyImport imp : script.getImports()) {
-            LOGGER.finer(String.format(MESSAGE_IMPORT, INDENTATION, imp, imp.getFile(), imp.getLine()));
+            LOGGER.finer(String.format(IMPORT, INDENTATION, imp, imp.getFile(), imp.getLine()));
         }
         for (final FunckyDefinition definition : script.getDefinitions()) {
-            LOGGER.finer(String.format(MESSAGE_DEFINITION, INDENTATION, definition, definition.getFile(),
+            LOGGER.finer(String.format(DEFINITION, INDENTATION, definition, definition.getFile(),
                     definition.getLine()));
             log(definition.getExpression(), 2);
         }
     }
 
     public Parser(final FunckyEngine engine) {
-        this(engine, Clock.systemUTC());
-    }
-
-    private Parser(final FunckyEngine engine, final Clock clock) {
         this.engine = engine;
-        this.clock = clock;
     }
 
     public FunckyExpression parse(final Queue<Token> input) throws CompilationException {
-        LOGGER.finer(String.format(MESSAGE_PARSING, Linker.STDIN));
-        final Instant start = clock.instant();
         final FunckyExpression expression =
                 (peek(input, union(FIRST, Set.of(TokenType.EOL))).getType() == TokenType.EOL) ? null
                         : parseComplexExpression(input, Set.of(TokenType.EOL));
         consume(input, TokenType.EOL);
         consume(input, TokenType.EOF);
         log(expression, 0);
-        LOGGER.finer(String.format(MESSAGE_PARSED, Linker.STDIN,
-                DurationFormatter.format(Duration.between(start, clock.instant()))));
         return expression;
     }
 
     public FunckyScript parse(final Queue<Token> input, final URI file) throws CompilationException {
-        LOGGER.finer(String.format(MESSAGE_PARSING, file));
-        final Instant start = clock.instant();
         final FunckyScript script = new FunckyScript(engine, file);
         while (true) {
             final Token token = consume(input, Set.of(TokenType.SYMBOL, TokenType.EOL, TokenType.EOF));
@@ -145,8 +136,6 @@ public class Parser {
                     break;
                 case EOF:
                     log(script);
-                    LOGGER.finer(String.format(MESSAGE_PARSED, file,
-                            DurationFormatter.format(Duration.between(start, clock.instant()))));
                     return script;
             }
         }
@@ -244,7 +233,7 @@ public class Parser {
                     consume(input, TokenType.SPACE);
                 }
         }
-        throw new IllegalStateException(String.format(MESSAGE_UNEXPECTED_TOKEN, token));
+        throw new IllegalStateException(String.format(UNEXPECTED_TOKEN, token));
     }
 
     private FunckyLiteral parseString(final String string, final Token token) {

@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -26,7 +23,6 @@ import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidMainE
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
-import io.github.thanospapapetrou.funcky.logging.DurationFormatter;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Characters;
@@ -46,12 +42,10 @@ public class Linker {
             FunckySimpleType.NUMBER);
     public static final URI STDIN;
 
+    private static final String DEFINITION = "  %1$s %2$s";
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
     private static final String ERROR_RESOLVING_LIBRARY_NAMESPACE = "Error resolving library namespace";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
-    private static final String MESSAGE_DEFINITION = "  %1$s %2$s";
-    private static final String MESSAGE_LINKED = "Linked %1$s in %2$s";
-    private static final String MESSAGE_LINKING = "Linking %1$s";
     private static final Set<Class<? extends FunckyLibrary>> PRELUDE = Set.of(
             Types.class,
             Numbers.class,
@@ -62,7 +56,7 @@ public class Linker {
             Combinators.class
     );
     private static final String PRELUDE_SCHEME = FunckyFactory.getParameters(FunckyEngine.LANGUAGE).get(0)
-                    .toLowerCase(Locale.ROOT);
+            .toLowerCase(Locale.ROOT);
     private static final String PRELUDE_SCRIPT = "/prelude/%1$s.funcky";
     private static final URI USER_DIR;
 
@@ -76,7 +70,6 @@ public class Linker {
     }
 
     private final FunckyEngine engine;
-    private final Clock clock;
 
     public static URI normalize(final URI base, final URI namespace) {
         return namespace.isAbsolute() ? namespace : (base.equals(STDIN) ? USER_DIR : base).resolve(namespace);
@@ -91,38 +84,25 @@ public class Linker {
     }
 
     public Linker(final FunckyEngine engine) {
-        this(engine, Clock.systemUTC());
-    }
-
-    private Linker(final FunckyEngine engine, final Clock clock) {
         this.engine = engine;
-        this.clock = clock;
     }
 
     public FunckyExpression link(final FunckyExpression expression) throws CompilationException {
-        LOGGER.fine(String.format(MESSAGE_LINKING, Linker.STDIN));
-        final Instant start = clock.instant();
         engine.getManager().setLoaded(Linker.STDIN);
         if (expression != null) {
             LOGGER.fine(expression.getType().toString());
         }
-        LOGGER.fine(String.format(MESSAGE_LINKED, Linker.STDIN,
-                DurationFormatter.format(Duration.between(start, clock.instant()))));
         return expression;
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) throws CompilationException {
-        LOGGER.fine(String.format(MESSAGE_LINKING, script.getFile()));
-        final Instant start = clock.instant();
         validateImports(script);
         final Map<String, FunckyType> definitionTypes = validateDefinitions(script);
         if (main) {
             validateMain(script);
         }
         LOGGER.fine(script.getFile().toString());
-        definitionTypes.forEach((definition, type) -> LOGGER.fine(String.format(MESSAGE_DEFINITION, definition, type)));
-        LOGGER.fine(String.format(MESSAGE_LINKED, script.getFile(),
-                DurationFormatter.format(Duration.between(start, clock.instant()))));
+        definitionTypes.forEach((definition, type) -> LOGGER.fine(String.format(DEFINITION, definition, type)));
         return script;
     }
 

@@ -6,7 +6,7 @@ import spock.lang.Unroll
 class FunckyFactorySpec extends Specification {
     private static final String[] ARGUMENTS = ['argument', 'other argument']
     private static final String ENGINE_NAME = 'funcky'
-    private static final String ENGINE_VERSION = '2.0.0-SNAPSHOT'
+    private static final String ENGINE_VERSION = '1.1.0-SNAPSHOT'
     private static final List<String> EXTENSIONS = ['funcky', 'fun']
     private static final String INVALID_PARAMETER = 'foo'
     private static final String LANGUAGE_NAME = 'Funcky'
