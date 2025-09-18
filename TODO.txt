@@ -4,7 +4,6 @@ add description when throwing IOException as compilation exception?
 run tests with http and https scripts
 
 Nice to Have
-linker link expression -> _
 
 test records
 monads
@@ -15,7 +14,7 @@ Funcky> "funcky:records".unit
 java.net.MalformedURLException: unknown protocol: funcky
 
 convert inner exceptions to runtime exceptions and reduce exception constructor arguments and addStackTrace
-cleanup funcky, factory, engine and reduce eval methods
+cleanup, factory, engine and reduce eval methods
 engine in values
 engine always in expressions
 cleanup linker, parser, tokenizer etc
@@ -24,7 +23,8 @@ transpile
 generics
 new methods and tests for records
 monads
-java
+java monad
+
 
 -cleanup
 -    contextmanager

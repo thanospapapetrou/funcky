@@ -23,6 +23,10 @@ import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidMainE
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Characters;
@@ -32,17 +36,13 @@ import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Lists;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Numbers;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
-import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
 public class Linker {
     public static final FunckyFunctionType MAIN_TYPE = new FunckyFunctionType(new FunckyListType(FunckyListType.STRING),
             FunckySimpleType.NUMBER);
     public static final URI STDIN;
 
-    private static final String DEFINITION = "  %1$s %2$s";
+    private static final String DEFINITION = "  %1$s%n    %2$s";
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
     private static final String ERROR_RESOLVING_LIBRARY_NAMESPACE = "Error resolving library namespace";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
@@ -102,7 +102,9 @@ public class Linker {
             validateMain(script);
         }
         LOGGER.fine(script.getFile().toString());
-        definitionTypes.forEach((definition, type) -> LOGGER.fine(String.format(DEFINITION, definition, type)));
+        definitionTypes.entrySet().stream()
+                .map(definitionType -> String.format(DEFINITION, definitionType.getKey(), definitionType.getValue()))
+                .forEach(LOGGER::fine);
         return script;
     }
 
