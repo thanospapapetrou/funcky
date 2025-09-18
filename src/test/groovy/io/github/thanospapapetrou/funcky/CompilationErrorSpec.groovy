@@ -14,10 +14,10 @@ import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.UnexpectedTo
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.exceptions.UnrecognizedInputException
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType
+import io.github.thanospapapetrou.funcky.runtime.FunckyType
 import spock.lang.Unroll
 
 class CompilationErrorSpec extends BaseSpec {

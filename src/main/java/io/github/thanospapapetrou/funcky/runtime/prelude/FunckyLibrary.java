@@ -16,7 +16,8 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 
-public class FunckyLibrary extends FunckyScript {
+public sealed class FunckyLibrary extends FunckyScript
+        permits Types, Numbers, Booleans, Characters, Lists, Commons, Combinators {
     private final FunckyValue[] values;
 
     protected static int requireInt(final FunckyNumber number, final String message) throws FunckyRuntimeException {

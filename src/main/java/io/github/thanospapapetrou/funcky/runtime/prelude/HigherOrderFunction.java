@@ -12,9 +12,9 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
 public abstract class HigherOrderFunction extends FunckyFunction {
     private final int order;

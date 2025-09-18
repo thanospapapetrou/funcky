@@ -7,9 +7,8 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
 
-public class FunckyRecord extends FunckyValue implements Comparable<FunckyRecord> {
+public final class FunckyRecord extends FunckyValue implements Comparable<FunckyRecord> {
     private static final String DELIMITER = ", ";
     private static final String PREFIX = "{";
     private static final String SUFFIX = "}";

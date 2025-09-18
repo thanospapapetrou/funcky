@@ -4,14 +4,14 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 
-public class Combinators extends FunckyLibrary {
+public final class Combinators extends FunckyLibrary {
     private static final FunckyTypeVariable A = new FunckyTypeVariable();
     private static final FunckyTypeVariable B = new FunckyTypeVariable();
     private static final FunckyTypeVariable C = new FunckyTypeVariable();
@@ -29,7 +29,7 @@ public class Combinators extends FunckyLibrary {
         @Override
         protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return arguments.get(0).eval(context);
+            return arguments.getFirst().eval(context);
         }
     };
 

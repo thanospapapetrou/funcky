@@ -9,17 +9,17 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
-public class Lists extends FunckyLibrary {
+public final class Lists extends FunckyLibrary {
     private static final FunckyTypeVariable A = new FunckyTypeVariable();
     public static final HigherOrderFunction HEAD = new HigherOrderFunction(Lists.class, "head",
             new FunckyListType(A), A) {
         @Override
         protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            final FunckyExpression head = ((FunckyList) arguments.get(0).eval(context)).getHead();
+            final FunckyExpression head = ((FunckyList) arguments.getFirst().eval(context)).getHead();
             if (head == null) {
                 throw new FunckyRuntimeException(ERROR_HEAD);
             }
@@ -31,7 +31,7 @@ public class Lists extends FunckyLibrary {
         @Override
         protected FunckyList apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            final FunckyExpression tail = ((FunckyList) arguments.get(0).eval(context)).getTail();
+            final FunckyExpression tail = ((FunckyList) arguments.getFirst().eval(context)).getTail();
             if (tail == null) {
                 throw new FunckyRuntimeException(ERROR_TAIL);
             }

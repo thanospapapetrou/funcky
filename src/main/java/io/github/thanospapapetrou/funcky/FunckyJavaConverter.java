@@ -10,9 +10,9 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
 public class FunckyJavaConverter {
     private static final String ERROR_CONVERTING_TO_FUNCKY = "Error converting %1$s (%2$s) to %3$s";

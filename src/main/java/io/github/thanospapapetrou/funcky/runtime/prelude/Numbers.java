@@ -8,16 +8,16 @@ import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
-public class Numbers extends FunckyLibrary {
+public final class Numbers extends FunckyLibrary {
     public static final HigherOrderFunction PLUS = new HigherOrderFunction(Numbers.class, "plus",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return (FunckyNumber) arguments.get(0).eval(context);
+            return (FunckyNumber) arguments.getFirst().eval(context);
         }
     };
     public static final HigherOrderFunction MINUS = new HigherOrderFunction(Numbers.class, "minus",
@@ -25,7 +25,7 @@ public class Numbers extends FunckyLibrary {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return new FunckyNumber(((FunckyNumber) arguments.get(0).eval(context)).getValue().negate());
+            return new FunckyNumber(((FunckyNumber) arguments.getFirst().eval(context)).getValue().negate());
         }
     };
     public static final HigherOrderFunction ADD = new HigherOrderFunction(Numbers.class, "add",
@@ -68,7 +68,7 @@ public class Numbers extends FunckyLibrary {
             final FunckyNumber scale = (FunckyNumber) arguments.get(2).eval(context);
             final FunckyNumber roundingMode = (FunckyNumber) arguments.get(3).eval(context);
             try {
-                return new FunckyNumber(((FunckyNumber) arguments.get(0).eval(context)).getValue()
+                return new FunckyNumber(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                         .divide(divisor, requireInt(scale, String.format(ERROR_INVALID_SCALE, scale)),
                                 requireEnum(roundingMode, RoundingMode.class,
                                         String.format(ERROR_INVALID_ROUNDING_MODE, roundingMode))));
@@ -82,7 +82,7 @@ public class Numbers extends FunckyLibrary {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.get(0).eval(context)).getValue()
+            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .byteValue()));
         }
     };
@@ -91,7 +91,7 @@ public class Numbers extends FunckyLibrary {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.get(0).eval(context)).getValue()
+            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .shortValue()));
         }
     };
@@ -100,7 +100,7 @@ public class Numbers extends FunckyLibrary {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.get(0).eval(context)).getValue()
+            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .intValue()));
         }
     };
@@ -109,7 +109,7 @@ public class Numbers extends FunckyLibrary {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.get(0).eval(context)).getValue()
+            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .longValue()));
         }
     };
@@ -118,7 +118,7 @@ public class Numbers extends FunckyLibrary {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.get(0).eval(context)).getValue()
+            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .floatValue()));
         }
     };
@@ -127,7 +127,7 @@ public class Numbers extends FunckyLibrary {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.get(0).eval(context)).getValue()
+            return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .doubleValue()));
         }
     };

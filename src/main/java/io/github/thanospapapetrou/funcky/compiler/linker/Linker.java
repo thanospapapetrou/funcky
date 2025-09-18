@@ -32,10 +32,10 @@ import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Lists;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Numbers;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
 public class Linker {
     public static final FunckyFunctionType MAIN_TYPE = new FunckyFunctionType(new FunckyListType(FunckyListType.STRING),
@@ -47,7 +47,7 @@ public class Linker {
     private static final String ERROR_RESOLVING_LIBRARY_NAMESPACE = "Error resolving library namespace";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
     private static final Set<Class<? extends FunckyLibrary>> PRELUDE = Set.of(
-            Types.class,
+            Types.class, // TODO get permitted subclasses instead
             Numbers.class,
             Booleans.class,
             Characters.class,

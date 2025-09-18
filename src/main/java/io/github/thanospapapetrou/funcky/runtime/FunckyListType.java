@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.runtime.types;
+package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.Map;
 import java.util.Set;
@@ -10,7 +10,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeExcepti
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
-public class FunckyListType extends FunckyType {
+public final class FunckyListType extends FunckyType {
     public static final FunckyListType STRING = new FunckyListType(FunckySimpleType.CHARACTER);
 
     private final FunckyExpression element;

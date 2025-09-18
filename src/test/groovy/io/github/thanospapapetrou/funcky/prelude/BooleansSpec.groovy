@@ -3,9 +3,9 @@ package io.github.thanospapapetrou.funcky.prelude
 import io.github.thanospapapetrou.funcky.BaseSpec
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType
 import spock.lang.Unroll
 
 class BooleansSpec extends BaseSpec {

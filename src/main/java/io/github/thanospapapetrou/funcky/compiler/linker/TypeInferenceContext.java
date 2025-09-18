@@ -10,12 +10,12 @@ import java.util.function.Predicate;
 import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType;
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
 public class TypeInferenceContext {
     private final Set<Set<FunckyType>> context;

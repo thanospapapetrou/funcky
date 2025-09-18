@@ -2,7 +2,7 @@ package io.github.thanospapapetrou.funcky.compiler.linker.exceptions;
 
 import io.github.thanospapapetrou.funcky.compiler.CompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
 public class IllegalApplicationException extends CompilationException {
     private static final String MESSAGE =

@@ -33,11 +33,11 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType;
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
 public class Parser {
     private static final String DEFINITION = "%1$sDefinition `%2$s` %3$s %4$d 1";

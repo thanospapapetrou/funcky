@@ -3,9 +3,8 @@ package io.github.thanospapapetrou.funcky.runtime;
 import java.math.BigDecimal;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
-public class FunckyNumber extends FunckyValue implements Comparable<FunckyNumber> {
+public final class FunckyNumber extends FunckyValue implements Comparable<FunckyNumber> {
     private final BigDecimal value;
 
     public FunckyNumber(final BigDecimal value) {

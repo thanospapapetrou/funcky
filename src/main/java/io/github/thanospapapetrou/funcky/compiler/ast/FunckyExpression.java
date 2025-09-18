@@ -14,10 +14,10 @@ import io.github.thanospapapetrou.funcky.compiler.CompilationException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
-public abstract class FunckyExpression extends CompiledScript {
+public abstract sealed class FunckyExpression extends CompiledScript permits FunckyLiteral, FunckyReference, FunckyApplication {
     protected final FunckyEngine engine;
     protected final URI file;
     protected final int line;

@@ -11,11 +11,11 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
-public class FunckyApplication extends FunckyExpression {
+public final class FunckyApplication extends FunckyExpression {
     private static final String FORMAT_APPLICATION = "%1$s %2$s";
     private static final String NESTED_APPLICATION = "%1$s (%2$s)";
 

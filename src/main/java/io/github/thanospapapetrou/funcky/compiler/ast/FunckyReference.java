@@ -4,13 +4,10 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.imageio.plugins.tiff.ExifGPSTagSet;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.CompilationException;
-import io.github.thanospapapetrou.funcky.compiler.linker.ContextManager;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedNameException;
@@ -19,10 +16,10 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
-public class FunckyReference extends FunckyExpression {
+public final class FunckyReference extends FunckyExpression {
     private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
     private static final String FORMAT_PREFIX = "%1$s.%2$s";
 

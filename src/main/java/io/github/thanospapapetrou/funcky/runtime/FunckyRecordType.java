@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.runtime.types;
+package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,13 +10,11 @@ import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.runtime.FunckyList;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
-public class FunckyRecordType extends FunckyType {
+public final class FunckyRecordType extends FunckyType {
     public static final FunckyRecordType UNIT = new FunckyRecordType(new FunckyList(
             new FunckyListType(FunckySimpleType.TYPE), (FunckyValue) null, null));
 

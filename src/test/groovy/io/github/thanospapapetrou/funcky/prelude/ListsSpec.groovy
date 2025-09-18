@@ -8,9 +8,9 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyNumber
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException
 import io.github.thanospapapetrou.funcky.runtime.prelude.Lists
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType
 import spock.lang.Unroll
 
 class ListsSpec extends BaseSpec {

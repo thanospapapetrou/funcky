@@ -9,16 +9,16 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
 
-public class Characters extends FunckyLibrary {
+public final class Characters extends FunckyLibrary {
     public static final HigherOrderFunction UPPERCASE = new HigherOrderFunction(Characters.class, "uppercase",
             FunckySimpleType.CHARACTER, FunckySimpleType.CHARACTER) {
         @Override
         protected FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
             return new FunckyCharacter(
-                    Character.toUpperCase(((FunckyCharacter) arguments.get(0).eval(context)).getValue()));
+                    Character.toUpperCase(((FunckyCharacter) arguments.getFirst().eval(context)).getValue()));
         }
     };
     public static final HigherOrderFunction LOWERCASE = new HigherOrderFunction(Characters.class, "lowercase",
@@ -27,7 +27,7 @@ public class Characters extends FunckyLibrary {
         protected FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
             return new FunckyCharacter(
-                    Character.toLowerCase(((FunckyCharacter) arguments.get(0).eval(context)).getValue()));
+                    Character.toLowerCase(((FunckyCharacter) arguments.getFirst().eval(context)).getValue()));
         }
     };
     public static final HigherOrderFunction NUMBER = new HigherOrderFunction(Characters.class, "number",
@@ -35,7 +35,7 @@ public class Characters extends FunckyLibrary {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return new FunckyNumber(new BigDecimal(((FunckyCharacter) arguments.get(0).eval(context)).getValue()));
+            return new FunckyNumber(new BigDecimal(((FunckyCharacter) arguments.getFirst().eval(context)).getValue()));
         }
     };
     public static final HigherOrderFunction CHARACTER = new HigherOrderFunction(Characters.class, "character",
@@ -43,7 +43,7 @@ public class Characters extends FunckyLibrary {
         @Override
         protected FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            final FunckyNumber codePointNumber = (FunckyNumber) arguments.get(0).eval(context);
+            final FunckyNumber codePointNumber = (FunckyNumber) arguments.getFirst().eval(context);
             final int codePointInt =
                     requireInt(codePointNumber, String.format(ERROR_INVALID_UNICODE_CODE_POINT, codePointNumber));
             if ((codePointInt < Character.MIN_VALUE) || (codePointInt >= Character.MAX_VALUE + 1)) {

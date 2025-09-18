@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.runtime.types;
+package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
-public class FunckySimpleType extends FunckyType {
+public final class FunckySimpleType extends FunckyType {
     public static final FunckySimpleType TYPE = new FunckySimpleType("Type");
     public static final FunckySimpleType NUMBER = new FunckySimpleType("Number");
     public static final FunckySimpleType BOOLEAN = new FunckySimpleType("Boolean");

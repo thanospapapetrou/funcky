@@ -9,7 +9,7 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
 public class ContextManager {
     private static final String DEFINITION_EXPRESSION = "%1$s$definition$%2$s$expression";

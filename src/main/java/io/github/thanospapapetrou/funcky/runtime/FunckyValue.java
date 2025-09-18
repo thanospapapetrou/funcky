@@ -4,9 +4,9 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
-public abstract class FunckyValue {
+public sealed abstract class FunckyValue
+        permits FunckyType, FunckyNumber, FunckyBoolean, FunckyCharacter, FunckyFunction, FunckyList, FunckyRecord {
     public abstract FunckyType getType();
 
     public abstract FunckyExpression toExpression();

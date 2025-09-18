@@ -9,15 +9,15 @@ import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
-public class Commons extends FunckyLibrary {
+public final class Commons extends FunckyLibrary {
     private static final FunckyTypeVariable A = new FunckyTypeVariable();
     private static final FunckyTypeVariable B = new FunckyTypeVariable();
     public static final HigherOrderFunction EQUAL = new HigherOrderFunction(Commons.class, "equal",
@@ -53,7 +53,7 @@ public class Commons extends FunckyLibrary {
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
             try {
-                return new FunckyNumber(new BigDecimal(arguments.get(0).eval(context).hashCode()));
+                return new FunckyNumber(new BigDecimal(arguments.getFirst().eval(context).hashCode()));
             } catch (final SneakyFunckyRuntimeException e) {
                 throw (FunckyRuntimeException) e.getCause();
             }
@@ -74,7 +74,7 @@ public class Commons extends FunckyLibrary {
         protected FunckyList apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
             try {
-                return FunckyJavaConverter.convert(arguments.get(0).eval(context).toString());
+                return FunckyJavaConverter.convert(arguments.getFirst().eval(context).toString());
             } catch (final SneakyFunckyRuntimeException e) {
                 throw (FunckyRuntimeException) e.getCause();
             }
@@ -86,7 +86,7 @@ public class Commons extends FunckyLibrary {
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
             try {
-                final FunckyList value = (FunckyList) arguments.get(0).eval(context);
+                final FunckyList value = (FunckyList) arguments.getFirst().eval(context);
                 try {
                     return new FunckyNumber(new BigDecimal(value.toString()));
                 } catch (final NumberFormatException e) {
@@ -102,7 +102,7 @@ public class Commons extends FunckyLibrary {
         @Override
         protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            throw new FunckyRuntimeException(arguments.get(0).eval(context).toString());
+            throw new FunckyRuntimeException(arguments.getFirst().eval(context).toString());
         }
     };
     public static final HigherOrderFunction BOTTOM = new HigherOrderFunction(Commons.class, "bottom",
@@ -110,7 +110,7 @@ public class Commons extends FunckyLibrary {
         @Override
         protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments)
                 throws FunckyRuntimeException {
-            return apply(arguments.get(0), context);
+            return apply(arguments.getFirst(), context);
         }
     };
     private static final String ERROR_INVALID_NUMBER = "Invalid number `%1$s`";

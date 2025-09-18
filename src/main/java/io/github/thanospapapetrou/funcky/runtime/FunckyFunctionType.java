@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.runtime.types;
+package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -13,7 +13,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeExcepti
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
-public class FunckyFunctionType extends FunckyType {
+public final class FunckyFunctionType extends FunckyType {
     private final FunckyExpression domain;
     private final FunckyExpression range;
 

@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.runtime.types;
+package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import io.github.thanospapapetrou.funcky.compiler.linker.TypeInferenceContext;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 
-public abstract class FunckyType extends FunckyValue implements Comparable<FunckyType> {
+public sealed abstract class FunckyType extends FunckyValue implements Comparable<FunckyType>
+        permits FunckySimpleType, FunckyFunctionType, FunckyListType, FunckyRecordType, FunckyTypeVariable {
     private static final List<Class<? extends FunckyType>> ORDERING = List.of(
             FunckySimpleType.class,
             FunckyFunctionType.class,
