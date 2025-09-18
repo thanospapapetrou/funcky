@@ -133,30 +133,30 @@ public class Linker {
         }
         for (final FunckyDefinition definition : script.getDefinitions()) {
             final Optional<FunckyDefinition> otherDefinition = script.getDefinitions().stream()
-                    .filter(def -> def.getLine() < definition.getLine())
-                    .filter(def -> def.getName().equals(definition.getName()))
+                    .filter(def -> def.line() < definition.line())
+                    .filter(def -> def.name().equals(definition.name()))
                     .findFirst();
             if (otherDefinition.isPresent()) {
                 throw new NameAlreadyDefinedException(definition, otherDefinition.get());
             }
-            engine.getManager().setDefinitionExpression(definition.getFile(), definition.getName(),
-                    definition.getExpression());
+            engine.getManager().setDefinitionExpression(definition.file(), definition.name(),
+                    definition.expression());
         }
         engine.getManager().setLoaded(script.getFile());
         for (final FunckyDefinition definition : script.getDefinitions()) {
-            definitionTypes.put(definition.getName(), definition.getExpression().getType());
+            definitionTypes.put(definition.name(), definition.expression().getType());
         }
         return definitionTypes;
     }
 
     private void validateMain(final FunckyScript script) throws CompilationException {
         final Optional<FunckyDefinition> main = script.getDefinitions().stream()
-                .filter(def -> def.getName().equals(FunckyScript.MAIN))
+                .filter(def -> def.name().equals(FunckyScript.MAIN))
                 .findAny();
         if (main.isEmpty()) {
             throw new UndefinedMainException(script);
         }
-        final FunckyType mainType = main.get().getExpression().getType();
+        final FunckyType mainType = main.get().expression().getType();
         try {
             if (mainType.unify(MAIN_TYPE) == null) {
                 throw new InvalidMainException(main.get(), mainType);

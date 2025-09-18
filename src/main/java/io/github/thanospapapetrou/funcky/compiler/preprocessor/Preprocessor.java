@@ -39,8 +39,8 @@ public class Preprocessor {
         final FunckyScript preprocessed = new FunckyScript(script.getEngine(), script.getFile());
         preprocessed.getImports().addAll(script.getImports());
         script.getDefinitions().stream()
-                .map(definition -> new FunckyDefinition(definition.getFile(), definition.getLine(),
-                        definition.getName(), preprocess(definition.getExpression())))
+                .map(definition -> new FunckyDefinition(definition.file(), definition.line(),
+                        definition.name(), preprocess(definition.expression())))
                 .forEach(preprocessed.getDefinitions()::add);
         return preprocessed;
     }

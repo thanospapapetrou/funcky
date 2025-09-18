@@ -91,9 +91,8 @@ public class Parser {
             LOGGER.finer(String.format(IMPORT, INDENTATION, imp, imp.file(), imp.line()));
         }
         for (final FunckyDefinition definition : script.getDefinitions()) {
-            LOGGER.finer(String.format(DEFINITION, INDENTATION, definition, definition.getFile(),
-                    definition.getLine()));
-            log(definition.getExpression(), 2);
+            LOGGER.finer(String.format(DEFINITION, INDENTATION, definition, definition.file(), definition.line()));
+            log(definition.expression(), 2);
         }
     }
 

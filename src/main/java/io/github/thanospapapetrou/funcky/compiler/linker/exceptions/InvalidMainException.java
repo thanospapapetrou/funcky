@@ -9,6 +9,6 @@ public class InvalidMainException extends CompilationException {
     private static final String MESSAGE = "Invalid main has type `%1$s`, it should be `%2$s`";
 
     public InvalidMainException(final FunckyDefinition main, final FunckyType mainType) {
-        super(String.format(MESSAGE, mainType, Linker.MAIN_TYPE), main.getFile(), main.getLine(), 1);
+        super(String.format(MESSAGE, mainType, Linker.MAIN_TYPE), main.file(), main.line(), 1);
     }
 }
