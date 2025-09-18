@@ -114,14 +114,14 @@ public class Linker {
     private void validateImports(final FunckyScript script) throws PrefixAlreadyBoundException {
         for (final FunckyImport inport : script.getImports()) {
             final Optional<FunckyImport> otherImport = script.getImports().stream()
-                    .filter(imp -> imp.getLine() < inport.getLine())
-                    .filter(imp -> imp.getPrefix().equals(inport.getPrefix()))
+                    .filter(imp -> imp.line() < inport.line())
+                    .filter(imp -> imp.prefix().equals(inport.prefix()))
                     .findFirst();
             if (otherImport.isPresent()) {
                 throw new PrefixAlreadyBoundException(inport, otherImport.get());
             }
-            engine.getManager().setImport(inport.getFile(), inport.getPrefix(), normalize(script.getFile(),
-                    inport.getNamespace()));
+            engine.getManager().setImport(inport.file(), inport.prefix(), normalize(script.getFile(),
+                    inport.namespace()));
         }
     }
 

@@ -88,7 +88,7 @@ public class Parser {
     private static void log(final FunckyScript script) {
         LOGGER.finer(String.format(SCRIPT, script.getFile()));
         for (final FunckyImport imp : script.getImports()) {
-            LOGGER.finer(String.format(IMPORT, INDENTATION, imp, imp.getFile(), imp.getLine()));
+            LOGGER.finer(String.format(IMPORT, INDENTATION, imp, imp.file(), imp.line()));
         }
         for (final FunckyDefinition definition : script.getDefinitions()) {
             LOGGER.finer(String.format(DEFINITION, INDENTATION, definition, definition.getFile(),
