@@ -7,6 +7,6 @@ public class InvalidUriException extends CompilationException {
     private static final String MESSAGE = "Invalid URI `%1$s`";
 
     public InvalidUriException(final Token token) {
-        super(String.format(MESSAGE, token.getStringValue()), token.getFile(), token.getLine(), token.getColumn());
+        super(String.format(MESSAGE, token.stringValue()), token.file(), token.line(), token.column());
     }
 }

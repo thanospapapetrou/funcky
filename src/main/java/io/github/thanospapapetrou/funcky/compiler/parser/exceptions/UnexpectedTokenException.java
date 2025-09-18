@@ -15,6 +15,6 @@ public class UnexpectedTokenException extends CompilationException {
         super(String.format(MESSAGE, token, expected.stream()
                         .map(TokenType::toString)
                         .collect(Collectors.joining(DELIMITER))),
-                token.getFile(), token.getLine(), token.getColumn());
+                token.file(), token.line(), token.column());
     }
 }

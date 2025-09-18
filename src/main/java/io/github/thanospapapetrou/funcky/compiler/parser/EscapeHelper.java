@@ -9,30 +9,28 @@ import io.github.thanospapapetrou.funcky.compiler.tokenizer.Radix;
 
 public class EscapeHelper {
     private static final Map<Pattern, Character> ESCAPE_CHARACTERS = Map.of(
-            "\\\\", '\\',
-            "\\t", '\t',
-            "\\b", '\b',
-            "\\n", '\n',
-            "\\r", '\r',
-            "\\f", '\f',
-            "\\'", '\'',
-            "\\\"", '"'
-    ).entrySet().stream().collect(Collectors.toMap(
-            entry -> Pattern.compile(Pattern.quote(entry.getKey())),
-            Map.Entry::getValue));
+                    "\\\\", '\\',
+                    "\\t", '\t',
+                    "\\b", '\b',
+                    "\\n", '\n',
+                    "\\r", '\r',
+                    "\\f", '\f',
+                    "\\'", '\'',
+                    "\\\"", '"'
+            ).entrySet().stream()
+            .collect(Collectors.toMap(entry -> Pattern.compile(Pattern.quote(entry.getKey())), Map.Entry::getValue));
     private static final Map<Pattern, Integer> ESCAPE_SEQUENCE = Map.of(
-            "\\\\(?<value>[0-3]?[0-7]{1,2})", Radix.OCTAL.getRadix(),
-            "\\\\u(?<value>[0-9A-Fa-f]{4})", Radix.HEXADECIMAL.getRadix()
-    ).entrySet().stream().collect(Collectors.toMap(
-            entry -> Pattern.compile(entry.getKey()),
-            Map.Entry::getValue));
+                    "\\\\(?<value>[0-3]?[0-7]{1,2})", Radix.OCTAL.getRadix(),
+                    "\\\\u(?<value>[0-9A-Fa-f]{4})", Radix.HEXADECIMAL.getRadix()
+            ).entrySet().stream()
+            .collect(Collectors.toMap(entry -> Pattern.compile(entry.getKey()), Map.Entry::getValue));
     private static final String FORMAT_HEXADECIMAL_ESCAPE = "\\u%1$04x";
     private static final String GROUP_VALUE = "value";
 
     public static String escape(final String unescaped) {
-        return unescaped.isEmpty() ? ""
-                : ((Character.isISOControl(unescaped.charAt(0)) ? String.format(FORMAT_HEXADECIMAL_ESCAPE,
-                        (int) unescaped.charAt(0)) : unescaped.charAt(0)) + escape(unescaped.substring(1)));
+        return unescaped.isEmpty() ? "" : ((Character.isISOControl(unescaped.charAt(0))
+                ? String.format(FORMAT_HEXADECIMAL_ESCAPE, (int) unescaped.charAt(0))
+                : unescaped.charAt(0)) + escape(unescaped.substring(1)));
     }
 
     public static String unescape(final String escaped) {

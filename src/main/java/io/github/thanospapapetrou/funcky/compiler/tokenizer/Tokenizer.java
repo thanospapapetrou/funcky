@@ -72,6 +72,6 @@ public class Tokenizer {
 
     private void addToken(final List<Token> tokens, final Token token) {
         tokens.add(token);
-        LOGGER.finest(String.format(TOKEN, token, token.getFile(), token.getLine(), token.getColumn()));
+        LOGGER.finest(String.format(TOKEN, token, token.file(), token.line(), token.column()));
     }
 }
