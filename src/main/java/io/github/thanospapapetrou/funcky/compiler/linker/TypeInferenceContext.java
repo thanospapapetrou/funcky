@@ -8,9 +8,8 @@ import java.util.TreeSet;
 import java.util.function.Predicate;
 
 import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
-import io.github.thanospapapetrou.funcky.runtime.FunckyList;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType;
 import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
@@ -28,7 +27,7 @@ public class TypeInferenceContext {
         this.context = context;
     }
 
-    public boolean unify(final FunckyType a, final FunckyType b) throws FunckyRuntimeException {
+    public boolean unify(final FunckyType a, final FunckyType b) {
         final FunckyType ta = find(a);
         final FunckyType tb = find(b);
         if ((ta instanceof FunckySimpleType) && (tb instanceof FunckySimpleType) && ta.equals(tb)) {
@@ -60,7 +59,7 @@ public class TypeInferenceContext {
         return false;
     }
 
-    public FunckyType find(final FunckyType type) throws FunckyRuntimeException {
+    public FunckyType find(final FunckyType type) {
         if (type instanceof FunckySimpleType) {
             return type;
         } else if (type instanceof FunckyFunctionType) {

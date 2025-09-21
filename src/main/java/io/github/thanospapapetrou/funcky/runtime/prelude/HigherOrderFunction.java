@@ -5,16 +5,14 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
-import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public abstract class HigherOrderFunction extends FunckyFunction {
     private final int order;
@@ -34,9 +32,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     }
 
     @Override
-    public FunckyValue apply(final FunckyExpression argument, final ScriptContext context)
-            throws FunckyRuntimeException {
-        try {
+    public FunckyValue apply(final FunckyExpression argument, final ScriptContext context) {
             final HigherOrderFunction that = this;
             final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(
                     new FunckyFunctionType(argument.getType(), new FunckyTypeVariable()))).getRange().eval();
@@ -45,18 +41,13 @@ public abstract class HigherOrderFunction extends FunckyFunction {
             return (order > 1) ? new HigherOrderFunction((FunckyFunctionType) range, order - 1,
                     new FunckyApplication(that.toExpression(), argument), arguments) {
                 @Override
-                protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                        throws FunckyRuntimeException {
+                protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
                     return that.apply(context, arguments);
                 }
             } : apply(context, arguments);
-        } catch (final FunckyCompilationException e) {
-            throw new FunckyRuntimeException(e);
-        }
     }
 
-    protected abstract FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments)
-            throws FunckyRuntimeException;
+    protected abstract FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments);
 
     @Override
     public FunckyExpression toExpression() {

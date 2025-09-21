@@ -11,21 +11,22 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnrecognizedInputException;
+import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 
 public class Tokenizer {
     private static final Logger LOGGER = Logger.getLogger(Tokenizer.class.getName());
     private static final String TOKEN = "%1$s %2$s %3$d %4$d";
 
-    public List<Token> tokenize(final String expression) throws UnrecognizedInputException {
+    public List<Token> tokenize(final String expression) {
         final List<Token> tokens = new ArrayList<>();
         tokenize(tokens, expression, Linker.STDIN, 1);
         addToken(tokens, TokenType.EOF, Linker.STDIN, 2, 1);
         return tokens;
     }
 
-    public List<Token> tokenize(final Reader script, final URI file) throws FunckyCompilationException {
+    public List<Token> tokenize(final Reader script, final URI file) {
         final List<Token> tokens = new ArrayList<>();
         int line = 1;
         try (final BufferedReader reader = new BufferedReader(script)) {
@@ -36,12 +37,11 @@ public class Tokenizer {
             addToken(tokens, TokenType.EOF, file, line, 1);
             return tokens;
         } catch (final IOException e) {
-            throw new FunckyCompilationException(e);
+            throw new SneakyCompilationException(new FunckyCompilationException(e));
         }
     }
 
-    private void tokenize(final List<Token> tokens, final String statement, final URI file, final int line)
-            throws UnrecognizedInputException {
+    private void tokenize(final List<Token> tokens, final String statement, final URI file, final int line) {
         final AtomicInteger index = new AtomicInteger(0);
         while (index.get() < statement.length()) {
             addToken(tokens, tokenize(statement, index, file, line));
@@ -49,8 +49,7 @@ public class Tokenizer {
         addToken(tokens, TokenType.EOL, file, line, index.get() + 1);
     }
 
-    private Token tokenize(final String statement, final AtomicInteger index, final URI file, final int line)
-            throws UnrecognizedInputException {
+    private Token tokenize(final String statement, final AtomicInteger index, final URI file, final int line) {
         for (final TokenType type : TokenType.values()) {
             if (type.getPattern() != null) {
                 final Matcher matcher = type.getPattern().matcher(statement.substring(index.get()));
@@ -62,7 +61,8 @@ public class Tokenizer {
                 }
             }
         }
-        throw new UnrecognizedInputException(statement.substring(index.get()), file, line, index.get() + 1);
+        throw new SneakyCompilationException(
+                new UnrecognizedInputException(statement.substring(index.get()), file, line, index.get() + 1));
     }
 
     private void addToken(final List<Token> tokens, final TokenType type, final URI file, final int line,

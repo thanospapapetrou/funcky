@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import io.github.thanospapapetrou.funcky.compiler.linker.TypeInferenceContext;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 
 public sealed abstract class FunckyType extends FunckyValue implements Comparable<FunckyType>
         permits FunckySimpleType, FunckyFunctionType, FunckyListType, FunckyRecordType, FunckyTypeVariable {
@@ -27,12 +26,12 @@ public sealed abstract class FunckyType extends FunckyValue implements Comparabl
                 .orElse(-1);
     }
 
-    public FunckyType free() throws FunckyRuntimeException {
+    public FunckyType free() {
         return bind(getTypeVariables().stream()
                 .collect(Collectors.toMap(Function.identity(), typeVariable -> new FunckyTypeVariable())));
     }
 
-    public FunckyType unify(final FunckyType type) throws FunckyRuntimeException {
+    public FunckyType unify(final FunckyType type) {
         final FunckyType free = type.free();
         final TypeInferenceContext context = new TypeInferenceContext();
         if (context.unify(this.free(), free)) {
@@ -55,8 +54,7 @@ public sealed abstract class FunckyType extends FunckyValue implements Comparabl
         return Integer.compare(getOrder(this), getOrder(type));
     }
 
-    protected abstract Set<FunckyTypeVariable> getTypeVariables() throws FunckyRuntimeException;
+    protected abstract Set<FunckyTypeVariable> getTypeVariables();
 
-    protected abstract FunckyType bind(final Map<FunckyTypeVariable, FunckyType> bindings)
-            throws FunckyRuntimeException;
+    protected abstract FunckyType bind(final Map<FunckyTypeVariable, FunckyType> bindings);
 }

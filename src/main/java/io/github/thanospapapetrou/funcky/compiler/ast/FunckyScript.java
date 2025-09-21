@@ -13,8 +13,6 @@ import javax.script.SimpleScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
 
 public class FunckyScript extends CompiledScript {
     public static final String MAIN = "main";
@@ -54,19 +52,15 @@ public class FunckyScript extends CompiledScript {
     }
 
     @Override
-    public FunckyNumber eval(final ScriptContext context) throws FunckyRuntimeException {
-        try {
+    public FunckyNumber eval(final ScriptContext context) {
             return (FunckyNumber) new FunckyApplication(new FunckyReference(engine, getFile(), -1, -1, getFile(), MAIN),
                     new FunckyLiteral(engine,
                             FunckyJavaConverter.convert(Arrays.asList(engine.getManager().getArguments())))).eval(
                     context);
-        } catch (final SneakyFunckyRuntimeException e) {
-            throw (FunckyRuntimeException) e.getCause();
-        }
     }
 
     @Override
-    public FunckyNumber eval(final Bindings bindings) throws FunckyRuntimeException {
+    public FunckyNumber eval(final Bindings bindings) {
         final SimpleScriptContext context = new SimpleScriptContext();
         context.setReader(engine.getContext().getReader());
         context.setWriter(engine.getContext().getWriter());
@@ -78,7 +72,7 @@ public class FunckyScript extends CompiledScript {
     }
 
     @Override
-    public FunckyNumber eval() throws FunckyRuntimeException {
+    public FunckyNumber eval() {
         return eval(engine.getContext());
     }
 }

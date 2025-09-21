@@ -8,16 +8,16 @@ import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
+import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
+import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
 public final class FunckyReference extends FunckyExpression {
     private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
@@ -66,14 +66,14 @@ public final class FunckyReference extends FunckyExpression {
         return name;
     }
 
-    public URI resolveNamespace() throws UnboundPrefixException {
+    public URI resolveNamespace() {
         if (namespace == null) {
             if (prefix == null) {
                 return file;
             } else {
                 final URI namespace = engine.getManager().getImport(file, prefix);
                 if (namespace == null) {
-                    throw new UnboundPrefixException(this);
+                    throw new SneakyCompilationException(new UnboundPrefixException(this));
                 }
                 return namespace;
             }
@@ -83,12 +83,12 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     @Override
-    public FunckyReference normalize() throws UnboundPrefixException {
+    public FunckyReference normalize() {
         return new FunckyReference(engine, file, line, column, resolveNamespace(), name);
     }
 
     @Override
-    public FunckyType getType() throws FunckyCompilationException {
+    public FunckyType getType() {
         final URI namespace = resolveNamespace();
         if (engine.getManager().getDefinitionType(namespace, name) == null) {
             engine.getManager().setDefinitionType(namespace, name, super.getType());
@@ -97,15 +97,11 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     @Override
-    public FunckyValue eval(final ScriptContext context) throws FunckyRuntimeException {
+    public FunckyValue eval(final ScriptContext context) {
         try {
             return resolveExpression().eval(context);
-        } catch (final FunckyCompilationException e) {
-            throw new FunckyRuntimeException(e);
-        } catch (final SneakyFunckyRuntimeException e) {
-            throw (FunckyRuntimeException) e.getCause();
-        } catch (final FunckyRuntimeException e) {
-            e.addStackTrace(this);
+        } catch (final SneakyRuntimeException e) {
+            e.getCause().getStack().add(this);
             throw e;
         }
     }
@@ -117,8 +113,7 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     @Override
-    protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions)
-            throws FunckyCompilationException {
+    protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions) {
         if (assumptions.containsKey(this)) {
             return assumptions.get(this);
         }
@@ -127,14 +122,18 @@ public final class FunckyReference extends FunckyExpression {
         return resolveExpression().getType(newAssumptions);
     }
 
-    private FunckyExpression resolveExpression() throws FunckyCompilationException {
+    private FunckyExpression resolveExpression() {
         final URI namespace = resolveNamespace();
         if (!engine.getManager().isLoaded(namespace)) {
-            engine.compile(namespace);
+            try {
+                engine.compile(namespace);
+            } catch (final FunckyCompilationException e) {
+                throw new SneakyCompilationException(e);
+            }
         }
         final FunckyExpression expression = engine.getManager().getDefinitionExpression(namespace, name);
         if (expression == null) {
-            throw new UndefinedNameException(namespace, this);
+            throw new SneakyCompilationException(new UndefinedNameException(namespace, this));
         }
         return expression;
     }

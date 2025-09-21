@@ -13,6 +13,7 @@ thread safety
 Funcky> "funcky:records".unit
 java.net.MalformedURLException: unknown protocol: funcky
 
+instanceof -> pattern matching
 convert inner exceptions to runtime exceptions and reduce exception constructor arguments and addStackTrace
 cleanup, factory, engine and reduce eval methods
 engine in values

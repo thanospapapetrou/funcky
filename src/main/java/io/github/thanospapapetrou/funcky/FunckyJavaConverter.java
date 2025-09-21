@@ -7,12 +7,11 @@ import java.util.stream.Stream;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
-import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public class FunckyJavaConverter {
     private static final String ERROR_CONVERTING_TO_FUNCKY = "Error converting %1$s (%2$s) to %3$s";
@@ -60,15 +59,11 @@ public class FunckyJavaConverter {
         final FunckyListType tailType = (tail == null) ? new FunckyListType(new FunckyTypeVariable()) : tail.getType();
         final String error = String.format(ERROR_CONVERTING_TO_FUNCKY, iterator.getClass().getName(), iterator,
                 LANGUAGE);
-        try {
             final FunckyListType listType = (FunckyListType) new FunckyListType(headType).unify(tailType);
             if (listType == null) {
                 throw new IllegalArgumentException(error);
             }
             return new FunckyList(listType, head, tail);
-        } catch (final FunckyRuntimeException e) {
-            throw new IllegalArgumentException(error);
-        }
     }
 
     public static FunckyList convert(final String string) {

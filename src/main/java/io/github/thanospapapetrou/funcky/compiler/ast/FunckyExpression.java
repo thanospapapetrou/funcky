@@ -10,12 +10,9 @@ import javax.script.SimpleScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyFactory;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public abstract sealed class FunckyExpression extends CompiledScript permits FunckyLiteral, FunckyReference, FunckyApplication {
     protected final FunckyEngine engine;
@@ -30,9 +27,9 @@ public abstract sealed class FunckyExpression extends CompiledScript permits Fun
         this.column = column;
     }
 
-    public abstract FunckyExpression normalize() throws UnboundPrefixException;
+    public abstract FunckyExpression normalize();
 
-    public FunckyType getType() throws FunckyCompilationException {
+    public FunckyType getType() {
         return getType(Map.of());
     }
 
@@ -54,10 +51,10 @@ public abstract sealed class FunckyExpression extends CompiledScript permits Fun
     }
 
     @Override
-    public abstract FunckyValue eval(final ScriptContext context) throws FunckyRuntimeException;
+    public abstract FunckyValue eval(final ScriptContext context);
 
     @Override
-    public FunckyValue eval(final Bindings bindings) throws FunckyRuntimeException {
+    public FunckyValue eval(final Bindings bindings) {
         final SimpleScriptContext context = new SimpleScriptContext();
         context.setReader(engine.getContext().getReader());
         context.setWriter(engine.getContext().getWriter());
@@ -69,10 +66,9 @@ public abstract sealed class FunckyExpression extends CompiledScript permits Fun
     }
 
     @Override
-    public FunckyValue eval() throws FunckyRuntimeException {
+    public FunckyValue eval() {
         return eval((engine == null) ? FunckyFactory.GLOBAL : engine.getContext());
     }
 
-    protected abstract FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions)
-            throws FunckyCompilationException;
+    protected abstract FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions);
 }

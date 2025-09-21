@@ -4,16 +4,14 @@ import java.util.Map;
 
 import javax.script.ScriptContext;
 
-import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.IllegalApplicationException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
 public final class FunckyApplication extends FunckyExpression {
     private static final String FORMAT_APPLICATION = "%1$s %2$s";
@@ -37,18 +35,16 @@ public final class FunckyApplication extends FunckyExpression {
     }
 
     @Override
-    public FunckyApplication normalize() throws UnboundPrefixException {
+    public FunckyApplication normalize() {
         return new FunckyApplication(function.normalize(), argument.normalize());
     }
 
     @Override
-    public FunckyValue eval(final ScriptContext context) throws FunckyRuntimeException {
+    public FunckyValue eval(final ScriptContext context) {
         try {
             return ((FunckyFunction) function.eval(context)).apply(argument, context);
-        } catch (final SneakyFunckyRuntimeException e) {
-            throw (FunckyRuntimeException) e.getCause();
-        } catch (final FunckyRuntimeException e) {
-            e.addStackTrace(this);
+        } catch (final SneakyRuntimeException e) {
+            e.getCause().getStack().add(this);
             throw e;
         }
     }
@@ -63,20 +59,15 @@ public final class FunckyApplication extends FunckyExpression {
     }
 
     @Override
-    protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions)
-            throws FunckyCompilationException {
+    protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions) {
         final FunckyType functionType = function.getType(assumptions);
         final FunckyType argumentType = argument.getType(assumptions);
-        try {
             final FunckyFunctionType type = (FunckyFunctionType) functionType
                     .unify(new FunckyFunctionType(argumentType, new FunckyTypeVariable()));
             if (type != null) {
                 return ((FunckyType) type.getRange().eval());
             } else {
-                throw new IllegalApplicationException(this, functionType, argumentType);
+                throw new SneakyCompilationException(new IllegalApplicationException(this, functionType, argumentType));
             }
-        } catch (final FunckyRuntimeException e) {
-            throw new FunckyCompilationException(e);
-        }
     }
 }

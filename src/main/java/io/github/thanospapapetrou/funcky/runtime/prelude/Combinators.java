@@ -9,7 +9,6 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 
 public final class Combinators extends FunckyLibrary {
     private static final FunckyTypeVariable A = new FunckyTypeVariable();
@@ -18,8 +17,7 @@ public final class Combinators extends FunckyLibrary {
     public static final HigherOrderFunction S = new HigherOrderFunction(Combinators.class, "s",
             new FunckyFunctionType(A, B, C), new FunckyFunctionType(A, B), A, C) {
         @Override
-        protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyApplication(new FunckyApplication(arguments.get(0), arguments.get(2)),
                     new FunckyApplication(arguments.get(1), arguments.get(2))).eval(context);
         }
@@ -27,8 +25,7 @@ public final class Combinators extends FunckyLibrary {
     public static final HigherOrderFunction K = new HigherOrderFunction(Combinators.class, "k",
             A, B, A) {
         @Override
-        protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return arguments.getFirst().eval(context);
         }
     };

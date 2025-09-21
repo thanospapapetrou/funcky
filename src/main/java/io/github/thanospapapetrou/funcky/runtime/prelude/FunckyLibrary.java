@@ -14,26 +14,26 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
+import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
 public sealed class FunckyLibrary extends FunckyScript
         permits Types, Numbers, Booleans, Characters, Lists, Commons, Combinators {
     private final FunckyValue[] values;
 
-    protected static int requireInt(final FunckyNumber number, final String message) throws FunckyRuntimeException {
+    protected static int requireInt(final FunckyNumber number, final String message) {
         if ((number.getValue().compareTo(BigDecimal.valueOf(number.getValue().intValue())) != 0)) {
-            throw new FunckyRuntimeException(message);
+            throw new SneakyRuntimeException(message);
         }
         return number.getValue().intValue();
     }
 
     protected static <E extends Enum<E>> E requireEnum(final FunckyNumber number, final Class<E> enumeration,
-            final String message) throws FunckyRuntimeException {
+            final String message) {
         final int ordinal = requireInt(number, message);
         return EnumSet.allOf(enumeration).stream()
                 .filter(value -> value.ordinal() == ordinal)
                 .findFirst()
-                .orElseThrow(() -> new FunckyRuntimeException(message));
+                .orElseThrow(() -> new SneakyRuntimeException(message));
     }
 
     public FunckyLibrary(final FunckyValue... values) {

@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
@@ -25,15 +24,15 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidListLiteralException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidUriException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnexpectedTokenException;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType;
 import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
@@ -100,7 +99,7 @@ public class Parser {
         this.engine = engine;
     }
 
-    public FunckyExpression parse(final Queue<Token> input) throws FunckyCompilationException {
+    public FunckyExpression parse(final Queue<Token> input) {
         final FunckyExpression expression =
                 (peek(input, union(FIRST, Set.of(TokenType.EOL))).type() == TokenType.EOL) ? null
                         : parseComplexExpression(input, Set.of(TokenType.EOL));
@@ -110,7 +109,7 @@ public class Parser {
         return expression;
     }
 
-    public FunckyScript parse(final Queue<Token> input, final URI file) throws FunckyCompilationException {
+    public FunckyScript parse(final Queue<Token> input, final URI file) {
         final FunckyScript script = new FunckyScript(engine, file);
         while (true) {
             final Token token = consume(input, Set.of(TokenType.SYMBOL, TokenType.EOL, TokenType.EOF));
@@ -140,8 +139,7 @@ public class Parser {
         }
     }
 
-    private FunckyExpression parseComplexExpression(final Queue<Token> input, final Set<TokenType> follow)
-            throws FunckyCompilationException {
+    private FunckyExpression parseComplexExpression(final Queue<Token> input, final Set<TokenType> follow) {
         FunckyExpression expression = parseSimpleExpression(input, follow);
         while (true) {
             if (peek(input, union(Set.of(TokenType.SPACE), follow)).type() == TokenType.SPACE) {
@@ -153,8 +151,7 @@ public class Parser {
         }
     }
 
-    private FunckyExpression parseSimpleExpression(final Queue<Token> input, final Set<TokenType> follow)
-            throws FunckyCompilationException {
+    private FunckyExpression parseSimpleExpression(final Queue<Token> input, final Set<TokenType> follow) {
         final Token token = consume(input, FIRST);
         switch (token.type()) {
             case BINARY_NUMBER:
@@ -244,17 +241,15 @@ public class Parser {
                         string.isEmpty() ? null : parseString(string.substring(1), token)));
     }
 
-    private URI parseUri(final Token string) throws InvalidUriException {
+    private URI parseUri(final Token string) {
         try {
             return new URI(string.stringValue());
         } catch (final URISyntaxException e) {
-            throw new InvalidUriException(string);
+            throw new SneakyCompilationException(new InvalidUriException(string));
         }
     }
 
-    private FunckyLiteral parseList(final List<FunckyExpression> elements, final Token leftSquareBracket)
-            throws FunckyCompilationException {
-        try {
+    private FunckyLiteral parseList(final List<FunckyExpression> elements, final Token leftSquareBracket) {
             final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
             final FunckyLiteral tail = elements.isEmpty() ? null
                     : parseList(elements.subList(1, elements.size()), leftSquareBracket);
@@ -264,17 +259,13 @@ public class Parser {
                     : ((FunckyListType) tail.getType());
             final FunckyListType listType = (FunckyListType) new FunckyListType(headType).unify(tailType);
             if (listType == null) {
-                throw new InvalidListLiteralException(head, tail, headType, tailType);
+                throw new SneakyCompilationException(new InvalidListLiteralException(head, tail, headType, tailType));
             }
             return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(),
                     leftSquareBracket.column(), new FunckyList(listType, head, tail));
-        } catch (final FunckyRuntimeException e) {
-            throw new FunckyCompilationException(e);
-        }
     }
 
-    private FunckyLiteral parseRecord(final List<FunckyExpression> components, final Token leftCurlyBracket)
-            throws FunckyCompilationException {
+    private FunckyLiteral parseRecord(final List<FunckyExpression> components, final Token leftCurlyBracket) {
         final List<FunckyType> types = new ArrayList<>();
         for (final FunckyExpression component : components) {
             types.add(component.getType());
@@ -283,21 +274,21 @@ public class Parser {
                 new FunckyRecord(new FunckyRecordType(FunckyJavaConverter.convert(types)), components));
     }
 
-    private Token consume(final Queue<Token> input, final Set<TokenType> expected) throws UnexpectedTokenException {
+    private Token consume(final Queue<Token> input, final Set<TokenType> expected) {
         final Token token = peek(input, expected);
         input.remove();
         return token;
     }
 
-    private Token consume(final Queue<Token> input, final TokenType expected) throws UnexpectedTokenException {
+    private Token consume(final Queue<Token> input, final TokenType expected) {
         return consume(input, Set.of(expected));
     }
 
-    private Token peek(final Queue<Token> input, final Set<TokenType> expected) throws UnexpectedTokenException {
+    private Token peek(final Queue<Token> input, final Set<TokenType> expected) {
         final Token token = Objects.requireNonNull(input.peek());
         if (expected.contains(token.type())) {
             return token;
         }
-        throw new UnexpectedTokenException(token, new TreeSet<>(expected));
+        throw new SneakyCompilationException(new UnexpectedTokenException(token, new TreeSet<>(expected)));
     }
 }

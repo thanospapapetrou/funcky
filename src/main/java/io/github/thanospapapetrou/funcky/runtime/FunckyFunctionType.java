@@ -9,8 +9,6 @@ import java.util.Set;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckyFunctionType extends FunckyType {
@@ -46,7 +44,6 @@ public final class FunckyFunctionType extends FunckyType {
 
     @Override
     public int compareTo(final FunckyType type) {
-        try {
             final int classComparison = super.compareTo(type);
             if (classComparison == 0) {
                 final int domainComparison =
@@ -55,41 +52,29 @@ public final class FunckyFunctionType extends FunckyType {
                         (FunckyType) ((FunckyFunctionType) type).range.eval()) : domainComparison;
             }
             return classComparison;
-        } catch (final FunckyRuntimeException e) {
-            throw new SneakyFunckyRuntimeException(e);
-        }
     }
 
     @Override
     public boolean equals(final Object object) {
-        try {
             return (object instanceof FunckyFunctionType) && domain.eval()
                     .equals(((FunckyFunctionType) object).domain.eval())
                     && range.eval().equals(((FunckyFunctionType) object).range.eval());
-        } catch (final FunckyRuntimeException e) {
-            throw new SneakyFunckyRuntimeException(e);
-        }
     }
 
     @Override
     public int hashCode() {
-        try {
             return domain.eval().hashCode() + range.eval().hashCode();
-        } catch (final FunckyRuntimeException e) {
-            throw new SneakyFunckyRuntimeException(e);
-        }
     }
 
     @Override
-    protected Set<FunckyTypeVariable> getTypeVariables() throws FunckyRuntimeException {
+    protected Set<FunckyTypeVariable> getTypeVariables() {
         final Set<FunckyTypeVariable> typeVariables = new HashSet<>(((FunckyType) domain.eval()).getTypeVariables());
         typeVariables.addAll(((FunckyType) range.eval()).getTypeVariables());
         return typeVariables;
     }
 
     @Override
-    protected FunckyFunctionType bind(final Map<FunckyTypeVariable, FunckyType> bindings)
-            throws FunckyRuntimeException {
+    protected FunckyFunctionType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
         return new FunckyFunctionType(((FunckyType) domain.eval()).bind(bindings),
                 ((FunckyType) range.eval()).bind(bindings));
     }

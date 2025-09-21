@@ -9,30 +9,27 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
+import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
 public final class Numbers extends FunckyLibrary {
     public static final HigherOrderFunction PLUS = new HigherOrderFunction(Numbers.class, "plus",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return (FunckyNumber) arguments.getFirst().eval(context);
         }
     };
     public static final HigherOrderFunction MINUS = new HigherOrderFunction(Numbers.class, "minus",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(((FunckyNumber) arguments.getFirst().eval(context)).getValue().negate());
         }
     };
     public static final HigherOrderFunction ADD = new HigherOrderFunction(Numbers.class, "add",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .add(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
@@ -40,8 +37,7 @@ public final class Numbers extends FunckyLibrary {
     public static final HigherOrderFunction SUBTRACT = new HigherOrderFunction(Numbers.class, "subtract",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .subtract(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
@@ -49,8 +45,7 @@ public final class Numbers extends FunckyLibrary {
     public static final HigherOrderFunction MULTIPLY = new HigherOrderFunction(Numbers.class, "multiply",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .multiply(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
@@ -59,11 +54,10 @@ public final class Numbers extends FunckyLibrary {
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER,
             FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             final BigDecimal divisor = ((FunckyNumber) arguments.get(1).eval(context)).getValue();
             if (divisor.compareTo(BigDecimal.ZERO) == 0) {
-                throw new FunckyRuntimeException(ERROR_DIVISION_BY_ZERO);
+                throw new SneakyRuntimeException(ERROR_DIVISION_BY_ZERO);
             }
             final FunckyNumber scale = (FunckyNumber) arguments.get(2).eval(context);
             final FunckyNumber roundingMode = (FunckyNumber) arguments.get(3).eval(context);
@@ -73,15 +67,14 @@ public final class Numbers extends FunckyLibrary {
                                 requireEnum(roundingMode, RoundingMode.class,
                                         String.format(ERROR_INVALID_ROUNDING_MODE, roundingMode))));
             } catch (final ArithmeticException e) {
-                throw new FunckyRuntimeException(String.format(ERROR_INSUFFICIENT_SCALE, scale, roundingMode));
+                throw new SneakyRuntimeException(String.format(ERROR_INSUFFICIENT_SCALE, scale, roundingMode));
             }
         }
     };
     public static final HigherOrderFunction BYTE = new HigherOrderFunction(Numbers.class, "byte",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .byteValue()));
         }
@@ -89,8 +82,7 @@ public final class Numbers extends FunckyLibrary {
     public static final HigherOrderFunction SHORT = new HigherOrderFunction(Numbers.class, "short",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .shortValue()));
         }
@@ -98,8 +90,7 @@ public final class Numbers extends FunckyLibrary {
     public static final HigherOrderFunction INT = new HigherOrderFunction(Numbers.class, "int",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .intValue()));
         }
@@ -107,8 +98,7 @@ public final class Numbers extends FunckyLibrary {
     public static final HigherOrderFunction LONG = new HigherOrderFunction(Numbers.class, "long",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .longValue()));
         }
@@ -116,8 +106,7 @@ public final class Numbers extends FunckyLibrary {
     public static final HigherOrderFunction FLOAT = new HigherOrderFunction(Numbers.class, "float",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .floatValue()));
         }
@@ -125,8 +114,7 @@ public final class Numbers extends FunckyLibrary {
     public static final HigherOrderFunction DOUBLE = new HigherOrderFunction(Numbers.class, "double",
             FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments)
-                throws FunckyRuntimeException {
+        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context)).getValue()
                     .doubleValue()));
         }

@@ -3,7 +3,6 @@ package io.github.thanospapapetrou.funcky.runtime;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 
 public non-sealed abstract class FunckyFunction extends FunckyValue implements Comparable<FunckyFunction> {
     protected final FunckyFunctionType type;
@@ -12,8 +11,7 @@ public non-sealed abstract class FunckyFunction extends FunckyValue implements C
         this.type = type;
     }
 
-    public abstract FunckyValue apply(final FunckyExpression argument, final ScriptContext context)
-            throws FunckyRuntimeException;
+    public abstract FunckyValue apply(final FunckyExpression argument, final ScriptContext context);
 
     @Override
     public FunckyFunctionType getType() {

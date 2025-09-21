@@ -4,8 +4,6 @@ import java.util.function.Function;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyFunckyRuntimeException;
 
 public final class FunckyList extends FunckyValue implements Comparable<FunckyList> {
     private static final String DELIMITER = ", ";
@@ -17,11 +15,7 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
     private final FunckyExpression tail;
 
     private static String toString(final FunckyExpression expression) {
-        try {
             return expression.eval().toString();
-        } catch (final FunckyRuntimeException e) {
-            throw new SneakyFunckyRuntimeException(e);
-        }
     }
 
     public FunckyList(final FunckyListType type, final FunckyExpression head, final FunckyExpression tail) {
@@ -54,40 +48,27 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
 
     @Override
     public int compareTo(final FunckyList list) {
-        try {
             final int headComparison = (head == null) ? ((list.head == null) ? 0 : -1)
                     : ((list.head == null) ? 1 : ((Comparable<FunckyValue>) head.eval()).compareTo(list.head.eval()));
             return (headComparison == 0) ? ((tail == null) ? ((list.tail == null) ? 0 : -1)
                     : ((list.tail == null) ? 1 : ((Comparable<FunckyValue>) tail.eval()).compareTo(list.tail.eval())))
                     : headComparison;
-        } catch (final FunckyRuntimeException e) {
-            throw new SneakyFunckyRuntimeException(e);
-        }
     }
 
     @Override
     public boolean equals(final Object object) {
-        try {
             return (object instanceof FunckyList) && ((head == null) ? (((FunckyList) object).head == null)
                     : ((((FunckyList) object).head != null) && head.eval().equals(((FunckyList) object).head.eval())))
                     && ((tail == null) ? (((FunckyList) object).tail == null)
                     : ((((FunckyList) object).tail != null) && tail.eval().equals(((FunckyList) object).tail.eval())));
-        } catch (final FunckyRuntimeException e) {
-            throw new SneakyFunckyRuntimeException(e);
-        }
     }
 
     @Override
     public int hashCode() {
-        try {
             return ((head == null) ? 0 : head.eval().hashCode()) + ((tail == null) ? 0 : tail.eval().hashCode());
-        } catch (final FunckyRuntimeException e) {
-            throw new SneakyFunckyRuntimeException(e);
-        }
     }
 
     public String toString(final Function<FunckyExpression, String> toString) {
-        try {
             final StringBuilder string = new StringBuilder(PREFIX);
             for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval()) {
                 string.append(toString.apply(list.head)).append(DELIMITER);
@@ -96,14 +77,10 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
                 string.setLength(string.length() - DELIMITER.length());
             }
             return string.append(SUFFIX).toString();
-        } catch (final FunckyRuntimeException e) {
-            throw new SneakyFunckyRuntimeException(e);
-        }
     }
 
     @Override
     public String toString() {
-        try {
             if (type.equals(FunckyListType.STRING)) {
                 final StringBuilder string = new StringBuilder();
                 for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval()) {
@@ -112,8 +89,5 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
                 return string.toString();
             }
             return toString(FunckyList::toString);
-        } catch (final FunckyRuntimeException e) {
-            throw new SneakyFunckyRuntimeException(e);
-        }
     }
 }

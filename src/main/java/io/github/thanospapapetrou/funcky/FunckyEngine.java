@@ -15,9 +15,10 @@ import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.linker.ContextManager;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.Parser;
@@ -27,6 +28,7 @@ import io.github.thanospapapetrou.funcky.compiler.tokenizer.Tokenizer;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
+import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
 public class FunckyEngine extends AbstractScriptEngine implements Compilable, Invocable {
     public static final String PARAMETER_EXTENSIONS = "io.github.thanospapapetrou.funcky.extensions";
@@ -67,38 +69,62 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     public FunckyValue eval(final String expression, final ScriptContext context)
             throws FunckyCompilationException, FunckyRuntimeException {
         final FunckyExpression expr = compile(expression);
-        return (expr == null) ? null : expr.eval(context);
+        try {
+            return (expr == null) ? null : expr.eval(context);
+        } catch (final SneakyRuntimeException e) {
+            throw e.getCause();
+        }
     }
 
     @Override
     public FunckyValue eval(final String expression, final Bindings bindings)
             throws FunckyCompilationException, FunckyRuntimeException {
         final FunckyExpression expr = compile(expression);
-        return (expr == null) ? null : expr.eval(bindings);
+        try {
+            return (expr == null) ? null : expr.eval(bindings);
+        } catch (final SneakyRuntimeException e) {
+            throw e.getCause();
+        }
     }
 
     @Override
     public FunckyValue eval(final String expression) throws FunckyCompilationException, FunckyRuntimeException {
         final FunckyExpression expr = compile(expression);
-        return (expr == null) ? null : expr.eval();
+        try {
+            return (expr == null) ? null : expr.eval();
+        } catch (final SneakyRuntimeException e) {
+            throw e.getCause();
+        }
     }
 
     @Override
     public FunckyNumber eval(final Reader script, final ScriptContext context)
             throws FunckyCompilationException, FunckyRuntimeException {
-        return compile(script).eval(context);
+        try {
+            return compile(script).eval(context);
+        } catch (final SneakyRuntimeException e) {
+            throw e.getCause();
+        }
     }
 
     @Override
     public FunckyNumber eval(final Reader script, final Bindings bindings)
             throws FunckyCompilationException, FunckyRuntimeException {
-        return compile(script).eval(bindings);
+        try {
+            return compile(script).eval(bindings);
+        } catch (final SneakyRuntimeException e) {
+            throw e.getCause();
+        }
 
     }
 
     @Override
     public FunckyNumber eval(final Reader script) throws FunckyCompilationException, FunckyRuntimeException {
-        return compile(script).eval();
+        try {
+            return compile(script).eval();
+        } catch (final SneakyRuntimeException e) {
+            throw e.getCause();
+        }
     }
 
     public FunckyScript compile(final URI file) throws FunckyCompilationException {
@@ -111,9 +137,13 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
 
     @Override
     public FunckyExpression compile(final String expression) throws FunckyCompilationException {
-        return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
-                .filter(token -> !token.type().equals(TokenType.COMMENT))
-                .collect(Collectors.toCollection(ArrayDeque::new)))));
+        try {
+            return linker.link(preprocessor.preprocess(parser.parse(
+                    tokenizer.tokenize(expression).stream().filter(token -> !token.type().equals(TokenType.COMMENT))
+                            .collect(Collectors.toCollection(ArrayDeque::new)))));
+        } catch (final SneakyCompilationException e) {
+            throw e.getCause();
+        }
     }
 
     @Override
@@ -127,9 +157,13 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
 
     private FunckyScript compile(final Reader script, final URI file, final boolean main) throws
             FunckyCompilationException {
-        return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(script, file).stream()
-                .filter(token -> !token.type().equals(TokenType.COMMENT))
-                .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
+        try {
+            return linker.link(preprocessor.preprocess(parser.parse(
+                    tokenizer.tokenize(script, file).stream().filter(token -> !token.type().equals(TokenType.COMMENT))
+                            .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
+        } catch (final SneakyCompilationException e) {
+            throw e.getCause();
+        }
     }
 
     @Override
