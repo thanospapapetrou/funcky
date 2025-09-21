@@ -10,8 +10,8 @@ import javax.script.SimpleScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyFactory;
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
-import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
@@ -32,7 +32,7 @@ public abstract sealed class FunckyExpression extends CompiledScript permits Fun
 
     public abstract FunckyExpression normalize() throws UnboundPrefixException;
 
-    public FunckyType getType() throws CompilationException {
+    public FunckyType getType() throws FunckyCompilationException {
         return getType(Map.of());
     }
 
@@ -74,5 +74,5 @@ public abstract sealed class FunckyExpression extends CompiledScript permits Fun
     }
 
     protected abstract FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions)
-            throws CompilationException;
+            throws FunckyCompilationException;
 }

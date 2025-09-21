@@ -7,10 +7,10 @@ import java.util.Map;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
-import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
-import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedNameException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
@@ -88,7 +88,7 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     @Override
-    public FunckyType getType() throws CompilationException {
+    public FunckyType getType() throws FunckyCompilationException {
         final URI namespace = resolveNamespace();
         if (engine.getManager().getDefinitionType(namespace, name) == null) {
             engine.getManager().setDefinitionType(namespace, name, super.getType());
@@ -100,7 +100,7 @@ public final class FunckyReference extends FunckyExpression {
     public FunckyValue eval(final ScriptContext context) throws FunckyRuntimeException {
         try {
             return resolveExpression().eval(context);
-        } catch (final CompilationException e) {
+        } catch (final FunckyCompilationException e) {
             throw new FunckyRuntimeException(e);
         } catch (final SneakyFunckyRuntimeException e) {
             throw (FunckyRuntimeException) e.getCause();
@@ -118,7 +118,7 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions)
-            throws CompilationException {
+            throws FunckyCompilationException {
         if (assumptions.containsKey(this)) {
             return assumptions.get(this);
         }
@@ -127,7 +127,7 @@ public final class FunckyReference extends FunckyExpression {
         return resolveExpression().getType(newAssumptions);
     }
 
-    private FunckyExpression resolveExpression() throws CompilationException {
+    private FunckyExpression resolveExpression() throws FunckyCompilationException {
         final URI namespace = resolveNamespace();
         if (!engine.getManager().isLoaded(namespace)) {
             engine.compile(namespace);

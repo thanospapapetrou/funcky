@@ -1,10 +1,9 @@
-package io.github.thanospapapetrou.funcky.compiler.linker.exceptions;
+package io.github.thanospapapetrou.funcky.compiler.exceptions;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
-public class IllegalApplicationException extends CompilationException {
+public final class IllegalApplicationException extends FunckyCompilationException {
     private static final String MESSAGE =
             "Function `%1$s` with type `%2$s` can not be applied to argument `%3$s` with type `%4$s`";
 

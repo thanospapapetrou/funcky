@@ -1,13 +1,12 @@
-package io.github.thanospapapetrou.funcky.compiler.parser.exceptions;
+package io.github.thanospapapetrou.funcky.compiler.exceptions;
 
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType;
 
-public class UnexpectedTokenException extends CompilationException {
+public final class UnexpectedTokenException extends FunckyCompilationException {
     private static final String DELIMITER = ", ";
     private static final String MESSAGE = "Unexpected token %1$s, expected %2$s";
 

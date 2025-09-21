@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
-import io.github.thanospapapetrou.funcky.compiler.tokenizer.exceptions.UnrecognizedInputException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.UnrecognizedInputException;
 
 public class Tokenizer {
     private static final Logger LOGGER = Logger.getLogger(Tokenizer.class.getName());
@@ -25,7 +25,7 @@ public class Tokenizer {
         return tokens;
     }
 
-    public List<Token> tokenize(final Reader script, final URI file) throws CompilationException {
+    public List<Token> tokenize(final Reader script, final URI file) throws FunckyCompilationException {
         final List<Token> tokens = new ArrayList<>();
         int line = 1;
         try (final BufferedReader reader = new BufferedReader(script)) {
@@ -36,7 +36,7 @@ public class Tokenizer {
             addToken(tokens, TokenType.EOF, file, line, 1);
             return tokens;
         } catch (final IOException e) {
-            throw new CompilationException(e);
+            throw new FunckyCompilationException(e);
         }
     }
 

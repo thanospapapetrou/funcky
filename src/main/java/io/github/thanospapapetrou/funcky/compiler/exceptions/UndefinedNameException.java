@@ -1,11 +1,10 @@
-package io.github.thanospapapetrou.funcky.compiler.linker.exceptions;
+package io.github.thanospapapetrou.funcky.compiler.exceptions;
 
 import java.net.URI;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 
-public class UndefinedNameException extends CompilationException {
+public final class UndefinedNameException extends FunckyCompilationException {
     private static final String MESSAGE = "Name `%1$s` is not defined in namespace `%2$s`";
 
     public UndefinedNameException(final URI namespace, final FunckyReference reference) {

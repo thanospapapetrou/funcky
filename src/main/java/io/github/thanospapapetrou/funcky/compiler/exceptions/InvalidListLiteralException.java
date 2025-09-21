@@ -1,12 +1,11 @@
-package io.github.thanospapapetrou.funcky.compiler.parser.exceptions;
+package io.github.thanospapapetrou.funcky.compiler.exceptions;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
-public class InvalidListLiteralException extends CompilationException {
+public final class InvalidListLiteralException extends FunckyCompilationException {
     private static final String MESSAGE =
             "Head `%1$s` with type `%2$s` can not be prepended to tail `%3$s` with type `%4$s`";
 

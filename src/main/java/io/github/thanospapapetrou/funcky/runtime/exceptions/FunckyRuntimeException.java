@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.script.ScriptException;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
@@ -23,7 +23,7 @@ public class FunckyRuntimeException extends ScriptException {
         this(message, null, -1, -1, new ArrayList<>());
     }
 
-    public FunckyRuntimeException(final CompilationException e) {
+    public FunckyRuntimeException(final FunckyCompilationException e) {
         this(String.format(RUNTIME_COMPILATION_ERROR, e.getMessage()), e.getFileName(), e.getLineNumber(),
                 e.getColumnNumber(), new ArrayList<>());
     }
@@ -84,7 +84,7 @@ public class FunckyRuntimeException extends ScriptException {
             return String.format(DEFINITION,
                     new FunckyDefinition(expression.getFile(), expression.getLine(), reference.getName(), expression),
                     expression.getFile(), expression.getLine(), 1);
-        } catch (final CompilationException e) {
+        } catch (final FunckyCompilationException e) {
             throw new SneakyFunckyRuntimeException(new FunckyRuntimeException(e));
         }
     }

@@ -4,9 +4,9 @@ import java.util.Map;
 
 import javax.script.ScriptContext;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
-import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.IllegalApplicationException;
-import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.IllegalApplicationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
@@ -64,7 +64,7 @@ public final class FunckyApplication extends FunckyExpression {
 
     @Override
     protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions)
-            throws CompilationException {
+            throws FunckyCompilationException {
         final FunckyType functionType = function.getType(assumptions);
         final FunckyType argumentType = argument.getType(assumptions);
         try {
@@ -76,7 +76,7 @@ public final class FunckyApplication extends FunckyExpression {
                 throw new IllegalApplicationException(this, functionType, argumentType);
             }
         } catch (final FunckyRuntimeException e) {
-            throw new CompilationException(e);
+            throw new FunckyCompilationException(e);
         }
     }
 }

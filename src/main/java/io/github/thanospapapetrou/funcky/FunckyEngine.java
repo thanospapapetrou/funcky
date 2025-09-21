@@ -15,7 +15,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.linker.ContextManager;
@@ -65,67 +65,68 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
 
     @Override
     public FunckyValue eval(final String expression, final ScriptContext context)
-            throws CompilationException, FunckyRuntimeException {
+            throws FunckyCompilationException, FunckyRuntimeException {
         final FunckyExpression expr = compile(expression);
         return (expr == null) ? null : expr.eval(context);
     }
 
     @Override
     public FunckyValue eval(final String expression, final Bindings bindings)
-            throws CompilationException, FunckyRuntimeException {
+            throws FunckyCompilationException, FunckyRuntimeException {
         final FunckyExpression expr = compile(expression);
         return (expr == null) ? null : expr.eval(bindings);
     }
 
     @Override
-    public FunckyValue eval(final String expression) throws CompilationException, FunckyRuntimeException {
+    public FunckyValue eval(final String expression) throws FunckyCompilationException, FunckyRuntimeException {
         final FunckyExpression expr = compile(expression);
         return (expr == null) ? null : expr.eval();
     }
 
     @Override
     public FunckyNumber eval(final Reader script, final ScriptContext context)
-            throws CompilationException, FunckyRuntimeException {
+            throws FunckyCompilationException, FunckyRuntimeException {
         return compile(script).eval(context);
     }
 
     @Override
     public FunckyNumber eval(final Reader script, final Bindings bindings)
-            throws CompilationException, FunckyRuntimeException {
+            throws FunckyCompilationException, FunckyRuntimeException {
         return compile(script).eval(bindings);
 
     }
 
     @Override
-    public FunckyNumber eval(final Reader script) throws CompilationException, FunckyRuntimeException {
+    public FunckyNumber eval(final Reader script) throws FunckyCompilationException, FunckyRuntimeException {
         return compile(script).eval();
     }
 
-    public FunckyScript compile(final URI file) throws CompilationException {
+    public FunckyScript compile(final URI file) throws FunckyCompilationException {
         try (final InputStreamReader input = new InputStreamReader(linker.getScript(file))) {
             return compile(input, file, false);
         } catch (final IOException e) {
-            throw new CompilationException(e);
+            throw new FunckyCompilationException(e);
         }
     }
 
     @Override
-    public FunckyExpression compile(final String expression) throws CompilationException {
+    public FunckyExpression compile(final String expression) throws FunckyCompilationException {
         return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
                 .filter(token -> !token.type().equals(TokenType.COMMENT))
                 .collect(Collectors.toCollection(ArrayDeque::new)))));
     }
 
     @Override
-    public FunckyScript compile(final Reader script) throws CompilationException {
+    public FunckyScript compile(final Reader script) throws FunckyCompilationException {
         try {
             return compile(script, getManager().getFile(), true);
         } catch (final IOException e) {
-            throw new CompilationException(e);
+            throw new FunckyCompilationException(e);
         }
     }
 
-    private FunckyScript compile(final Reader script, final URI file, final boolean main) throws CompilationException {
+    private FunckyScript compile(final Reader script, final URI file, final boolean main) throws
+            FunckyCompilationException {
         return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(script, file).stream()
                 .filter(token -> !token.type().equals(TokenType.COMMENT))
                 .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);

@@ -11,10 +11,9 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.Parser;
-import io.github.thanospapapetrou.funcky.compiler.preprocessor.Preprocessor;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Tokenizer;
 import io.github.thanospapapetrou.funcky.logging.FunckyLogFormatter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -73,7 +72,7 @@ public class Funcky {
                             .ifPresent(System.out::println);
                 } catch (final FunckyRuntimeException e) {
                     System.err.println(e.getMessage());
-                } catch (final CompilationException e) {
+                } catch (final FunckyCompilationException e) {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                 }
                 System.out.printf(PROMPT, engine.getFactory().getLanguageName());
@@ -91,7 +90,7 @@ public class Funcky {
             System.exit(engine.eval(reader).getValue().intValue());
         } catch (final FunckyRuntimeException e) {
             System.err.println(e.getMessage());
-        } catch (final CompilationException e) {
+        } catch (final FunckyCompilationException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
         } catch (final IOException | URISyntaxException e) {
             LOGGER.log(Level.SEVERE, String.format(ERROR_READING, script), e);

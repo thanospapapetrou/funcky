@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
@@ -23,9 +23,9 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.InvalidListLiteralException;
-import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.InvalidUriException;
-import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.UnexpectedTokenException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidListLiteralException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidUriException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.UnexpectedTokenException;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
@@ -100,7 +100,7 @@ public class Parser {
         this.engine = engine;
     }
 
-    public FunckyExpression parse(final Queue<Token> input) throws CompilationException {
+    public FunckyExpression parse(final Queue<Token> input) throws FunckyCompilationException {
         final FunckyExpression expression =
                 (peek(input, union(FIRST, Set.of(TokenType.EOL))).type() == TokenType.EOL) ? null
                         : parseComplexExpression(input, Set.of(TokenType.EOL));
@@ -110,7 +110,7 @@ public class Parser {
         return expression;
     }
 
-    public FunckyScript parse(final Queue<Token> input, final URI file) throws CompilationException {
+    public FunckyScript parse(final Queue<Token> input, final URI file) throws FunckyCompilationException {
         final FunckyScript script = new FunckyScript(engine, file);
         while (true) {
             final Token token = consume(input, Set.of(TokenType.SYMBOL, TokenType.EOL, TokenType.EOF));
@@ -141,7 +141,7 @@ public class Parser {
     }
 
     private FunckyExpression parseComplexExpression(final Queue<Token> input, final Set<TokenType> follow)
-            throws CompilationException {
+            throws FunckyCompilationException {
         FunckyExpression expression = parseSimpleExpression(input, follow);
         while (true) {
             if (peek(input, union(Set.of(TokenType.SPACE), follow)).type() == TokenType.SPACE) {
@@ -154,7 +154,7 @@ public class Parser {
     }
 
     private FunckyExpression parseSimpleExpression(final Queue<Token> input, final Set<TokenType> follow)
-            throws CompilationException {
+            throws FunckyCompilationException {
         final Token token = consume(input, FIRST);
         switch (token.type()) {
             case BINARY_NUMBER:
@@ -253,7 +253,7 @@ public class Parser {
     }
 
     private FunckyLiteral parseList(final List<FunckyExpression> elements, final Token leftSquareBracket)
-            throws CompilationException {
+            throws FunckyCompilationException {
         try {
             final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
             final FunckyLiteral tail = elements.isEmpty() ? null
@@ -269,12 +269,12 @@ public class Parser {
             return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(),
                     leftSquareBracket.column(), new FunckyList(listType, head, tail));
         } catch (final FunckyRuntimeException e) {
-            throw new CompilationException(e);
+            throw new FunckyCompilationException(e);
         }
     }
 
     private FunckyLiteral parseRecord(final List<FunckyExpression> components, final Token leftCurlyBracket)
-            throws CompilationException {
+            throws FunckyCompilationException {
         final List<FunckyType> types = new ArrayList<>();
         for (final FunckyExpression component : components) {
             types.add(component.getType());

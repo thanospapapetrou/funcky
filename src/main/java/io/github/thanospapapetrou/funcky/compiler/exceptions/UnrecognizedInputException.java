@@ -1,10 +1,8 @@
-package io.github.thanospapapetrou.funcky.compiler.tokenizer.exceptions;
+package io.github.thanospapapetrou.funcky.compiler.exceptions;
 
 import java.net.URI;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
-
-public class UnrecognizedInputException extends CompilationException {
+public final class UnrecognizedInputException extends FunckyCompilationException {
     private static final String MESSAGE = "Unrecognized input `%1$s`";
 
     public UnrecognizedInputException(final String input, final URI file, final int line, final int column) {

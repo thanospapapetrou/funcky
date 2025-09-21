@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
-import io.github.thanospapapetrou.funcky.compiler.CompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
@@ -50,7 +50,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
                     return that.apply(context, arguments);
                 }
             } : apply(context, arguments);
-        } catch (final CompilationException e) {
+        } catch (final FunckyCompilationException e) {
             throw new FunckyRuntimeException(e);
         }
     }
