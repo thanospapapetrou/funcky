@@ -158,10 +158,9 @@ public class Linker {
         if (main.isEmpty()) {
             throw new SneakyCompilationException(new UndefinedMainException(script));
         }
-        final FunckyType mainType = main.get().expression().getType();
-            if (mainType.unify(MAIN_TYPE) == null) {
-                throw new SneakyCompilationException(new InvalidMainException(main.get(), mainType));
-            }
+        if (main.get().expression().getType().unify(MAIN_TYPE) == null) {
+            throw new SneakyCompilationException(new InvalidMainException(main.get()));
+        }
     }
 
     private Class<? extends FunckyLibrary> getLibrary(final URI file) {

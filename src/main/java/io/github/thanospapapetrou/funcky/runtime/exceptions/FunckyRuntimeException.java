@@ -9,6 +9,7 @@ import javax.script.ScriptException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 
 public class FunckyRuntimeException extends ScriptException {
@@ -51,12 +52,13 @@ public class FunckyRuntimeException extends ScriptException {
     }
 
     private String formatStack(final FunckyExpression expression) {
-        if (expression instanceof FunckyApplication) {
-            return formatStack((FunckyApplication) expression);
-        } else if (expression instanceof FunckyReference) {
-            return formatStack((FunckyReference) expression);
-        } else {
-            throw new IllegalStateException(String.format(ERROR_FORMATTING_STACK, expression));
+        switch (expression) {
+            case FunckyApplication application:
+                return formatStack(application);
+            case FunckyReference reference:
+                return formatStack(reference);
+            case FunckyLiteral literal:
+                throw new IllegalStateException(String.format(ERROR_FORMATTING_STACK, literal));
         }
     }
 
@@ -68,8 +70,7 @@ public class FunckyRuntimeException extends ScriptException {
     private String formatStack(final FunckyReference reference) {
             final FunckyExpression expression = reference.getEngine().getManager()
                     .getDefinitionExpression(reference.resolveNamespace(), reference.getName());
-            return String.format(DEFINITION,
-                    new FunckyDefinition(expression.getFile(), expression.getLine(), reference.getName(), expression),
-                    expression.getFile(), expression.getLine(), 1);
+            return String.format(DEFINITION, new FunckyDefinition(expression.getFile(), expression.getLine(),
+                    reference.getName(), expression), expression.getFile(), expression.getLine(), 1);
     }
 }

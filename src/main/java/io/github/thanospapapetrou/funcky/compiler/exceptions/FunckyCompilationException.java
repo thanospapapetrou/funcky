@@ -5,10 +5,10 @@ import java.net.URI;
 
 import javax.script.ScriptException;
 
-public sealed class FunckyCompilationException extends ScriptException
-        permits UnrecognizedInputException, UnexpectedTokenException, InvalidUriException, InvalidListLiteralException,
-        PrefixAlreadyBoundException, NameAlreadyDefinedException, UnboundPrefixException, UndefinedNameException,
-        IllegalApplicationException, UndefinedMainException, InvalidMainException {
+public sealed class FunckyCompilationException extends ScriptException permits UnrecognizedInputException,
+        UnexpectedTokenException, InvalidUriException, InvalidListLiteralException, PrefixAlreadyBoundException,
+        NameAlreadyDefinedException, UnboundPrefixException, UndefinedNameException, IllegalApplicationException,
+        UndefinedMainException, InvalidMainException {
     public FunckyCompilationException(final IOException e) {
         super(e);
     }

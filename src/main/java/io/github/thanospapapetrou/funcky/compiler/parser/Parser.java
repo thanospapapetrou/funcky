@@ -253,13 +253,12 @@ public class Parser {
             final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
             final FunckyLiteral tail = elements.isEmpty() ? null
                     : parseList(elements.subList(1, elements.size()), leftSquareBracket);
-            final FunckyType headType = (head == null) ? new FunckyTypeVariable()
-                    : head.getType();
-            final FunckyListType tailType = (tail == null) ? new FunckyListType(new FunckyTypeVariable())
-                    : ((FunckyListType) tail.getType());
-            final FunckyListType listType = (FunckyListType) new FunckyListType(headType).unify(tailType);
+        final FunckyListType listType =
+                (FunckyListType) new FunckyListType((head == null) ? new FunckyTypeVariable() : head.getType()).unify(
+                        (tail == null) ? new FunckyListType(new FunckyTypeVariable())
+                                : ((FunckyListType) tail.getType()));
             if (listType == null) {
-                throw new SneakyCompilationException(new InvalidListLiteralException(head, tail, headType, tailType));
+                throw new SneakyCompilationException(new InvalidListLiteralException(head, tail));
             }
             return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(),
                     leftSquareBracket.column(), new FunckyList(listType, head, tail));
