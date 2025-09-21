@@ -55,7 +55,7 @@ public class FunckyScript extends CompiledScript {
     public FunckyNumber eval(final ScriptContext context) {
             return (FunckyNumber) new FunckyApplication(new FunckyReference(engine, getFile(), -1, -1, getFile(), MAIN),
                     new FunckyLiteral(engine,
-                            FunckyJavaConverter.convert(Arrays.asList(engine.getManager().getArguments())))).eval(
+                            engine.getConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval(
                     context);
     }
 

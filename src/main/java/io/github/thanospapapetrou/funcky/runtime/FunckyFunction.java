@@ -2,12 +2,14 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import javax.script.ScriptContext;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 
 public non-sealed abstract class FunckyFunction extends FunckyValue implements Comparable<FunckyFunction> {
     protected final FunckyFunctionType type;
 
-    protected FunckyFunction(final FunckyFunctionType type) {
+    protected FunckyFunction(final FunckyEngine engine, final FunckyFunctionType type) {
+        super(engine);
         this.type = type;
     }
 

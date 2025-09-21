@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
@@ -19,13 +20,16 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     private final FunckyExpression expression;
     private final List<FunckyExpression> arguments;
 
-    HigherOrderFunction(final Class<? extends FunckyLibrary> library, final String name, final FunckyType... types) {
-        this(new FunckyFunctionType(types), types.length - 1, new FunckyReference(library, name), List.of());
+    HigherOrderFunction(final FunckyEngine engine, final Class<? extends FunckyLibrary> library, final String name,
+            final FunckyType... types) {
+        this(engine, new FunckyFunctionType(engine, types), types.length - 1,
+                new FunckyReference(engine, library, name), List.of());
     }
 
-    private HigherOrderFunction(final FunckyFunctionType type, final int order, final FunckyExpression expression,
+    private HigherOrderFunction(final FunckyEngine engine, final FunckyFunctionType type, final int order,
+            final FunckyExpression expression,
             final List<FunckyExpression> arguments) {
-        super(type);
+        super(engine, type);
         this.order = order;
         this.expression = expression;
         this.arguments = arguments;
@@ -35,10 +39,11 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     public FunckyValue apply(final FunckyExpression argument, final ScriptContext context) {
             final HigherOrderFunction that = this;
             final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(
-                    new FunckyFunctionType(argument.getType(), new FunckyTypeVariable()))).getRange().eval();
+                    new FunckyFunctionType(engine, argument.getType(), new FunckyTypeVariable(engine)))).getRange()
+                    .eval();
             final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
             arguments.add(argument);
-            return (order > 1) ? new HigherOrderFunction((FunckyFunctionType) range, order - 1,
+        return (order > 1) ? new HigherOrderFunction(engine, (FunckyFunctionType) range, order - 1,
                     new FunckyApplication(that.toExpression(), argument), arguments) {
                 @Override
                 protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {

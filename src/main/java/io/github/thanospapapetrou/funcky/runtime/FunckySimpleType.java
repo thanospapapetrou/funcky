@@ -3,34 +3,38 @@ package io.github.thanospapapetrou.funcky.runtime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckySimpleType extends FunckyType {
-    public static final FunckySimpleType TYPE = new FunckySimpleType("Type");
-    public static final FunckySimpleType NUMBER = new FunckySimpleType("Number");
-    public static final FunckySimpleType BOOLEAN = new FunckySimpleType("Boolean");
-    public static final FunckySimpleType CHARACTER = new FunckySimpleType("Character");
-    private static final List<FunckySimpleType> ORDERING = List.of(TYPE, NUMBER, BOOLEAN, CHARACTER);
+    public static final Function<FunckyEngine, FunckySimpleType> TYPE = engine -> new FunckySimpleType(engine, "Type");
+    public static final Function<FunckyEngine, FunckySimpleType> NUMBER = engine -> new FunckySimpleType(engine, "Number");
+    public static final Function<FunckyEngine, FunckySimpleType> BOOLEAN = engine -> new FunckySimpleType(engine, "Boolean");
+    public static final Function<FunckyEngine, FunckySimpleType> CHARACTER = engine -> new FunckySimpleType(engine, "Character");
+
+    private static final List<String> ORDERING = List.of("Type", "Number", "Boolean", "Character");
 
     private final String name;
 
     private static int getOrder(final FunckySimpleType type) {
         return IntStream.range(0, ORDERING.size())
-                .filter(i -> ORDERING.get(i).equals(type))
+                .filter(i -> ORDERING.get(i).equals(type.name))
                 .findFirst()
                 .orElse(-1);
     }
 
-    private FunckySimpleType(final String name) {
+    private FunckySimpleType(final FunckyEngine engine, final String name) {
+        super(engine);
         this.name = name;
     }
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(Types.class, name);
+        return new FunckyReference(engine, Types.class, name);
     }
 
     @Override

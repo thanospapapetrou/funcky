@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
 public final class FunckyTypeVariable extends FunckyType {
@@ -12,17 +13,18 @@ public final class FunckyTypeVariable extends FunckyType {
 
     private final int hash;
 
-    public FunckyTypeVariable() {
-        this(HASH.getAndIncrement());
+    public FunckyTypeVariable(final FunckyEngine engine) {
+        this(engine, HASH.getAndIncrement());
     }
 
-    private FunckyTypeVariable(final int hash) {
+    private FunckyTypeVariable(final FunckyEngine engine, final int hash) {
+        super(engine);
         this.hash = hash;
     }
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(this);
+        return new FunckyLiteral(engine, this);
     }
 
     @Override

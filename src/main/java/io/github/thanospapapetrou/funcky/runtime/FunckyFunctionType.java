@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
@@ -15,18 +16,19 @@ public final class FunckyFunctionType extends FunckyType {
     private final FunckyExpression domain;
     private final FunckyExpression range;
 
-    public FunckyFunctionType(final FunckyExpression domain, final FunckyExpression range) {
+    public FunckyFunctionType(final FunckyEngine engine, final FunckyExpression domain, final FunckyExpression range) {
+        super(engine);
         this.domain = domain;
         this.range = range;
     }
 
-    public FunckyFunctionType(final FunckyType... types) {
-        this(Arrays.asList(types));
+    public FunckyFunctionType(final FunckyEngine engine, final FunckyType... types) {
+        this(engine, Arrays.asList(types));
     }
 
-    private FunckyFunctionType(final List<FunckyType> types) {
-        this(new FunckyLiteral(types.get(0)), new FunckyLiteral((types.size() == 2)
-                ? types.get(1) : new FunckyFunctionType(types.subList(1, types.size()))));
+    private FunckyFunctionType(final FunckyEngine engine, final List<FunckyType> types) {
+        this(engine, new FunckyLiteral(engine, types.get(0)), new FunckyLiteral(engine,
+                (types.size() == 2) ? types.get(1) : new FunckyFunctionType(engine, types.subList(1, types.size()))));
     }
 
     public FunckyExpression getDomain() {
@@ -39,7 +41,7 @@ public final class FunckyFunctionType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new FunckyApplication(Types.FUNCTION.toExpression(), domain), range);
+        return new FunckyApplication(new FunckyApplication(Types.FUNCTION.apply(engine).toExpression(), domain), range);
     }
 
     @Override
@@ -75,7 +77,7 @@ public final class FunckyFunctionType extends FunckyType {
 
     @Override
     protected FunckyFunctionType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return new FunckyFunctionType(((FunckyType) domain.eval()).bind(bindings),
+        return new FunckyFunctionType(engine, ((FunckyType) domain.eval()).bind(bindings),
                 ((FunckyType) range.eval()).bind(bindings));
     }
 }

@@ -52,14 +52,12 @@ public class FunckyRuntimeException extends ScriptException {
     }
 
     private String formatStack(final FunckyExpression expression) {
-        switch (expression) {
-            case FunckyApplication application:
-                return formatStack(application);
-            case FunckyReference reference:
-                return formatStack(reference);
-            case FunckyLiteral literal:
-                throw new IllegalStateException(String.format(ERROR_FORMATTING_STACK, literal));
-        }
+        return switch (expression) {
+            case FunckyApplication application -> formatStack(application);
+            case FunckyReference reference -> formatStack(reference);
+            case FunckyLiteral literal ->
+                    throw new IllegalStateException(String.format(ERROR_FORMATTING_STACK, literal));
+        };
     }
 
     private String formatStack(final FunckyApplication application) {

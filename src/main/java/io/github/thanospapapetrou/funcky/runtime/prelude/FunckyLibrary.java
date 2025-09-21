@@ -7,6 +7,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
@@ -36,8 +37,8 @@ public sealed class FunckyLibrary extends FunckyScript
                 .orElseThrow(() -> new SneakyRuntimeException(message));
     }
 
-    public FunckyLibrary(final FunckyValue... values) {
-        super(null, null);
+    public FunckyLibrary(final FunckyEngine engine, final FunckyValue... values) {
+        super(engine, null);
         this.values = values;
     }
 
@@ -50,7 +51,7 @@ public sealed class FunckyLibrary extends FunckyScript
     public List<FunckyDefinition> getDefinitions() {
         return Arrays.stream(values)
                 .map(value -> new FunckyDefinition(getFile(), -1, ((FunckyReference) value.toExpression()).getName(),
-                        new FunckyLiteral(value)))
+                        new FunckyLiteral(engine, value)))
                 .collect(Collectors.toList());
     }
 }

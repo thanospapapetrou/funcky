@@ -10,6 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
@@ -37,8 +38,9 @@ import io.github.thanospapapetrou.funcky.runtime.prelude.Numbers;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public class Linker {
-    public static final FunckyFunctionType MAIN_TYPE = new FunckyFunctionType(new FunckyListType(FunckyListType.STRING),
-            FunckySimpleType.NUMBER);
+    public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE =
+            engine -> new FunckyFunctionType(engine, new FunckyListType(engine, FunckyListType.STRING.apply(engine)),
+                    FunckySimpleType.NUMBER.apply(engine));
     public static final URI STDIN;
 
     private static final String DEFINITION = "  %1$s%n    %2$s";
@@ -158,7 +160,7 @@ public class Linker {
         if (main.isEmpty()) {
             throw new SneakyCompilationException(new UndefinedMainException(script));
         }
-        if (main.get().expression().getType().unify(MAIN_TYPE) == null) {
+        if (main.get().expression().getType().unify(MAIN_TYPE.apply(engine)) == null) {
             throw new SneakyCompilationException(new InvalidMainException(main.get()));
         }
     }
@@ -171,7 +173,7 @@ public class Linker {
 
     private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {
         try {
-            return library.getDeclaredConstructor().newInstance();
+            return library.getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
         } catch (final ReflectiveOperationException e) {
             throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
         }

@@ -2,23 +2,27 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckyListType extends FunckyType {
-    public static final FunckyListType STRING = new FunckyListType(FunckySimpleType.CHARACTER);
+    public static final Function<FunckyEngine, FunckyListType> STRING =
+            engine -> new FunckyListType(engine, FunckySimpleType.CHARACTER.apply(engine));
 
     private final FunckyExpression element;
 
-    public FunckyListType(final FunckyExpression element) {
+    public FunckyListType(final FunckyEngine engine, final FunckyExpression element) {
+        super(engine);
         this.element = element;
     }
 
-    public FunckyListType(final FunckyType element) {
-        this(new FunckyLiteral(element));
+    public FunckyListType(final FunckyEngine engine, final FunckyType element) {
+        this(engine, new FunckyLiteral(engine, element));
     }
 
     public FunckyExpression getElement() {
@@ -27,7 +31,7 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(Types.LIST.toExpression(), element);
+        return new FunckyApplication(Types.LIST.apply(engine).toExpression(), element);
     }
 
     @Override
@@ -55,6 +59,6 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     protected FunckyListType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return new FunckyListType(((FunckyType) element.eval()).bind(bindings));
+        return new FunckyListType(engine, ((FunckyType) element.eval()).bind(bindings));
     }
 }

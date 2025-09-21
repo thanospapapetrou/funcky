@@ -2,6 +2,7 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.function.Function;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
@@ -18,14 +19,18 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
             return expression.eval().toString();
     }
 
-    public FunckyList(final FunckyListType type, final FunckyExpression head, final FunckyExpression tail) {
+    public FunckyList(final FunckyEngine engine, final FunckyListType type, final FunckyExpression head,
+            final FunckyExpression tail) {
+        super(engine);
         this.type = type;
         this.head = head;
         this.tail = tail;
     }
 
-    public FunckyList(final FunckyListType type, final FunckyValue head, final FunckyList tail) {
-        this(type, (head == null) ? null : new FunckyLiteral(head), (tail == null) ? null : new FunckyLiteral(tail));
+    public FunckyList(final FunckyEngine engine, final FunckyListType type, final FunckyValue head,
+            final FunckyList tail) {
+        this(engine, type, (head == null) ? null : new FunckyLiteral(engine, head),
+                (tail == null) ? null : new FunckyLiteral(engine, tail));
     }
 
     public FunckyExpression getHead() {
@@ -43,7 +48,7 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(this);
+        return new FunckyLiteral(engine, this);
     }
 
     @Override
@@ -81,7 +86,7 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
 
     @Override
     public String toString() {
-            if (type.equals(FunckyListType.STRING)) {
+        if (type.equals(FunckyListType.STRING.apply(engine))) {
                 final StringBuilder string = new StringBuilder();
                 for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval()) {
                     string.append(((FunckyCharacter) list.head.eval()).getValue());

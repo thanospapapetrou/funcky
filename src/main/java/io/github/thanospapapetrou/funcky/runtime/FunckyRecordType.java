@@ -5,25 +5,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
-import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckyRecordType extends FunckyType {
-    public static final FunckyRecordType UNIT = new FunckyRecordType(new FunckyList(
-            new FunckyListType(FunckySimpleType.TYPE), (FunckyValue) null, null));
+    public static final Function<FunckyEngine, FunckyRecordType> UNIT = engine -> new FunckyRecordType(engine,
+            new FunckyList(engine, new FunckyListType(engine, FunckySimpleType.TYPE.apply(engine)), (FunckyValue) null,
+                    null));
 
     private final FunckyExpression components;
 
-    public FunckyRecordType(final FunckyExpression components) {
+    public FunckyRecordType(final FunckyEngine engine, final FunckyExpression components) {
+        super(engine);
         this.components = components;
     }
 
-    public FunckyRecordType(final FunckyList components) {
-        this(new FunckyLiteral(components));
+    public FunckyRecordType(final FunckyEngine engine, final FunckyList components) {
+        this(engine, new FunckyLiteral(engine, components));
     }
 
     public FunckyExpression getComponents() {
@@ -32,7 +35,7 @@ public final class FunckyRecordType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(Types.RECORD.toExpression(), components);
+        return new FunckyApplication(Types.RECORD.apply(engine).toExpression(), components);
     }
 
     @Override
@@ -70,6 +73,6 @@ public final class FunckyRecordType extends FunckyType {
                 list = (FunckyList) list.getTail().eval()) {
             types.add(((FunckyType) list.getHead().eval()).bind(bindings));
         }
-        return new FunckyRecordType(FunckyJavaConverter.convert(types));
+        return new FunckyRecordType(engine, engine.getConverter().convert(types));
     }
 }

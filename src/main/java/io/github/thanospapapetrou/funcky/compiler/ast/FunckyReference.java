@@ -42,8 +42,8 @@ public final class FunckyReference extends FunckyExpression {
         this(engine, file, line, column, null, null, name);
     }
 
-    public FunckyReference(final Class<? extends FunckyLibrary> library, final String name) {
-        this(null, null, -1, -1, Linker.getNamespace(library), name);
+    public FunckyReference(final FunckyEngine engine, final Class<? extends FunckyLibrary> library, final String name) {
+        this(engine, null, -1, -1, Linker.getNamespace(library), name);
     }
 
     private FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
@@ -118,7 +118,7 @@ public final class FunckyReference extends FunckyExpression {
             return assumptions.get(this);
         }
         final Map<FunckyReference, FunckyTypeVariable> newAssumptions = new HashMap<>(assumptions);
-        newAssumptions.put(this, new FunckyTypeVariable());
+        newAssumptions.put(this, new FunckyTypeVariable(engine));
         return resolveExpression().getType(newAssumptions);
     }
 

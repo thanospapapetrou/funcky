@@ -3,6 +3,7 @@ package io.github.thanospapapetrou.funcky.runtime;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
@@ -14,7 +15,9 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     private final FunckyRecordType type;
     private final List<FunckyExpression> components;
 
-    public FunckyRecord(final FunckyRecordType type, final List<FunckyExpression> components) {
+    public FunckyRecord(final FunckyEngine engine, final FunckyRecordType type,
+            final List<FunckyExpression> components) {
+        super(engine);
         this.type = type;
         this.components = components;
     }
@@ -30,7 +33,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(this);
+        return new FunckyLiteral(engine, this);
     }
 
     @Override

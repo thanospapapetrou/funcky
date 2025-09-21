@@ -14,64 +14,72 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public class FunckyJavaConverter {
-    private static final String ERROR_CONVERTING_TO_FUNCKY = "Error converting %1$s (%2$s) to %3$s";
-    private static final String ERROR_CONVERTING_TO_JAVA = "Error converting %1$s (%2$s) to Java";
-    private static final String LANGUAGE = FunckyFactory.getParameters(FunckyEngine.LANGUAGE).get(0);
+    private final String ERROR_CONVERTING_TO_FUNCKY = "Error converting %1$s (%2$s) to %3$s";
+    private final String ERROR_CONVERTING_TO_JAVA = "Error converting %1$s (%2$s) to Java";
+    private final String LANGUAGE = FunckyFactory.getParameters(FunckyEngine.LANGUAGE).get(0);
 
     // TODO convert types?
 
-    public static FunckyNumber convert(final Number number) {
-        return new FunckyNumber(new BigDecimal(number.toString()));
+    private FunckyEngine engine;
+
+    public FunckyJavaConverter(final FunckyEngine engine) {
+        this.engine = engine;
     }
 
-    public static BigDecimal convert(final FunckyNumber number) {
+    public FunckyNumber convert(final Number number) {
+        return new FunckyNumber(engine, new BigDecimal(number.toString()));
+    }
+
+    public BigDecimal convert(final FunckyNumber number) {
         return number.getValue();
     }
 
-    public static FunckyBoolean convert(final boolean bool) {
-        return bool ? FunckyBoolean.TRUE : FunckyBoolean.FALSE;
+    public FunckyBoolean convert(final boolean bool) {
+        return bool ? FunckyBoolean.TRUE.apply(engine) : FunckyBoolean.FALSE.apply(engine);
     }
 
-    public static boolean convert(final FunckyBoolean bool) {
+    public boolean convert(final FunckyBoolean bool) {
         return bool.getValue();
     }
 
-    public static FunckyCharacter convert(final char character) {
-        return new FunckyCharacter(character);
+    public FunckyCharacter convert(final char character) {
+        return new FunckyCharacter(engine, character);
     }
 
-    public static char convert(final FunckyCharacter character) {
+    public char convert(final FunckyCharacter character) {
         return character.getValue();
     }
 
-    public static FunckyList convert(final Stream<?> stream) {
+    public FunckyList convert(final Stream<?> stream) {
         return convert(stream.iterator());
     }
 
-    public static FunckyList convert(final Iterable<?> iterable) {
+    public FunckyList convert(final Iterable<?> iterable) {
         return convert(iterable.iterator());
     }
 
-    public static FunckyList convert(final Iterator<?> iterator) {
+    public FunckyList convert(final Iterator<?> iterator) {
         final FunckyValue head = iterator.hasNext() ? convert(iterator.next()) : null;
         final FunckyList tail = (head == null) ? null : convert(iterator);
-        final FunckyType headType = (head == null) ? new FunckyTypeVariable() : head.getType();
-        final FunckyListType tailType = (tail == null) ? new FunckyListType(new FunckyTypeVariable()) : tail.getType();
+        final FunckyType headType = (head == null) ? new FunckyTypeVariable(engine) : head.getType();
+        final FunckyListType tailType =
+                (tail == null) ? new FunckyListType(engine, new FunckyTypeVariable(engine)) : tail.getType();
         final String error = String.format(ERROR_CONVERTING_TO_FUNCKY, iterator.getClass().getName(), iterator,
                 LANGUAGE);
-            final FunckyListType listType = (FunckyListType) new FunckyListType(headType).unify(tailType);
+        final FunckyListType listType = (FunckyListType) new FunckyListType(engine, headType).unify(tailType);
             if (listType == null) {
                 throw new IllegalArgumentException(error);
             }
-            return new FunckyList(listType, head, tail);
+        return new FunckyList(engine, listType, head, tail);
     }
 
-    public static FunckyList convert(final String string) {
-        return new FunckyList(FunckyListType.STRING, string.isEmpty() ? null : convert(string.charAt(0)),
+    public FunckyList convert(final String string) {
+        return new FunckyList(engine, FunckyListType.STRING.apply(engine),
+                string.isEmpty() ? null : convert(string.charAt(0)),
                 string.isEmpty() ? null : convert(string.substring(1)));
     }
 
-    public static Stream<?> convert(final FunckyList list) {
+    public Stream<?> convert(final FunckyList list) {
         // TODO
         return null;
     }
@@ -79,7 +87,7 @@ public class FunckyJavaConverter {
     // TODO convert records
     // TODO convert functions?
 
-    private static FunckyValue convert(final Object object) {
+    private FunckyValue convert(final Object object) {
         if (object instanceof FunckyValue) {
             return (FunckyValue) object;
         } else if (object instanceof Number) {
@@ -101,7 +109,7 @@ public class FunckyJavaConverter {
                 String.format(ERROR_CONVERTING_TO_FUNCKY, object.getClass().getName(), object, LANGUAGE));
     }
 
-    private static Object convert(final FunckyValue value) {
+    private Object convert(final FunckyValue value) {
         if (value instanceof FunckyNumber) {
             return convert((FunckyNumber) value);
         } else if (value instanceof FunckyBoolean) {

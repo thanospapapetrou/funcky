@@ -1,15 +1,19 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
+import java.util.function.Function;
+
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 
 public final class FunckyBoolean extends FunckyValue implements Comparable<FunckyBoolean> {
-    public static final FunckyBoolean FALSE = new FunckyBoolean(false);
-    public static final FunckyBoolean TRUE = new FunckyBoolean(true);
+    public static final Function<FunckyEngine, FunckyBoolean> FALSE = engine -> new FunckyBoolean(engine, false);
+    public static final Function<FunckyEngine, FunckyBoolean> TRUE = engine -> new FunckyBoolean(engine, true);
 
     private final boolean value;
 
-    private FunckyBoolean(final boolean value) {
+    private FunckyBoolean(final FunckyEngine engine, final boolean value) {
+        super(engine);
         this.value = value;
     }
 
@@ -19,12 +23,12 @@ public final class FunckyBoolean extends FunckyValue implements Comparable<Funck
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.BOOLEAN;
+        return FunckySimpleType.BOOLEAN.apply(engine);
     }
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(Booleans.class, Boolean.toString(value));
+        return new FunckyReference(engine, Booleans.class, Boolean.toString(value));
     }
 
     @Override

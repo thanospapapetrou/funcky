@@ -8,11 +8,11 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public final class FunckyLiteral extends FunckyExpression {
     private static final String FORMAT_CHARACTER = "'%1$s'";
@@ -28,10 +28,6 @@ public final class FunckyLiteral extends FunckyExpression {
 
     public FunckyLiteral(final FunckyEngine engine, final FunckyValue value) {
         this(engine, null, -1, -1, value);
-    }
-
-    public FunckyLiteral(final FunckyValue value) {
-        this(null, value);
     }
 
     public FunckyValue getValue() {
