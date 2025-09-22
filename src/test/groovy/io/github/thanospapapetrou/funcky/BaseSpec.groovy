@@ -39,8 +39,6 @@ abstract class BaseSpec extends Specification {
             ['0X', '0x'], // prefix
             ['0': 0.0G, '1': 1.0G, 'F': 15.0G, 'f': 15.0G, '01': 1.0G, '10': 16.0G] // value
     ].combinations().collectEntries { [(it[0].key + it[1] + it[2].key): it[0].value * it[2].value] }
-    protected static final Map<String, FunckyNumber> NUMBERS = (BINARY_NUMBERS + OCTAL_NUMBERS + DECIMAL_NUMBERS + HEXADECIMAL_NUMBERS)
-            .collectEntries { [(it.key): new FunckyNumber(it.value)] }
     protected static final Map<String, Character> LITERAL_CHARACTERS = [
             '\'A\''   : ('A' as char),
             '\'a\''   : ('a' as char),
@@ -63,8 +61,6 @@ abstract class BaseSpec extends Specification {
             '\'\\u000F\'': (15 as char),
             '\'\\u000f\'': (15 as char),
             '\'\\u0010\'': (16 as char)]
-    protected static final Map<String, FunckyCharacter> CHARACTERS = (LITERAL_CHARACTERS + OCTAL_CHARACTERS + HEXADECIMAL_CHARACTERS)
-            .collectEntries { [(it.key): new FunckyCharacter(it.value)] }
     protected static final Map<String, String> STRINGS = [
             '""'                                              : '',
             '" "'                                             : ' ',
@@ -108,7 +104,17 @@ abstract class BaseSpec extends Specification {
         new InputStreamReader(getClass().getResourceAsStream(script))
     }
 
+    protected Map<String, FunckyNumber> getNumbers() {
+        (BINARY_NUMBERS + OCTAL_NUMBERS + DECIMAL_NUMBERS + HEXADECIMAL_NUMBERS)
+                .collectEntries { [(it.key): new FunckyNumber(engine, it.value)] }
+    }
+
+    protected Map<String, FunckyCharacter> getCharacters() {
+        (LITERAL_CHARACTERS + OCTAL_CHARACTERS + HEXADECIMAL_CHARACTERS)
+                .collectEntries { [(it.key): new FunckyCharacter(engine, it.value)] }
+    }
+
     protected Map<String, FunckyList> getStrings() {
-        STRINGS.collectEntries { [(it.key): FunckyJavaConverter.convert(it.value)] }
+        STRINGS.collectEntries { [(it.key): engine.converter.convert(it.value)] }
     }
 }

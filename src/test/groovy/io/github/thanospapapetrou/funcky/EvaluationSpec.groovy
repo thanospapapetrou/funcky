@@ -14,7 +14,7 @@ class EvaluationSpec extends BaseSpec {
         expect:
         engine.eval(expression.key) == expression.value
         where:
-        expression << NUMBERS
+        expression << numbers
     }
 
     @Unroll('Test evaluate character literal (expression: #expression.key)')
@@ -22,7 +22,7 @@ class EvaluationSpec extends BaseSpec {
         expect:
         engine.eval(expression.key) == expression.value
         where:
-        expression << CHARACTERS
+        expression << characters
     }
 
     @Unroll('Test evaluate string literal (expression: #expression.key)')

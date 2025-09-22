@@ -9,7 +9,7 @@ class ScriptSpec extends BaseSpec {
         given:
         final Reader reader = setScript(script, arguments)
         expect:
-        engine.eval(reader) == new FunckyNumber(result)
+        engine.eval(reader) == new FunckyNumber(engine, result)
         cleanup:
         reader.close()
         where:
@@ -23,7 +23,7 @@ class ScriptSpec extends BaseSpec {
     @Unroll('Test evaluate script as expression (expression: #expression)')
     def 'Test evaluate script as expression'(final String expression, final BigDecimal result) {
         expect:
-        engine.eval(expression) == new FunckyNumber(result)
+        engine.eval(expression) == new FunckyNumber(engine, result)
         where:
         expression                                                      || result
         '"./target/test-classes/count_arguments.funcky".main []'        || 0.0G
