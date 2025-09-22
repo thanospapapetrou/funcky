@@ -1,10 +1,13 @@
 package io.github.thanospapapetrou.funcky.runtime.prelude;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
@@ -19,7 +22,6 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 
 public sealed class FunckyLibrary extends FunckyScript
         permits Types, Numbers, Booleans, Characters, Lists, Commons, Combinators {
-    private final FunckyValue[] values;
 
     protected static int requireInt(final FunckyNumber number, final String message) {
         if ((number.getValue().compareTo(BigDecimal.valueOf(number.getValue().intValue())) != 0)) {
@@ -37,9 +39,8 @@ public sealed class FunckyLibrary extends FunckyScript
                 .orElseThrow(() -> new SneakyRuntimeException(message));
     }
 
-    public FunckyLibrary(final FunckyEngine engine, final FunckyValue... values) {
+    protected FunckyLibrary(final FunckyEngine engine, final FunckyValue... values) { // TODO remove values
         super(engine, null);
-        this.values = values;
     }
 
     @Override
@@ -49,9 +50,21 @@ public sealed class FunckyLibrary extends FunckyScript
 
     @Override
     public List<FunckyDefinition> getDefinitions() {
-        return Arrays.stream(values)
-                .map(value -> new FunckyDefinition(getFile(), -1, ((FunckyReference) value.toExpression()).getName(),
-                        new FunckyLiteral(engine, value)))
-                .collect(Collectors.toList());
+        return Arrays.stream(getClass().getDeclaredFields())
+                .map(this::getDefinition)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    private FunckyDefinition getDefinition(final Field field) {
+        try {
+            final int modifiers = field.getModifiers();
+            return (Modifier.isPublic(modifiers) && Modifier.isFinal(modifiers) && field.getName().startsWith("$"))
+                    // TODO improve starts with
+                    ? new FunckyDefinition(getFile(), -1, field.getName().substring(1), // TODO improve substring
+                    new FunckyLiteral(engine, (FunckyValue) field.get(this))) : null;
+        } catch (final IllegalAccessException e) {
+            return null;
+        }
     }
 }

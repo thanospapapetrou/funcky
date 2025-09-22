@@ -44,7 +44,7 @@ public final class FunckyReference extends FunckyExpression {
 
     public FunckyReference(final FunckyEngine engine, final Class<? extends FunckyLibrary> library, final String name) {
         this(engine, null, -1, -1, Linker.getNamespace(library), name);
-    }
+    } // TODO remove
 
     private FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
             final URI namespace, final String prefix, final String name) {

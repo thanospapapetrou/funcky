@@ -1,6 +1,9 @@
 package io.github.thanospapapetrou.funcky.runtime.prelude;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.script.ScriptContext;
@@ -24,11 +27,16 @@ public abstract class HigherOrderFunction extends FunckyFunction {
             final FunckyType... types) {
         this(engine, new FunckyFunctionType(engine, types), types.length - 1,
                 new FunckyReference(engine, library, name), List.of());
+    } // TODO remove
+
+    HigherOrderFunction(final FunckyEngine engine, final FunckyLibrary library, final String name,
+            final FunckyType... types) { // TODO remove name
+        this(engine, new FunckyFunctionType(engine, types), types.length - 1,
+                new FunckyReference(engine, library.getClass(), name), List.of());
     }
 
     private HigherOrderFunction(final FunckyEngine engine, final FunckyFunctionType type, final int order,
-            final FunckyExpression expression,
-            final List<FunckyExpression> arguments) {
+            final FunckyExpression expression, final List<FunckyExpression> arguments) {
         super(engine, type);
         this.order = order;
         this.expression = expression;
@@ -57,5 +65,22 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     @Override
     public FunckyExpression toExpression() {
         return expression;
+    }
+
+    // TODO improve
+    private static String getName(final FunckyLibrary library, final HigherOrderFunction that) {
+        return Arrays.stream(library.getClass().getDeclaredFields())
+                .filter(field -> Modifier.isPublic(field.getModifiers()))
+                .filter(field -> Modifier.isFinal(field.getModifiers()))
+                .filter(field -> {
+                    try {
+                        return field.get(library) == that;
+                    } catch (final IllegalAccessException e) {
+                        throw new IllegalStateException("Error accessing field", e);
+                    }
+                })
+                .map(Field::getName)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Error resolving field"));
     }
 }

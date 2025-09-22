@@ -13,6 +13,8 @@ thread safety
 Funcky> "funcky:records".unit
 java.net.MalformedURLException: unknown protocol: funcky
 
+use logging instead of System.out.println and System.err.println, because messages are not printed in correct order
+
 instanceof -> pattern matching
 cleanup, factory, engine and reduce eval methods
 engine in values
