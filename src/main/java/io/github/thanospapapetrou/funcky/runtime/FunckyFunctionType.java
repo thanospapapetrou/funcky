@@ -41,7 +41,8 @@ public final class FunckyFunctionType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new FunckyApplication(Types.FUNCTION.apply(engine).toExpression(), domain), range);
+        return new FunckyApplication(new FunckyApplication(new Types(engine).$Function.toExpression(),
+                domain), range);
     }
 
     @Override

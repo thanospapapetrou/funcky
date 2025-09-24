@@ -1,8 +1,12 @@
 package io.github.thanospapapetrou.funcky
 
+import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter
 import io.github.thanospapapetrou.funcky.runtime.FunckyList
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType
+
 import javax.script.ScriptContext
 import spock.lang.Shared
 import spock.lang.Specification
@@ -93,9 +97,30 @@ abstract class BaseSpec extends Specification {
 
     @Shared
     protected FunckyEngine engine
+    @Shared
+    protected FunckySimpleType $Type
+    @Shared
+    protected FunckySimpleType $Number
+    @Shared
+    protected FunckySimpleType $Boolean
+    @Shared
+    protected FunckySimpleType $Character
+    @Shared
+    protected FunckyListType $String
+    @Shared
+    protected FunckyBoolean $false;
+    @Shared
+    protected FunckyBoolean $true;
 
     def setupSpec() {
         engine = new FunckyFactory().scriptEngine
+        $Type = FunckySimpleType.TYPE.apply(engine)
+        $Number = FunckySimpleType.NUMBER.apply(engine)
+        $Boolean = FunckySimpleType.BOOLEAN.apply(engine)
+        $Character = FunckySimpleType.CHARACTER.apply(engine)
+        $String = new FunckyListType(engine, $Character)
+        $false = FunckyBoolean.FALSE.apply(engine)
+        $true = FunckyBoolean.TRUE.apply(engine)
     }
 
     protected Reader setScript(final String script, final String... arguments) {

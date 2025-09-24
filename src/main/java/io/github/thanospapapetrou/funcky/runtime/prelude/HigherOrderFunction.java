@@ -19,26 +19,29 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public abstract class HigherOrderFunction extends FunckyFunction {
+    private static final String ERROR_RESOLVING_FIELD = "Error resolving field %s";
+    private static final String ERROR_RESOLVING_NAME = "Error resolving name";
+
     private final int order;
+    private final FunckyLibrary library;
     private final FunckyExpression expression;
     private final List<FunckyExpression> arguments;
 
+    HigherOrderFunction(final FunckyEngine engine, final FunckyLibrary library, final FunckyType... types) {
+        this(engine, new FunckyFunctionType(engine, types), types.length - 1, library, null, List.of());
+    }
+
     HigherOrderFunction(final FunckyEngine engine, final Class<? extends FunckyLibrary> library, final String name,
             final FunckyType... types) {
-        this(engine, new FunckyFunctionType(engine, types), types.length - 1,
+        this(engine, new FunckyFunctionType(engine, types), types.length - 1, null,
                 new FunckyReference(engine, library, name), List.of());
     } // TODO remove
 
-    HigherOrderFunction(final FunckyEngine engine, final FunckyLibrary library, final String name,
-            final FunckyType... types) { // TODO remove name
-        this(engine, new FunckyFunctionType(engine, types), types.length - 1,
-                new FunckyReference(engine, library.getClass(), name), List.of());
-    }
-
     private HigherOrderFunction(final FunckyEngine engine, final FunckyFunctionType type, final int order,
-            final FunckyExpression expression, final List<FunckyExpression> arguments) {
+            final FunckyLibrary library, final FunckyExpression expression, final List<FunckyExpression> arguments) {
         super(engine, type);
         this.order = order;
+        this.library = library;
         this.expression = expression;
         this.arguments = arguments;
     }
@@ -52,7 +55,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
             final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
             arguments.add(argument);
         return (order > 1) ? new HigherOrderFunction(engine, (FunckyFunctionType) range, order - 1,
-                    new FunckyApplication(that.toExpression(), argument), arguments) {
+                    null, new FunckyApplication(that.toExpression(), argument), arguments) {
                 @Override
                 protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
                     return that.apply(context, arguments);
@@ -64,23 +67,24 @@ public abstract class HigherOrderFunction extends FunckyFunction {
 
     @Override
     public FunckyExpression toExpression() {
-        return expression;
+        return (expression == null) ? new FunckyReference(engine, library.getClass(), getName()) : expression;
     }
 
-    // TODO improve
-    private static String getName(final FunckyLibrary library, final HigherOrderFunction that) {
+    private String getName() {
         return Arrays.stream(library.getClass().getDeclaredFields())
                 .filter(field -> Modifier.isPublic(field.getModifiers()))
-                .filter(field -> Modifier.isFinal(field.getModifiers()))
-                .filter(field -> {
-                    try {
-                        return field.get(library) == that;
-                    } catch (final IllegalAccessException e) {
-                        throw new IllegalStateException("Error accessing field", e);
-                    }
-                })
+                .filter(this::isThis)
                 .map(Field::getName)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Error resolving field"));
+                .map(name -> name.substring(1)) // TODO improve logic
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException(ERROR_RESOLVING_NAME));
+    }
+
+    private boolean isThis(final Field field) {
+        try {
+            return field.get(library) == this;
+        } catch (final IllegalAccessException e) {
+            throw new IllegalStateException(String.format(ERROR_RESOLVING_FIELD, field.getName()), e);
+        }
     }
 }

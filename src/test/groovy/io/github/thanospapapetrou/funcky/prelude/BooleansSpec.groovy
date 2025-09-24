@@ -1,11 +1,9 @@
 package io.github.thanospapapetrou.funcky.prelude
 
 import io.github.thanospapapetrou.funcky.BaseSpec
-import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType
 import spock.lang.Unroll
 
 class BooleansSpec extends BaseSpec {
@@ -15,8 +13,8 @@ class BooleansSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                    || result
-        '"funcky:booleans".false'                     || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:booleans".false' || FunckySimpleType.BOOLEAN
+        '"funcky:booleans".false'                     || $false
+        '"funcky:types".type "funcky:booleans".false' || $Boolean
     }
 
     @Unroll('Test true (expression: #expression)')
@@ -25,8 +23,8 @@ class BooleansSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                   || result
-        '"funcky:booleans".true'                     || FunckyBoolean.TRUE
-        '"funcky:types".type "funcky:booleans".true' || FunckySimpleType.BOOLEAN
+        '"funcky:booleans".true'                     || $true
+        '"funcky:types".type "funcky:booleans".true' || $Boolean
     }
 
     @Unroll('Test not (expression: #expression)')
@@ -35,10 +33,10 @@ class BooleansSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                             || result
-        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".not)' || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:booleans".not'                            || new FunckyFunctionType(FunckySimpleType.BOOLEAN, FunckySimpleType.BOOLEAN)
-        '"funcky:booleans".not "funcky:booleans".false'                        || FunckyBoolean.TRUE
-        '"funcky:booleans".not "funcky:booleans".true'                         || FunckyBoolean.FALSE
+        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".not)' || $false
+        '"funcky:types".type "funcky:booleans".not'                            || new FunckyFunctionType(engine, $Boolean, $Boolean)
+        '"funcky:booleans".not "funcky:booleans".false'                        || $true
+        '"funcky:booleans".not "funcky:booleans".true'                         || $false
     }
 
     @Unroll('Test and (expression: #expression)')
@@ -47,15 +45,15 @@ class BooleansSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                              || result
-        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".and)'                                  || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:booleans".and'                                                             || new FunckyFunctionType(FunckySimpleType.BOOLEAN, FunckySimpleType.BOOLEAN, FunckySimpleType.BOOLEAN)
-        '"funcky:types".type ("funcky:booleans".and "funcky:booleans".false)'                                   || new FunckyFunctionType(FunckySimpleType.BOOLEAN, FunckySimpleType.BOOLEAN)
-        '"funcky:lists".empty ("funcky:commons".string ("funcky:booleans".and ("funcky:commons".error "foo")))' || FunckyBoolean.FALSE
-        '"funcky:booleans".and "funcky:booleans".false "funcky:booleans".false'                                 || FunckyBoolean.FALSE
-        '"funcky:booleans".and "funcky:booleans".false "funcky:booleans".true'                                  || FunckyBoolean.FALSE
-        '"funcky:booleans".and "funcky:booleans".true "funcky:booleans".false'                                  || FunckyBoolean.FALSE
-        '"funcky:booleans".and "funcky:booleans".true "funcky:booleans".true'                                   || FunckyBoolean.TRUE
-        '"funcky:booleans".and "funcky:booleans".false ("funcky:commons".error "foo")'                          || FunckyBoolean.FALSE
+        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".and)'                                  || $false
+        '"funcky:types".type "funcky:booleans".and'                                                             || new FunckyFunctionType(engine, $Boolean, $Boolean, $Boolean)
+        '"funcky:types".type ("funcky:booleans".and "funcky:booleans".false)'                                   || new FunckyFunctionType(engine, $Boolean, $Boolean)
+        '"funcky:lists".empty ("funcky:commons".string ("funcky:booleans".and ("funcky:commons".error "foo")))' || $false
+        '"funcky:booleans".and "funcky:booleans".false "funcky:booleans".false'                                 || $false
+        '"funcky:booleans".and "funcky:booleans".false "funcky:booleans".true'                                  || $false
+        '"funcky:booleans".and "funcky:booleans".true "funcky:booleans".false'                                  || $false
+        '"funcky:booleans".and "funcky:booleans".true "funcky:booleans".true'                                   || $true
+        '"funcky:booleans".and "funcky:booleans".false ("funcky:commons".error "foo")'                          || $false
     }
 
     @Unroll('Test or (expression: #expression)')
@@ -64,15 +62,15 @@ class BooleansSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                             || result
-        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".or)'                                  || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:booleans".or'                                                             || new FunckyFunctionType(FunckySimpleType.BOOLEAN, FunckySimpleType.BOOLEAN, FunckySimpleType.BOOLEAN)
-        '"funcky:types".type ("funcky:booleans".or "funcky:booleans".false)'                                   || new FunckyFunctionType(FunckySimpleType.BOOLEAN, FunckySimpleType.BOOLEAN)
-        '"funcky:lists".empty ("funcky:commons".string ("funcky:booleans".or ("funcky:commons".error "foo")))' || FunckyBoolean.FALSE
-        '"funcky:booleans".or "funcky:booleans".false "funcky:booleans".false'                                 || FunckyBoolean.FALSE
-        '"funcky:booleans".or "funcky:booleans".false "funcky:booleans".true'                                  || FunckyBoolean.TRUE
-        '"funcky:booleans".or "funcky:booleans".true "funcky:booleans".false'                                  || FunckyBoolean.TRUE
-        '"funcky:booleans".or "funcky:booleans".true "funcky:booleans".true'                                   || FunckyBoolean.TRUE
-        '"funcky:booleans".or "funcky:booleans".true ("funcky:commons".error "foo")'                           || FunckyBoolean.TRUE
+        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".or)'                                  || $false
+        '"funcky:types".type "funcky:booleans".or'                                                             || new FunckyFunctionType(engine, $Boolean, $Boolean, $Boolean)
+        '"funcky:types".type ("funcky:booleans".or "funcky:booleans".false)'                                   || new FunckyFunctionType(engine, $Boolean, $Boolean)
+        '"funcky:lists".empty ("funcky:commons".string ("funcky:booleans".or ("funcky:commons".error "foo")))' || $false
+        '"funcky:booleans".or "funcky:booleans".false "funcky:booleans".false'                                 || $false
+        '"funcky:booleans".or "funcky:booleans".false "funcky:booleans".true'                                  || $true
+        '"funcky:booleans".or "funcky:booleans".true "funcky:booleans".false'                                  || $true
+        '"funcky:booleans".or "funcky:booleans".true "funcky:booleans".true'                                   || $true
+        '"funcky:booleans".or "funcky:booleans".true ("funcky:commons".error "foo")'                           || $true
     }
 
     @Unroll('Test xor (expression: #expression)')
@@ -81,14 +79,14 @@ class BooleansSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                              || result
-        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".xor)'                                  || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:booleans".xor'                                                             || new FunckyFunctionType(FunckySimpleType.BOOLEAN, FunckySimpleType.BOOLEAN, FunckySimpleType.BOOLEAN)
-        '"funcky:types".type ("funcky:booleans".xor "funcky:booleans".false)'                                   || new FunckyFunctionType(FunckySimpleType.BOOLEAN, FunckySimpleType.BOOLEAN)
-        '"funcky:lists".empty ("funcky:commons".string ("funcky:booleans".xor ("funcky:commons".error "foo")))' || FunckyBoolean.FALSE
-        '"funcky:booleans".xor "funcky:booleans".false "funcky:booleans".false'                                 || FunckyBoolean.FALSE
-        '"funcky:booleans".xor "funcky:booleans".false "funcky:booleans".true'                                  || FunckyBoolean.TRUE
-        '"funcky:booleans".xor "funcky:booleans".true "funcky:booleans".false'                                  || FunckyBoolean.TRUE
-        '"funcky:booleans".xor "funcky:booleans".true "funcky:booleans".true'                                   || FunckyBoolean.FALSE
+        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".xor)'                                  || $false
+        '"funcky:types".type "funcky:booleans".xor'                                                             || new FunckyFunctionType(engine, $Boolean, $Boolean, $Boolean)
+        '"funcky:types".type ("funcky:booleans".xor "funcky:booleans".false)'                                   || new FunckyFunctionType(engine, $Boolean, $Boolean)
+        '"funcky:lists".empty ("funcky:commons".string ("funcky:booleans".xor ("funcky:commons".error "foo")))' || $false
+        '"funcky:booleans".xor "funcky:booleans".false "funcky:booleans".false'                                 || $false
+        '"funcky:booleans".xor "funcky:booleans".false "funcky:booleans".true'                                  || $true
+        '"funcky:booleans".xor "funcky:booleans".true "funcky:booleans".false'                                  || $true
+        '"funcky:booleans".xor "funcky:booleans".true "funcky:booleans".true'                                   || $false
     }
 
     @Unroll('Test all (expression: #expression)')
@@ -97,15 +95,15 @@ class BooleansSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                 || result
-        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".all)'     || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:booleans".all'                                || new FunckyFunctionType(new FunckyListType(FunckySimpleType.BOOLEAN), FunckySimpleType.BOOLEAN)
-        '"funcky:booleans".all []'                                                 || FunckyBoolean.TRUE
-        '"funcky:booleans".all ["funcky:booleans".false]'                          || FunckyBoolean.FALSE
-        '"funcky:booleans".all ["funcky:booleans".true]'                           || FunckyBoolean.TRUE
-        '"funcky:booleans".all ["funcky:booleans".false, "funcky:booleans".false]' || FunckyBoolean.FALSE
-        '"funcky:booleans".all ["funcky:booleans".false, "funcky:booleans".true]'  || FunckyBoolean.FALSE
-        '"funcky:booleans".all ["funcky:booleans".true, "funcky:booleans".false]'  || FunckyBoolean.FALSE
-        '"funcky:booleans".all ["funcky:booleans".true, "funcky:booleans".true]'   || FunckyBoolean.TRUE
+        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".all)'     || $false
+        '"funcky:types".type "funcky:booleans".all'                                || new FunckyFunctionType(engine, new FunckyListType(engine, $Boolean), $Boolean)
+        '"funcky:booleans".all []'                                                 || $true
+        '"funcky:booleans".all ["funcky:booleans".false]'                          || $false
+        '"funcky:booleans".all ["funcky:booleans".true]'                           || $true
+        '"funcky:booleans".all ["funcky:booleans".false, "funcky:booleans".false]' || $false
+        '"funcky:booleans".all ["funcky:booleans".false, "funcky:booleans".true]'  || $false
+        '"funcky:booleans".all ["funcky:booleans".true, "funcky:booleans".false]'  || $false
+        '"funcky:booleans".all ["funcky:booleans".true, "funcky:booleans".true]'   || $true
     }
 
     @Unroll('Test any (expression: #expression)')
@@ -114,14 +112,14 @@ class BooleansSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                 || result
-        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".any)'     || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:booleans".any'                                || new FunckyFunctionType(new FunckyListType(FunckySimpleType.BOOLEAN), FunckySimpleType.BOOLEAN)
-        '"funcky:booleans".any []'                                                 || FunckyBoolean.FALSE
-        '"funcky:booleans".any ["funcky:booleans".false]'                          || FunckyBoolean.FALSE
-        '"funcky:booleans".any ["funcky:booleans".true]'                           || FunckyBoolean.TRUE
-        '"funcky:booleans".any ["funcky:booleans".false, "funcky:booleans".false]' || FunckyBoolean.FALSE
-        '"funcky:booleans".any ["funcky:booleans".false, "funcky:booleans".true]'  || FunckyBoolean.TRUE
-        '"funcky:booleans".any ["funcky:booleans".true, "funcky:booleans".false]'  || FunckyBoolean.TRUE
-        '"funcky:booleans".any ["funcky:booleans".true, "funcky:booleans".true]'   || FunckyBoolean.TRUE
+        '"funcky:lists".empty ("funcky:commons".string "funcky:booleans".any)'     || $false
+        '"funcky:types".type "funcky:booleans".any'                                || new FunckyFunctionType(engine, new FunckyListType(engine, $Boolean), $Boolean)
+        '"funcky:booleans".any []'                                                 || $false
+        '"funcky:booleans".any ["funcky:booleans".false]'                          || $false
+        '"funcky:booleans".any ["funcky:booleans".true]'                           || $true
+        '"funcky:booleans".any ["funcky:booleans".false, "funcky:booleans".false]' || $false
+        '"funcky:booleans".any ["funcky:booleans".false, "funcky:booleans".true]'  || $true
+        '"funcky:booleans".any ["funcky:booleans".true, "funcky:booleans".false]'  || $true
+        '"funcky:booleans".any ["funcky:booleans".true, "funcky:booleans".true]'   || $true
     }
 }

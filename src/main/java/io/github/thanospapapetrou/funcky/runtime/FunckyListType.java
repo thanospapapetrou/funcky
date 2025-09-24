@@ -31,7 +31,7 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(Types.LIST.apply(engine).toExpression(), element);
+        return new FunckyApplication(new Types(engine).$List.toExpression(), element);
     }
 
     @Override

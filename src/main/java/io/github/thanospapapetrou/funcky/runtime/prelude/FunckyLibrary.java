@@ -59,7 +59,7 @@ public sealed class FunckyLibrary extends FunckyScript
     private FunckyDefinition getDefinition(final Field field) {
         try {
             final int modifiers = field.getModifiers();
-            return (Modifier.isPublic(modifiers) && Modifier.isFinal(modifiers) && field.getName().startsWith("$"))
+            return (Modifier.isPublic(modifiers) && field.getName().startsWith("$"))
                     // TODO improve starts with
                     ? new FunckyDefinition(getFile(), -1, field.getName().substring(1), // TODO improve substring
                     new FunckyLiteral(engine, (FunckyValue) field.get(this))) : null;

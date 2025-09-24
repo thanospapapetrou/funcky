@@ -35,7 +35,7 @@ public final class FunckyRecordType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(Types.RECORD.apply(engine).toExpression(), components);
+        return new FunckyApplication(new Types(engine).$Record.toExpression(), components);
     }
 
     @Override
