@@ -3,7 +3,6 @@ package io.github.thanospapapetrou.funcky.prelude
 import java.util.regex.Pattern
 
 import io.github.thanospapapetrou.funcky.BaseSpec
-import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean
 import io.github.thanospapapetrou.funcky.runtime.FunckyList
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException
@@ -187,7 +186,7 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".type []))'                 || $true
         '"funcky:types".type [1]'                                                                       || new FunckyListType(engine, $Number)
         '"funcky:types".type ""'                                                                        || $String
-        '"funcky:types".type {}'                                                                        || FunckyRecordType.UNIT
+        '"funcky:types".type {}'                                                                        || $Unit
         '"funcky:types".type {1}'                                                                       || new FunckyRecordType(engine, engine.converter.convert([$Number]))
         '"funcky:types".type {1, \'a\'}'                                                                || new FunckyRecordType(engine, engine.converter.convert([$Number, $Character]))
     }
@@ -200,16 +199,16 @@ class TypesSpec extends BaseSpec {
         expression                                                                                        || result
         '"funcky:types".typeVariable'                                                                     || new Types(engine).$typeVariable
         '"funcky:types".type "funcky:types".typeVariable'                                                 || new FunckyFunctionType(engine, $Type, $Boolean)
-        '"funcky:types".typeVariable "funcky:types".Type'                                                 || FunckyBoolean.FALSE
-        '"funcky:types".typeVariable "funcky:types".Number'                                               || FunckyBoolean.FALSE
-        '"funcky:types".typeVariable "funcky:types".Boolean'                                              || FunckyBoolean.FALSE
-        '"funcky:types".typeVariable "funcky:types".Character'                                            || FunckyBoolean.FALSE
-        '"funcky:types".typeVariable ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || FunckyBoolean.FALSE
-        '"funcky:types".typeVariable ("funcky:types".List "funcky:types".Type)'                           || FunckyBoolean.FALSE
-        '"funcky:types".typeVariable ("funcky:types".String)'                                             || FunckyBoolean.FALSE
-        '"funcky:types".typeVariable ("funcky:types".Record [])'                                          || FunckyBoolean.FALSE
-        '"funcky:types".typeVariable ("funcky:types".Record ["funcky:types".Type])'                       || FunckyBoolean.FALSE
-        '"funcky:types".typeVariable "funcky:types".Unit'                                                 || FunckyBoolean.FALSE
+        '"funcky:types".typeVariable "funcky:types".Type'                                                 || $false
+        '"funcky:types".typeVariable "funcky:types".Number'                                               || $false
+        '"funcky:types".typeVariable "funcky:types".Boolean'                                              || $false
+        '"funcky:types".typeVariable "funcky:types".Character'                                            || $false
+        '"funcky:types".typeVariable ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || $false
+        '"funcky:types".typeVariable ("funcky:types".List "funcky:types".Type)'                           || $false
+        '"funcky:types".typeVariable ("funcky:types".String)'                                             || $false
+        '"funcky:types".typeVariable ("funcky:types".Record [])'                                          || $false
+        '"funcky:types".typeVariable ("funcky:types".Record ["funcky:types".Type])'                       || $false
+        '"funcky:types".typeVariable "funcky:types".Unit'                                                 || $false
         '"funcky:types".typeVariable $_'                                                                  || $true
     }
 
@@ -221,17 +220,17 @@ class TypesSpec extends BaseSpec {
         expression                                                                                        || result
         '"funcky:types".functionType'                                                                     || new Types(engine).$functionType
         '"funcky:types".type "funcky:types".functionType'                                                 || new FunckyFunctionType(engine, $Type, $Boolean)
-        '"funcky:types".functionType "funcky:types".Type'                                                 || FunckyBoolean.FALSE
-        '"funcky:types".functionType "funcky:types".Number'                                               || FunckyBoolean.FALSE
-        '"funcky:types".functionType "funcky:types".Boolean'                                              || FunckyBoolean.FALSE
-        '"funcky:types".functionType "funcky:types".Character'                                            || FunckyBoolean.FALSE
+        '"funcky:types".functionType "funcky:types".Type'                                                 || $false
+        '"funcky:types".functionType "funcky:types".Number'                                               || $false
+        '"funcky:types".functionType "funcky:types".Boolean'                                              || $false
+        '"funcky:types".functionType "funcky:types".Character'                                            || $false
         '"funcky:types".functionType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || $true
-        '"funcky:types".functionType ("funcky:types".List "funcky:types".Type)'                           || FunckyBoolean.FALSE
-        '"funcky:types".functionType ("funcky:types".String)'                                             || FunckyBoolean.FALSE
-        '"funcky:types".functionType ("funcky:types".Record [])'                                          || FunckyBoolean.FALSE
-        '"funcky:types".functionType ("funcky:types".Record ["funcky:types".Type])'                       || FunckyBoolean.FALSE
-        '"funcky:types".functionType "funcky:types".Unit'                                                 || FunckyBoolean.FALSE
-        '"funcky:types".functionType $_'                                                                  || FunckyBoolean.FALSE
+        '"funcky:types".functionType ("funcky:types".List "funcky:types".Type)'                           || $false
+        '"funcky:types".functionType ("funcky:types".String)'                                             || $false
+        '"funcky:types".functionType ("funcky:types".Record [])'                                          || $false
+        '"funcky:types".functionType ("funcky:types".Record ["funcky:types".Type])'                       || $false
+        '"funcky:types".functionType "funcky:types".Unit'                                                 || $false
+        '"funcky:types".functionType $_'                                                                  || $false
     }
 
     @Unroll('Test listType (expression: #expression)')
@@ -242,17 +241,17 @@ class TypesSpec extends BaseSpec {
         expression                                                                                    || result
         '"funcky:types".listType'                                                                     || new Types(engine).$listType
         '"funcky:types".type "funcky:types".listType'                                                 || new FunckyFunctionType(engine, $Type, $Boolean)
-        '"funcky:types".listType "funcky:types".Type'                                                 || FunckyBoolean.FALSE
-        '"funcky:types".listType "funcky:types".Number'                                               || FunckyBoolean.FALSE
-        '"funcky:types".listType "funcky:types".Boolean'                                              || FunckyBoolean.FALSE
-        '"funcky:types".listType "funcky:types".Character'                                            || FunckyBoolean.FALSE
-        '"funcky:types".listType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || FunckyBoolean.FALSE
+        '"funcky:types".listType "funcky:types".Type'                                                 || $false
+        '"funcky:types".listType "funcky:types".Number'                                               || $false
+        '"funcky:types".listType "funcky:types".Boolean'                                              || $false
+        '"funcky:types".listType "funcky:types".Character'                                            || $false
+        '"funcky:types".listType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || $false
         '"funcky:types".listType ("funcky:types".List "funcky:types".Type)'                           || $true
         '"funcky:types".listType ("funcky:types".String)'                                             || $true
-        '"funcky:types".listType ("funcky:types".Record [])'                                          || FunckyBoolean.FALSE
-        '"funcky:types".listType ("funcky:types".Record ["funcky:types".Type])'                       || FunckyBoolean.FALSE
-        '"funcky:types".listType "funcky:types".Unit'                                                 || FunckyBoolean.FALSE
-        '"funcky:types".listType $_'                                                                  || FunckyBoolean.FALSE
+        '"funcky:types".listType ("funcky:types".Record [])'                                          || $false
+        '"funcky:types".listType ("funcky:types".Record ["funcky:types".Type])'                       || $false
+        '"funcky:types".listType "funcky:types".Unit'                                                 || $false
+        '"funcky:types".listType $_'                                                                  || $false
     }
 
     @Unroll('Test recordType (expression: #expression)')
@@ -263,17 +262,17 @@ class TypesSpec extends BaseSpec {
         expression                                                                                      || result
         '"funcky:types".recordType'                                                                     || new Types(engine).$recordType
         '"funcky:types".type "funcky:types".recordType'                                                 || new FunckyFunctionType(engine, $Type, $Boolean)
-        '"funcky:types".recordType "funcky:types".Type'                                                 || FunckyBoolean.FALSE
-        '"funcky:types".recordType "funcky:types".Number'                                               || FunckyBoolean.FALSE
-        '"funcky:types".recordType "funcky:types".Boolean'                                              || FunckyBoolean.FALSE
-        '"funcky:types".recordType "funcky:types".Character'                                            || FunckyBoolean.FALSE
-        '"funcky:types".recordType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || FunckyBoolean.FALSE
-        '"funcky:types".recordType ("funcky:types".List "funcky:types".Type)'                           || FunckyBoolean.FALSE
-        '"funcky:types".recordType ("funcky:types".String)'                                             || FunckyBoolean.FALSE
+        '"funcky:types".recordType "funcky:types".Type'                                                 || $false
+        '"funcky:types".recordType "funcky:types".Number'                                               || $false
+        '"funcky:types".recordType "funcky:types".Boolean'                                              || $false
+        '"funcky:types".recordType "funcky:types".Character'                                            || $false
+        '"funcky:types".recordType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || $false
+        '"funcky:types".recordType ("funcky:types".List "funcky:types".Type)'                           || $false
+        '"funcky:types".recordType ("funcky:types".String)'                                             || $false
         '"funcky:types".recordType ("funcky:types".Record [])'                                          || $true
         '"funcky:types".recordType ("funcky:types".Record ["funcky:types".Type])'                       || $true
         '"funcky:types".recordType "funcky:types".Unit'                                                 || $true
-        '"funcky:types".recordType $_'                                                                  || FunckyBoolean.FALSE
+        '"funcky:types".recordType $_'                                                                  || $false
     }
 
     @Unroll('Test free (expression: #expression')
@@ -291,21 +290,21 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".free ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'                                                                                                        || new FunckyFunctionType(engine, $Type, $Number)
         '"funcky:types".domain ("funcky:types".free ("funcky:types".Function "funcky:types".Type $_))'                                                                                                   || $Type
         '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".free ("funcky:types".Function "funcky:types".Type $_)))'                                                                      || $true
-        '"funcky:commons".equal ("funcky:types".range ("funcky:types".free ("funcky:types".Function "funcky:types".Type $_))) ("funcky:types".range ("funcky:types".Function "funcky:types".Type $_))'   || FunckyBoolean.FALSE
+        '"funcky:commons".equal ("funcky:types".range ("funcky:types".free ("funcky:types".Function "funcky:types".Type $_))) ("funcky:types".range ("funcky:types".Function "funcky:types".Type $_))'   || $false
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".free ("funcky:types".Function $_ "funcky:types".Type)))'                                                                     || $true
-        '"funcky:commons".equal ("funcky:types".domain ("funcky:types".free ("funcky:types".Function $_ "funcky:types".Type))) ("funcky:types".domain ("funcky:types".Function $_ "funcky:types".Type))' || FunckyBoolean.FALSE
+        '"funcky:commons".equal ("funcky:types".domain ("funcky:types".free ("funcky:types".Function $_ "funcky:types".Type))) ("funcky:types".domain ("funcky:types".Function $_ "funcky:types".Type))' || $false
         '"funcky:types".range ("funcky:types".free ("funcky:types".Function $_ "funcky:types".Type))'                                                                                                    || $Type
         '"funcky:types".free ("funcky:types".List "funcky:types".Type)'                                                                                                                                  || new FunckyListType(engine, $Type)
         '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".free ("funcky:types".List $_)))'                                                                                            || $true
-        '"funcky:commons".equal ("funcky:types".element ("funcky:types".free ("funcky:types".List $_))) ("funcky:types".element ("funcky:types".List $_))'                                               || FunckyBoolean.FALSE
+        '"funcky:commons".equal ("funcky:types".element ("funcky:types".free ("funcky:types".List $_))) ("funcky:types".element ("funcky:types".List $_))'                                               || $false
         '"funcky:types".free "funcky:types".String'                                                                                                                                                      || $String
-        '"funcky:types".free ("funcky:types".Record [])'                                                                                                                                                 || FunckyRecordType.UNIT
+        '"funcky:types".free ("funcky:types".Record [])'                                                                                                                                                 || $Unit
         '"funcky:types".free ("funcky:types".Record ["funcky:types".Type])'                                                                                                                              || new FunckyRecordType(engine, engine.converter.convert([$Type]))
         '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".free ("funcky:types".Record [$_]))))'                                                               || $true
         '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".free ("funcky:types".Record [$_]))))'                                                                      || $true
-        '"funcky:types".free "funcky:types".Unit'                                                                                                                                                        || FunckyRecordType.UNIT
+        '"funcky:types".free "funcky:types".Unit'                                                                                                                                                        || $Unit
         '"funcky:types".typeVariable ("funcky:types".free $_)'                                                                                                                                           || $true
-        '"funcky:commons".equal ("funcky:types".free $_) $_'                                                                                                                                             || FunckyBoolean.FALSE
+        '"funcky:commons".equal ("funcky:types".free $_) $_'                                                                                                                                             || $false
     }
 
     @Unroll('Test unify (expression: #expression')
@@ -364,9 +363,9 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".unify "funcky:types".String ("funcky:types".List "funcky:types".Character)'                                                                                        || $String
         '"funcky:types".unify "funcky:types".String "funcky:types".String'                                                                                                                 || $String
         '"funcky:types".unify "funcky:types".String $_'                                                                                                                                    || $String
-        '"funcky:types".unify ("funcky:types".Record []) ("funcky:types".Record [])'                                                                                                       || FunckyRecordType.UNIT
-        '"funcky:types".unify ("funcky:types".Record []) "funcky:types".Unit'                                                                                                              || FunckyRecordType.UNIT
-        '"funcky:types".unify ("funcky:types".Record []) $_'                                                                                                                               || FunckyRecordType.UNIT
+        '"funcky:types".unify ("funcky:types".Record []) ("funcky:types".Record [])'                                                                                                       || $Unit
+        '"funcky:types".unify ("funcky:types".Record []) "funcky:types".Unit'                                                                                                              || $Unit
+        '"funcky:types".unify ("funcky:types".Record []) $_'                                                                                                                               || $Unit
         '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) ("funcky:types".Record ["funcky:types".Type])'                                                                 || new FunckyRecordType(engine, engine.converter.convert([$Type]))
         '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) ("funcky:types".Record [$_])'                                                                                  || new FunckyRecordType(engine, engine.converter.convert([$Type]))
         '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) $_'                                                                                                            || new FunckyRecordType(engine, engine.converter.convert([$Type]))
@@ -375,9 +374,9 @@ class TypesSpec extends BaseSpec {
         '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record [$_]))))'                          || $true
         '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) $_)))'                                             || $true
         '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) $_)))'                                                    || $true
-        '"funcky:types".unify "funcky:types".Unit ("funcky:types".Record [])'                                                                                                              || FunckyRecordType.UNIT
-        '"funcky:types".unify "funcky:types".Unit "funcky:types".Unit'                                                                                                                     || FunckyRecordType.UNIT
-        '"funcky:types".unify "funcky:types".Unit $_'                                                                                                                                      || FunckyRecordType.UNIT
+        '"funcky:types".unify "funcky:types".Unit ("funcky:types".Record [])'                                                                                                              || $Unit
+        '"funcky:types".unify "funcky:types".Unit "funcky:types".Unit'                                                                                                                     || $Unit
+        '"funcky:types".unify "funcky:types".Unit $_'                                                                                                                                      || $Unit
         '"funcky:types".unify $_ "funcky:types".Type'                                                                                                                                      || $Type
         '"funcky:types".unify $_ "funcky:types".Number'                                                                                                                                    || $Number
         '"funcky:types".unify $_ "funcky:types".Boolean'                                                                                                                                   || $Boolean
@@ -392,11 +391,11 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".unify $_ ("funcky:types".List "funcky:types".Type)'                                                                                                                || new FunckyListType(engine, $Type)
         '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".unify $_ ("funcky:types".List $_)))'                                                                          || $true
         '"funcky:types".unify $_ "funcky:types".String'                                                                                                                                    || $String
-        '"funcky:types".unify $_ ("funcky:types".Record [])'                                                                                                                               || FunckyRecordType.UNIT
+        '"funcky:types".unify $_ ("funcky:types".Record [])'                                                                                                                               || $Unit
         '"funcky:types".unify $_ ("funcky:types".Record ["funcky:types".Type])'                                                                                                            || new FunckyRecordType(engine, engine.converter.convert([$Type]))
         '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify $_ ("funcky:types".Record [$_]))))'                                             || $true
         '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify $_ ("funcky:types".Record [$_]))))'                                                    || $true
-        '"funcky:types".unify $_ "funcky:types".Unit'                                                                                                                                      || FunckyRecordType.UNIT
+        '"funcky:types".unify $_ "funcky:types".Unit'                                                                                                                                      || $Unit
         '"funcky:types".typeVariable ("funcky:types".unify $_ $_)'                                                                                                                         || $true
     }
 

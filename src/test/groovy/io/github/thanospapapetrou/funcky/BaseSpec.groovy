@@ -5,6 +5,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter
 import io.github.thanospapapetrou.funcky.runtime.FunckyList
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber
+import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType
 import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType
 
 import javax.script.ScriptContext
@@ -108,6 +109,8 @@ abstract class BaseSpec extends Specification {
     @Shared
     protected FunckyListType $String
     @Shared
+    protected FunckyRecordType $Unit
+    @Shared
     protected FunckyBoolean $false;
     @Shared
     protected FunckyBoolean $true;
@@ -118,7 +121,8 @@ abstract class BaseSpec extends Specification {
         $Number = FunckySimpleType.NUMBER.apply(engine)
         $Boolean = FunckySimpleType.BOOLEAN.apply(engine)
         $Character = FunckySimpleType.CHARACTER.apply(engine)
-        $String = new FunckyListType(engine, $Character)
+        $String = FunckyListType.STRING.apply(engine)
+        $Unit = FunckyRecordType.UNIT.apply(engine)
         $false = FunckyBoolean.FALSE.apply(engine)
         $true = FunckyBoolean.TRUE.apply(engine)
     }
