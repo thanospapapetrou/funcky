@@ -58,7 +58,7 @@ class CombinatorsSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                                                                                                || result
-        '"funcky:combinators".k'                                                                                                                                                                  || Combinators.K
+        '"funcky:combinators".k'                                                                                                                                                                  || new Combinators(engine).$k
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".type "funcky:combinators".k))'                                                                                        || $true
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".range ("funcky:types".type "funcky:combinators".k)))'                                                                 || $true
         '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".range ("funcky:types".type "funcky:combinators".k)))'                                                                  || $true
@@ -67,7 +67,7 @@ class CombinatorsSpec extends BaseSpec {
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".type ("funcky:combinators".k 0)))'                                                                                    || $true
         '"funcky:types".range ("funcky:types".type ("funcky:combinators".k 0))'                                                                                                                   || $Number
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".type ("funcky:combinators".k \'a\')))'                                                                                || $true
-        '"funcky:types".range ("funcky:types".type ("funcky:combinators".k \'a\'))'                                                                                                               || FunckySimpleType.CHARACTER
+        '"funcky:types".range ("funcky:types".type ("funcky:combinators".k \'a\'))'                                                                                                               || $Character
         '"funcky:commons".string ("funcky:combinators".k ("funcky:commons".error "foo"))'                                                                                                         || engine.converter.convert('"funcky:combinators".k ("funcky:commons".error "foo")')
         '"funcky:combinators".k 0 \'a\''                                                                                                                                                          || new FunckyNumber(engine, 0.0G)
         '"funcky:combinators".k \'a\' 0'                                                                                                                                                          || new FunckyCharacter(engine, 'a' as char)

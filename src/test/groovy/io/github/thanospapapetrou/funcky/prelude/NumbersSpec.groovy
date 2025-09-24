@@ -3,15 +3,12 @@ package io.github.thanospapapetrou.funcky.prelude
 import java.math.RoundingMode
 
 import io.github.thanospapapetrou.funcky.BaseSpec
-import io.github.thanospapapetrou.funcky.FunckyJavaConverter
-import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException
 import io.github.thanospapapetrou.funcky.runtime.prelude.Numbers
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType
 import spock.lang.Unroll
 
 class NumbersSpec extends BaseSpec {
@@ -21,7 +18,7 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression << (RoundingMode.values()*.name().collect { "\"funcky:numbers\".$it" } + RoundingMode.values()*.name().collect { "\"funcky:types\".type (\"funcky:numbers\".$it)" })
-        result << (RoundingMode.values()*.ordinal().collect(BigDecimal.&new).collect(FunckyNumber.&new) + ([FunckySimpleType.NUMBER] * RoundingMode.values().size()))
+        result << (RoundingMode.values()*.ordinal().collect(BigDecimal.&new).collect({new FunckyNumber(engine, it)}) + ([$Number] * RoundingMode.values().size()))
     }
 
     @Unroll('Test plus (expression: #expression)')
@@ -30,11 +27,11 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                  || result
-        '"funcky:numbers".plus'                     || Numbers.PLUS
-        '"funcky:types".type "funcky:numbers".plus' || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:numbers".plus 0'                   || new FunckyNumber(0.0G)
-        '"funcky:numbers".plus 1'                   || new FunckyNumber(1.0G)
-        '"funcky:numbers".plus -1'                  || new FunckyNumber(-1.0G)
+        '"funcky:numbers".plus'                     || new Numbers(engine).$plus
+        '"funcky:types".type "funcky:numbers".plus' || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:numbers".plus 0'                   || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".plus 1'                   || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".plus -1'                  || new FunckyNumber(engine, -1.0G)
     }
 
     @Unroll('Test minus (expression: #expression)')
@@ -43,11 +40,11 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                   || result
-        '"funcky:numbers".minus'                     || Numbers.MINUS
-        '"funcky:types".type "funcky:numbers".minus' || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:numbers".minus 0'                   || new FunckyNumber(0.0G)
-        '"funcky:numbers".minus 1'                   || new FunckyNumber(-1.0G)
-        '"funcky:numbers".minus -1'                  || new FunckyNumber(1.0G)
+        '"funcky:numbers".minus'                     || new Numbers(engine).$minus
+        '"funcky:types".type "funcky:numbers".minus' || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:numbers".minus 0'                   || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".minus 1'                   || new FunckyNumber(engine, -1.0G)
+        '"funcky:numbers".minus -1'                  || new FunckyNumber(engine, 1.0G)
     }
 
     @Unroll('Test round (expression: #expression)')
@@ -56,15 +53,15 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                 || result
-        '"funcky:lists".empty ("funcky:commons".string "funcky:numbers".round)'                                    || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:numbers".round'                                                               || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:lists".empty ("funcky:commons".string ("funcky:numbers".round ("funcky:commons".error "foo")))'   || FunckyBoolean.FALSE
-        '"funcky:lists".empty ("funcky:commons".string ("funcky:numbers".round 0 ("funcky:commons".error "foo")))' || FunckyBoolean.FALSE
-        '"funcky:numbers".round 12.34 0 "funcky:numbers".HALF_UP'                                                  || new FunckyNumber(12.0G)
-        '"funcky:numbers".round 12.34 1 "funcky:numbers".HALF_UP'                                                  || new FunckyNumber(12.3G)
-        '"funcky:numbers".round 12.34 -1 "funcky:numbers".HALF_UP'                                                 || new FunckyNumber(10.0G)
-        '"funcky:numbers".round 0.1 0 "funcky:numbers".UP'                                                         || new FunckyNumber(1.0G)
-        '"funcky:numbers".round 0.1 0 "funcky:numbers".DOWN'                                                       || new FunckyNumber(0.0G)
+        '"funcky:lists".empty ("funcky:commons".string "funcky:numbers".round)'                                    || $false
+        '"funcky:types".type "funcky:numbers".round'                                                               || new FunckyFunctionType(engine, $Number, $Number, $Number, $Number)
+        '"funcky:lists".empty ("funcky:commons".string ("funcky:numbers".round ("funcky:commons".error "foo")))'   || $false
+        '"funcky:lists".empty ("funcky:commons".string ("funcky:numbers".round 0 ("funcky:commons".error "foo")))' || $false
+        '"funcky:numbers".round 12.34 0 "funcky:numbers".HALF_UP'                                                  || new FunckyNumber(engine, 12.0G)
+        '"funcky:numbers".round 12.34 1 "funcky:numbers".HALF_UP'                                                  || new FunckyNumber(engine, 12.3G)
+        '"funcky:numbers".round 12.34 -1 "funcky:numbers".HALF_UP'                                                 || new FunckyNumber(engine, 10.0G)
+        '"funcky:numbers".round 0.1 0 "funcky:numbers".UP'                                                         || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".round 0.1 0 "funcky:numbers".DOWN'                                                       || new FunckyNumber(engine, 0.0G)
     }
 
     @Unroll('Test round (runtime error, expression: #expression)')
@@ -89,14 +86,14 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                      || result
-        '"funcky:numbers".add'                                                          || Numbers.ADD
-        '"funcky:types".type "funcky:numbers".add'                                      || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:types".type ("funcky:numbers".add 1)'                                  || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:commons".string ("funcky:numbers".add ("funcky:commons".error "foo"))' || FunckyJavaConverter.convert('"funcky:numbers".add ("funcky:commons".error "foo")')
-        '"funcky:numbers".add 0 0'                                                      || new FunckyNumber(0.0G)
-        '"funcky:numbers".add 0 1'                                                      || new FunckyNumber(1.0G)
-        '"funcky:numbers".add 1 1'                                                      || new FunckyNumber(2.0G)
-        '"funcky:numbers".add 1 -1'                                                     || new FunckyNumber(0.0G)
+        '"funcky:numbers".add'                                                          || new Numbers(engine).$add
+        '"funcky:types".type "funcky:numbers".add'                                      || new FunckyFunctionType(engine, $Number, $Number, $Number)
+        '"funcky:types".type ("funcky:numbers".add 1)'                                  || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:commons".string ("funcky:numbers".add ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:numbers".add ("funcky:commons".error "foo")')
+        '"funcky:numbers".add 0 0'                                                      || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".add 0 1'                                                      || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".add 1 1'                                                      || new FunckyNumber(engine, 2.0G)
+        '"funcky:numbers".add 1 -1'                                                     || new FunckyNumber(engine, 0.0G)
     }
 
     @Unroll('Test subtract (expression: #expression)')
@@ -105,14 +102,14 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                           || result
-        '"funcky:numbers".subtract'                                                          || Numbers.SUBTRACT
-        '"funcky:types".type "funcky:numbers".subtract'                                      || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:types".type ("funcky:numbers".subtract 1)'                                  || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:commons".string ("funcky:numbers".subtract ("funcky:commons".error "foo"))' || FunckyJavaConverter.convert('"funcky:numbers".subtract ("funcky:commons".error "foo")')
-        '"funcky:numbers".subtract 0 0'                                                      || new FunckyNumber(0.0G)
-        '"funcky:numbers".subtract 0 1'                                                      || new FunckyNumber(-1.0G)
-        '"funcky:numbers".subtract 1 1'                                                      || new FunckyNumber(0.0G)
-        '"funcky:numbers".subtract 1 -1'                                                     || new FunckyNumber(2.0G)
+        '"funcky:numbers".subtract'                                                          || new Numbers(engine).$subtract
+        '"funcky:types".type "funcky:numbers".subtract'                                      || new FunckyFunctionType(engine, $Number, $Number, $Number)
+        '"funcky:types".type ("funcky:numbers".subtract 1)'                                  || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:commons".string ("funcky:numbers".subtract ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:numbers".subtract ("funcky:commons".error "foo")')
+        '"funcky:numbers".subtract 0 0'                                                      || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".subtract 0 1'                                                      || new FunckyNumber(engine, -1.0G)
+        '"funcky:numbers".subtract 1 1'                                                      || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".subtract 1 -1'                                                     || new FunckyNumber(engine, 2.0G)
     }
 
     @Unroll('Test multiply (expression: #expression)')
@@ -121,14 +118,14 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                           || result
-        '"funcky:numbers".multiply'                                                          || Numbers.MULTIPLY
-        '"funcky:types".type "funcky:numbers".multiply'                                      || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:types".type ("funcky:numbers".multiply 1)'                                  || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:commons".string ("funcky:numbers".multiply ("funcky:commons".error "foo"))' || FunckyJavaConverter.convert('"funcky:numbers".multiply ("funcky:commons".error "foo")')
-        '"funcky:numbers".multiply 0 0'                                                      || new FunckyNumber(0.0G)
-        '"funcky:numbers".multiply 0 1'                                                      || new FunckyNumber(0.0G)
-        '"funcky:numbers".multiply 1 1'                                                      || new FunckyNumber(1.0G)
-        '"funcky:numbers".multiply 1 -1'                                                     || new FunckyNumber(-1.0G)
+        '"funcky:numbers".multiply'                                                          || new Numbers(engine).$multiply
+        '"funcky:types".type "funcky:numbers".multiply'                                      || new FunckyFunctionType(engine, $Number, $Number, $Number)
+        '"funcky:types".type ("funcky:numbers".multiply 1)'                                  || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:commons".string ("funcky:numbers".multiply ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:numbers".multiply ("funcky:commons".error "foo")')
+        '"funcky:numbers".multiply 0 0'                                                      || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".multiply 0 1'                                                      || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".multiply 1 1'                                                      || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".multiply 1 -1'                                                     || new FunckyNumber(engine, -1.0G)
     }
 
     @Unroll('Test divide (expression: #expression)')
@@ -137,18 +134,18 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                             || result
-        '"funcky:numbers".divide'                                                              || Numbers.DIVIDE
-        '"funcky:types".type "funcky:numbers".divide'                                          || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:types".type ("funcky:numbers".divide 1)'                                      || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:types".type ("funcky:numbers".divide 1 2)'                                    || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:types".type ("funcky:numbers".divide 1 2 3)'                                  || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:commons".string ("funcky:numbers".divide ("funcky:commons".error "foo"))'     || FunckyJavaConverter.convert('"funcky:numbers".divide ("funcky:commons".error "foo")')
-        '"funcky:commons".string ("funcky:numbers".divide 1 ("funcky:commons".error "foo"))'   || FunckyJavaConverter.convert('"funcky:numbers".divide 1 ("funcky:commons".error "foo")')
-        '"funcky:commons".string ("funcky:numbers".divide 1 2 ("funcky:commons".error "foo"))' || FunckyJavaConverter.convert('"funcky:numbers".divide 1 2 ("funcky:commons".error "foo")')
-        '"funcky:numbers".divide 1 3 4 "funcky:numbers".UP'                                    || new FunckyNumber(0.3334G)
-        '"funcky:numbers".divide 123 4 -1 "funcky:numbers".UP'                                 || new FunckyNumber(40.0G)
-        '"funcky:numbers".divide 1 3 2 "funcky:numbers".UP'                                    || new FunckyNumber(0.34G)
-        '"funcky:numbers".divide 1 3 2 "funcky:numbers".DOWN'                                  || new FunckyNumber(0.33G)
+        '"funcky:numbers".divide'                                                              || new Numbers(engine).$divide
+        '"funcky:types".type "funcky:numbers".divide'                                          || new FunckyFunctionType(engine, $Number, $Number, $Number, $Number, $Number)
+        '"funcky:types".type ("funcky:numbers".divide 1)'                                      || new FunckyFunctionType(engine, $Number, $Number, $Number, $Number)
+        '"funcky:types".type ("funcky:numbers".divide 1 2)'                                    || new FunckyFunctionType(engine, $Number, $Number, $Number)
+        '"funcky:types".type ("funcky:numbers".divide 1 2 3)'                                  || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:commons".string ("funcky:numbers".divide ("funcky:commons".error "foo"))'     || engine.converter.convert('"funcky:numbers".divide ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:numbers".divide 1 ("funcky:commons".error "foo"))'   || engine.converter.convert('"funcky:numbers".divide 1 ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:numbers".divide 1 2 ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:numbers".divide 1 2 ("funcky:commons".error "foo")')
+        '"funcky:numbers".divide 1 3 4 "funcky:numbers".UP'                                    || new FunckyNumber(engine, 0.3334G)
+        '"funcky:numbers".divide 123 4 -1 "funcky:numbers".UP'                                 || new FunckyNumber(engine, 40.0G)
+        '"funcky:numbers".divide 1 3 2 "funcky:numbers".UP'                                    || new FunckyNumber(engine, 0.34G)
+        '"funcky:numbers".divide 1 3 2 "funcky:numbers".DOWN'                                  || new FunckyNumber(engine, 0.33G)
     }
 
     @Unroll('Test divide (runtime error, expression: #expression)')
@@ -174,13 +171,13 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                || result
-        '"funcky:lists".empty ("funcky:commons".string "funcky:numbers".modulo)'                                  || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:numbers".modulo'                                                             || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:lists".empty ("funcky:commons".string ("funcky:numbers".modulo ("funcky:commons".error "foo")))' || FunckyBoolean.FALSE
-        '"funcky:numbers".modulo 7 3'                                                                             || new FunckyNumber(1.0G)
-        '"funcky:numbers".modulo 7 -3'                                                                            || new FunckyNumber(-2.0G)
-        '"funcky:numbers".modulo -7 3'                                                                            || new FunckyNumber(2.0G)
-        '"funcky:numbers".modulo -7 -3'                                                                           || new FunckyNumber(-1.0G)
+        '"funcky:lists".empty ("funcky:commons".string "funcky:numbers".modulo)'                                  || $false
+        '"funcky:types".type "funcky:numbers".modulo'                                                             || new FunckyFunctionType(engine, $Number, $Number, $Number)
+        '"funcky:lists".empty ("funcky:commons".string ("funcky:numbers".modulo ("funcky:commons".error "foo")))' || $false
+        '"funcky:numbers".modulo 7 3'                                                                             || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".modulo 7 -3'                                                                            || new FunckyNumber(engine, -2.0G)
+        '"funcky:numbers".modulo -7 3'                                                                            || new FunckyNumber(engine, 2.0G)
+        '"funcky:numbers".modulo -7 -3'                                                                           || new FunckyNumber(engine, -1.0G)
     }
 
     @Unroll('Test modulo (runtime error, expression: #expression)')
@@ -202,19 +199,19 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                  || result
-        '"funcky:numbers".byte'                     || Numbers.BYTE
-        '"funcky:types".type "funcky:numbers".byte' || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:numbers".byte 0'                   || new FunckyNumber(0.0G)
-        '"funcky:numbers".byte 1'                   || new FunckyNumber(1.0G)
-        '"funcky:numbers".byte 127'                 || new FunckyNumber(127.0G)
-        '"funcky:numbers".byte -128'                || new FunckyNumber(-128.0G)
-        '"funcky:numbers".byte 0.1'                 || new FunckyNumber(0.0G)
-        '"funcky:numbers".byte 0.9'                 || new FunckyNumber(0.0G)
-        '"funcky:numbers".byte 1.1'                 || new FunckyNumber(1.0G)
-        '"funcky:numbers".byte 128'                 || new FunckyNumber(-128.0G)
-        '"funcky:numbers".byte 129'                 || new FunckyNumber(-127.0G)
-        '"funcky:numbers".byte -129'                || new FunckyNumber(127.0G)
-        '"funcky:numbers".byte -130'                || new FunckyNumber(126.0G)
+        '"funcky:numbers".byte'                     || new Numbers(engine).$byte
+        '"funcky:types".type "funcky:numbers".byte' || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:numbers".byte 0'                   || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".byte 1'                   || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".byte 127'                 || new FunckyNumber(engine, 127.0G)
+        '"funcky:numbers".byte -128'                || new FunckyNumber(engine, -128.0G)
+        '"funcky:numbers".byte 0.1'                 || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".byte 0.9'                 || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".byte 1.1'                 || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".byte 128'                 || new FunckyNumber(engine, -128.0G)
+        '"funcky:numbers".byte 129'                 || new FunckyNumber(engine, -127.0G)
+        '"funcky:numbers".byte -129'                || new FunckyNumber(engine, 127.0G)
+        '"funcky:numbers".byte -130'                || new FunckyNumber(engine, 126.0G)
     }
 
     @Unroll('Test short (expression: #expression)')
@@ -223,19 +220,19 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                   || result
-        '"funcky:numbers".short'                     || Numbers.SHORT
-        '"funcky:types".type "funcky:numbers".short' || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:numbers".short 0'                   || new FunckyNumber(0.0G)
-        '"funcky:numbers".short 1'                   || new FunckyNumber(1.0G)
-        '"funcky:numbers".short 32767'               || new FunckyNumber(32767.0G)
-        '"funcky:numbers".short -32768'              || new FunckyNumber(-32768.0G)
-        '"funcky:numbers".short 0.1'                 || new FunckyNumber(0.0G)
-        '"funcky:numbers".short 0.9'                 || new FunckyNumber(0.0G)
-        '"funcky:numbers".short 1.1'                 || new FunckyNumber(1.0G)
-        '"funcky:numbers".short 32768'               || new FunckyNumber(-32768.0G)
-        '"funcky:numbers".short 32769'               || new FunckyNumber(-32767.0G)
-        '"funcky:numbers".short -32769'              || new FunckyNumber(32767.0G)
-        '"funcky:numbers".short -32770'              || new FunckyNumber(32766.0G)
+        '"funcky:numbers".short'                     || new Numbers(engine).$short
+        '"funcky:types".type "funcky:numbers".short' || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:numbers".short 0'                   || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".short 1'                   || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".short 32767'               || new FunckyNumber(engine, 32767.0G)
+        '"funcky:numbers".short -32768'              || new FunckyNumber(engine, -32768.0G)
+        '"funcky:numbers".short 0.1'                 || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".short 0.9'                 || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".short 1.1'                 || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".short 32768'               || new FunckyNumber(engine, -32768.0G)
+        '"funcky:numbers".short 32769'               || new FunckyNumber(engine, -32767.0G)
+        '"funcky:numbers".short -32769'              || new FunckyNumber(engine, 32767.0G)
+        '"funcky:numbers".short -32770'              || new FunckyNumber(engine, 32766.0G)
     }
 
     @Unroll('Test int (expression: #expression)')
@@ -244,19 +241,19 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                 || result
-        '"funcky:numbers".int'                     || Numbers.INT
-        '"funcky:types".type "funcky:numbers".int' || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:numbers".int 0'                   || new FunckyNumber(0.0G)
-        '"funcky:numbers".int 1'                   || new FunckyNumber(1.0G)
-        '"funcky:numbers".int 2147483647'          || new FunckyNumber(2147483647.0G)
-        '"funcky:numbers".int -2147483648'         || new FunckyNumber(-2147483648.0G)
-        '"funcky:numbers".int 0.1'                 || new FunckyNumber(0.0G)
-        '"funcky:numbers".int 0.9'                 || new FunckyNumber(0.0G)
-        '"funcky:numbers".int 1.1'                 || new FunckyNumber(1.0G)
-        '"funcky:numbers".int 2147483648'          || new FunckyNumber(-2147483648.0G)
-        '"funcky:numbers".int 2147483649'          || new FunckyNumber(-2147483647.0G)
-        '"funcky:numbers".int -2147483649'         || new FunckyNumber(2147483647.0G)
-        '"funcky:numbers".int -2147483650'         || new FunckyNumber(2147483646.0G)
+        '"funcky:numbers".int'                     || new Numbers(engine).$int
+        '"funcky:types".type "funcky:numbers".int' || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:numbers".int 0'                   || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".int 1'                   || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".int 2147483647'          || new FunckyNumber(engine, 2147483647.0G)
+        '"funcky:numbers".int -2147483648'         || new FunckyNumber(engine, -2147483648.0G)
+        '"funcky:numbers".int 0.1'                 || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".int 0.9'                 || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".int 1.1'                 || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".int 2147483648'          || new FunckyNumber(engine, -2147483648.0G)
+        '"funcky:numbers".int 2147483649'          || new FunckyNumber(engine, -2147483647.0G)
+        '"funcky:numbers".int -2147483649'         || new FunckyNumber(engine, 2147483647.0G)
+        '"funcky:numbers".int -2147483650'         || new FunckyNumber(engine, 2147483646.0G)
     }
 
     @Unroll('Test long (expression: #expression)')
@@ -265,19 +262,19 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                   || result
-        '"funcky:numbers".long'                      || Numbers.LONG
-        '"funcky:types".type "funcky:numbers".long'  || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:numbers".long 0'                    || new FunckyNumber(0.0G)
-        '"funcky:numbers".long 1'                    || new FunckyNumber(1.0G)
-        '"funcky:numbers".long 9223372036854775807'  || new FunckyNumber(9223372036854775807.0G)
-        '"funcky:numbers".long -9223372036854775808' || new FunckyNumber(-9223372036854775808.0G)
-        '"funcky:numbers".long 0.1'                  || new FunckyNumber(0.0G)
-        '"funcky:numbers".long 0.9'                  || new FunckyNumber(0.0G)
-        '"funcky:numbers".long 1.1'                  || new FunckyNumber(1.0G)
-        '"funcky:numbers".long 9223372036854775808'  || new FunckyNumber(-9223372036854775808.0G)
-        '"funcky:numbers".long 9223372036854775809'  || new FunckyNumber(-9223372036854775807.0G)
-        '"funcky:numbers".long -9223372036854775809' || new FunckyNumber(9223372036854775807.0G)
-        '"funcky:numbers".long -9223372036854775810' || new FunckyNumber(9223372036854775806.0G)
+        '"funcky:numbers".long'                      || new Numbers(engine).$long
+        '"funcky:types".type "funcky:numbers".long'  || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:numbers".long 0'                    || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".long 1'                    || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".long 9223372036854775807'  || new FunckyNumber(engine, 9223372036854775807.0G)
+        '"funcky:numbers".long -9223372036854775808' || new FunckyNumber(engine, -9223372036854775808.0G)
+        '"funcky:numbers".long 0.1'                  || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".long 0.9'                  || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".long 1.1'                  || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".long 9223372036854775808'  || new FunckyNumber(engine, -9223372036854775808.0G)
+        '"funcky:numbers".long 9223372036854775809'  || new FunckyNumber(engine, -9223372036854775807.0G)
+        '"funcky:numbers".long -9223372036854775809' || new FunckyNumber(engine, 9223372036854775807.0G)
+        '"funcky:numbers".long -9223372036854775810' || new FunckyNumber(engine, 9223372036854775806.0G)
     }
 
     @Unroll('Test float (expression: #expression)')
@@ -286,12 +283,12 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                   || result
-        '"funcky:numbers".float'                     || Numbers.FLOAT
-        '"funcky:types".type "funcky:numbers".float' || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:numbers".float 0'                   || new FunckyNumber(0.0G)
-        '"funcky:numbers".float 1'                   || new FunckyNumber(1.0G)
-        '"funcky:numbers".float -1'                  || new FunckyNumber(-1.0G)
-        '"funcky:numbers".float 0.1'                 || new FunckyNumber(0.100000001490116119384765625G)
+        '"funcky:numbers".float'                     || new Numbers(engine).$float
+        '"funcky:types".type "funcky:numbers".float' || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:numbers".float 0'                   || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".float 1'                   || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".float -1'                  || new FunckyNumber(engine, -1.0G)
+        '"funcky:numbers".float 0.1'                 || new FunckyNumber(engine, 0.100000001490116119384765625G)
     }
 
     @Unroll('Test double (expression: #expression)')
@@ -300,12 +297,12 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                    || result
-        '"funcky:numbers".double'                     || Numbers.DOUBLE
-        '"funcky:types".type "funcky:numbers".double' || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)
-        '"funcky:numbers".double 0'                   || new FunckyNumber(0.0G)
-        '"funcky:numbers".double 1'                   || new FunckyNumber(1.0G)
-        '"funcky:numbers".double -1'                  || new FunckyNumber(-1.0G)
-        '"funcky:numbers".double 0.1'                 || new FunckyNumber(0.1000000000000000055511151231257827021181583404541015625G)
+        '"funcky:numbers".double'                     || new Numbers(engine).$double
+        '"funcky:types".type "funcky:numbers".double' || new FunckyFunctionType(engine, $Number, $Number)
+        '"funcky:numbers".double 0'                   || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".double 1'                   || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".double -1'                  || new FunckyNumber(engine, -1.0G)
+        '"funcky:numbers".double 0.1'                 || new FunckyNumber(engine, 0.1000000000000000055511151231257827021181583404541015625G)
     }
 
     @Unroll('Test sum (expression: #expression)')
@@ -314,14 +311,14 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                            || result
-        '"funcky:lists".empty ("funcky:commons".string "funcky:numbers".sum)' || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:numbers".sum'                            || new FunckyFunctionType(new FunckyListType(FunckySimpleType.NUMBER), FunckySimpleType.NUMBER)
-        '"funcky:numbers".sum []'                                             || new FunckyNumber(0.0G)
-        '"funcky:numbers".sum [0]'                                            || new FunckyNumber(0.0G)
-        '"funcky:numbers".sum [1]'                                            || new FunckyNumber(1.0G)
-        '"funcky:numbers".sum [0, 1]'                                         || new FunckyNumber(1.0G)
-        '"funcky:numbers".sum [1, 2]'                                         || new FunckyNumber(3.0G)
-        '"funcky:numbers".sum [2, 3]'                                         || new FunckyNumber(5.0G)
+        '"funcky:lists".empty ("funcky:commons".string "funcky:numbers".sum)' || $false
+        '"funcky:types".type "funcky:numbers".sum'                            || new FunckyFunctionType(engine, new FunckyListType(engine, $Number), $Number)
+        '"funcky:numbers".sum []'                                             || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".sum [0]'                                            || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".sum [1]'                                            || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".sum [0, 1]'                                         || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".sum [1, 2]'                                         || new FunckyNumber(engine, 3.0G)
+        '"funcky:numbers".sum [2, 3]'                                         || new FunckyNumber(engine, 5.0G)
     }
 
     @Unroll('Test product (expression: #expression)')
@@ -330,13 +327,13 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                || result
-        '"funcky:lists".empty ("funcky:commons".string "funcky:numbers".product)' || FunckyBoolean.FALSE
-        '"funcky:types".type "funcky:numbers".product'                            || new FunckyFunctionType(new FunckyListType(FunckySimpleType.NUMBER), FunckySimpleType.NUMBER)
-        '"funcky:numbers".product []'                                             || new FunckyNumber(1.0G)
-        '"funcky:numbers".product [0]'                                            || new FunckyNumber(0.0G)
-        '"funcky:numbers".product [1]'                                            || new FunckyNumber(1.0G)
-        '"funcky:numbers".product [0, 1]'                                         || new FunckyNumber(0.0G)
-        '"funcky:numbers".product [1, 2]'                                         || new FunckyNumber(2.0G)
-        '"funcky:numbers".product [2, 3]'                                         || new FunckyNumber(6.0G)
+        '"funcky:lists".empty ("funcky:commons".string "funcky:numbers".product)' || $false
+        '"funcky:types".type "funcky:numbers".product'                            || new FunckyFunctionType(engine, new FunckyListType(engine, $Number), $Number)
+        '"funcky:numbers".product []'                                             || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".product [0]'                                            || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".product [1]'                                            || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".product [0, 1]'                                         || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".product [1, 2]'                                         || new FunckyNumber(engine, 2.0G)
+        '"funcky:numbers".product [2, 3]'                                         || new FunckyNumber(engine, 6.0G)
     }
 }

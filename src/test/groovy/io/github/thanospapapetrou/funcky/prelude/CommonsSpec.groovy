@@ -850,7 +850,7 @@ class CommonsSpec extends BaseSpec {
         expression                                                                                          || result
         '"funcky:commons".string'                                                                           || new Commons(engine).$string
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".type "funcky:commons".string))' || $true
-        '"funcky:types".range ("funcky:types".type "funcky:commons".string)'                                || FunckyListType.STRING
+        '"funcky:types".range ("funcky:types".type "funcky:commons".string)'                                || $String
         '"funcky:commons".string "funcky:types".Type'                                                       || engine.converter.convert('"funcky:types".Type')
         '"funcky:commons".string "funcky:types".Number'                                                     || engine.converter.convert('"funcky:types".Number')
         '"funcky:commons".string "funcky:types".Boolean'                                                    || engine.converter.convert('"funcky:types".Boolean')
@@ -888,7 +888,7 @@ class CommonsSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                    || result
-        '"funcky:commons".number'                     || Commons.NUMBER
+        '"funcky:commons".number'                     || new Commons(engine).$number
         '"funcky:types".type "funcky:commons".number' || new FunckyFunctionType(engine, $String, $Number)
         '"funcky:commons".number "0.0"'               || new FunckyNumber(engine, 0.0G)
         '"funcky:commons".number "1.1"'               || new FunckyNumber(engine, 1.1G)
@@ -1164,8 +1164,8 @@ class CommonsSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                        || result
-        '"funcky:commons".error'                                                                          || Commons.ERROR
-        '"funcky:types".domain ("funcky:types".type "funcky:commons".error)'                              || FunckyListType.STRING
+        '"funcky:commons".error'                                                                          || new Commons(engine).$error
+        '"funcky:types".domain ("funcky:types".type "funcky:commons".error)'                              || $String
         '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".type "funcky:commons".error))' || $true
     }
 
@@ -1189,7 +1189,7 @@ class CommonsSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                                                                          || result
-        '"funcky:commons".bottom'                                                                                                                                           || Commons.BOTTOM
+        '"funcky:commons".bottom'                                                                                                                                           || new Commons(engine).$bottom
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".type "funcky:commons".bottom))'                                                                 || $true
         '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".type "funcky:commons".bottom))'                                                                  || $true
         '"funcky:commons".equal ("funcky:types".domain ("funcky:types".type "funcky:commons".bottom)) ("funcky:types".range ("funcky:types".type "funcky:commons".bottom))' || $false

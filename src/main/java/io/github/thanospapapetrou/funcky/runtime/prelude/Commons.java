@@ -57,8 +57,7 @@ public final class Commons extends FunckyLibrary {
             FunckyListType.STRING.apply(engine)) {
         @Override
         protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-            return (((FunckyBoolean) arguments.get(0).eval(context)).getValue()
-                    ? arguments.get(1) : arguments.get(2)).eval(context);
+            return engine.getConverter().convert(arguments.getFirst().eval(context).toString());
         }
     };
     public final HigherOrderFunction $number = new HigherOrderFunction(engine, this,
