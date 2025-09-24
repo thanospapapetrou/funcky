@@ -46,10 +46,10 @@ public final class FunckyLiteral extends FunckyExpression {
 
     @Override
     public String toString() {
-        if (value.getType().equals(FunckySimpleType.CHARACTER)) {
+        if (value.getType().equals(FunckySimpleType.CHARACTER.apply(engine))) {
             return String.format(FORMAT_CHARACTER, EscapeHelper.escape(value.toString()));
         }
-        if (value.getType().equals(FunckyListType.STRING)) {
+        if (value.getType().equals(FunckyListType.STRING.apply(engine))) {
             return String.format(FORMAT_STRING, EscapeHelper.escape(value.toString()));
         }
         if (value.getType() instanceof FunckyListType) {

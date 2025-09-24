@@ -111,9 +111,9 @@ abstract class BaseSpec extends Specification {
     @Shared
     protected FunckyRecordType $Unit
     @Shared
-    protected FunckyBoolean $false;
+    protected FunckyBoolean $false
     @Shared
-    protected FunckyBoolean $true;
+    protected FunckyBoolean $true
 
     def setupSpec() {
         engine = new FunckyFactory().scriptEngine

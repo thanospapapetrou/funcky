@@ -16,7 +16,6 @@ import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnrecognizedInputException
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType
 import io.github.thanospapapetrou.funcky.runtime.FunckyType
 import spock.lang.Unroll
 
@@ -181,9 +180,9 @@ class CompilationErrorSpec extends BaseSpec {
         e.lineNumber == 1
         e.columnNumber == column
         where:
-        expression                       || head                      | headType                 | tail    | tailType                                  | column
-        '[1, \'a\']'                     || '1'                       | FunckySimpleType.NUMBER  | '"a"'   | FunckyListType.STRING                     | 2
-        '["funcky:booleans".false, "a"]' || '"funcky:booleans".false' | FunckySimpleType.BOOLEAN | '["a"]' | new FunckyListType(FunckyListType.STRING) | 2
+        expression                       || head                      | headType | tail    | tailType                            | column
+        '[1, \'a\']'                     || '1'                       | $Number  | '"a"'   | $String                             | 2
+        '["funcky:booleans".false, "a"]' || '"funcky:booleans".false' | $Boolean | '["a"]' | new FunckyListType(engine, $String) | 2
     }
 
     @Unroll('Test invalid list literal error in script (script: #script)')
@@ -202,9 +201,9 @@ class CompilationErrorSpec extends BaseSpec {
         cleanup:
         reader.close()
         where:
-        script                                                   || head                      | headType                 | tail    | tailType                                  | line | column
-        '/compilation_error/invalid_list_literal_error_1.funcky' || '1'                       | FunckySimpleType.NUMBER  | '"a"'   | FunckyListType.STRING                     | 1    | 8
-        '/compilation_error/invalid_list_literal_error_2.funcky' || '"funcky:booleans".false' | FunckySimpleType.BOOLEAN | '["a"]' | new FunckyListType(FunckyListType.STRING) | 2    | 8
+        script                                                   || head                      | headType | tail    | tailType                            | line | column
+        '/compilation_error/invalid_list_literal_error_1.funcky' || '1'                       | $Number  | '"a"'   | $String                             | 1    | 8
+        '/compilation_error/invalid_list_literal_error_2.funcky' || '"funcky:booleans".false' | $Boolean | '["a"]' | new FunckyListType(engine, $String) | 2    | 8
     }
 
     @Unroll('Test prefix already bound error (script: #script)')
@@ -337,9 +336,9 @@ class CompilationErrorSpec extends BaseSpec {
         e.lineNumber == 1
         e.columnNumber == column
         where:
-        expression                                       || function                 | functionType                                                                                      | argument                  | argumentType             | column
-        '"funcky:numbers".add "funcky:booleans".false'   || '"funcky:numbers".add'   | new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) | '"funcky:booleans".false' | FunckySimpleType.BOOLEAN | 1
-        '"funcky:numbers".add 1 "funcky:booleans".false' || '"funcky:numbers".add 1' | new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)                          | '"funcky:booleans".false' | FunckySimpleType.BOOLEAN | 1
+        expression                                       || function                 | functionType                                              | argument                  | argumentType | column
+        '"funcky:numbers".add "funcky:booleans".false'   || '"funcky:numbers".add'   | new FunckyFunctionType(engine, $Number, $Number, $Number) | '"funcky:booleans".false' | $Boolean     | 1
+        '"funcky:numbers".add 1 "funcky:booleans".false' || '"funcky:numbers".add 1' | new FunckyFunctionType(engine, $Number, $Number)          | '"funcky:booleans".false' | $Boolean     | 1
     }
 
     @Unroll('Test illegal application error in script (script: #script)')
@@ -358,9 +357,9 @@ class CompilationErrorSpec extends BaseSpec {
         cleanup:
         reader.close()
         where:
-        script                                                  || function               | functionType                                                                                      | argument                  | argumentType             | line | column
-        '/compilation_error/illegal_application_error_1.funcky' || '"funcky:numbers".add' | new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) | '"funcky:booleans".false' | FunckySimpleType.BOOLEAN | 1    | 7
-        '/compilation_error/illegal_application_error_2.funcky' || 'numbers.add 1'        | new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER)                          | 'booleans.false'          | FunckySimpleType.BOOLEAN | 4    | 7
+        script                                                  || function               | functionType                                              | argument                  | argumentType | line | column
+        '/compilation_error/illegal_application_error_1.funcky' || '"funcky:numbers".add' | new FunckyFunctionType(engine, $Number, $Number, $Number) | '"funcky:booleans".false' | $Boolean     | 1    | 7
+        '/compilation_error/illegal_application_error_2.funcky' || 'numbers.add 1'        | new FunckyFunctionType(engine, $Number, $Number)          | 'booleans.false'          | $Boolean     | 4    | 7
     }
 
     @Unroll('Test undefined main error (script: #script)')
@@ -391,15 +390,15 @@ class CompilationErrorSpec extends BaseSpec {
         then:
         final InvalidMainException e = thrown()
         e.message
-        e.message.startsWith(String.format(InvalidMainException.MESSAGE, type, Linker.MAIN_TYPE))
+        e.message.startsWith(String.format(InvalidMainException.MESSAGE, type, Linker.MAIN_TYPE.apply(engine)))
         e.fileName == CompilationErrorSpec.getResource(script).toURI().toString()
         e.lineNumber == line
         e.columnNumber == 1
         cleanup:
         reader.close()
         where:
-        script                                           || type                                                                     | line
-        '/compilation_error/invalid_main_error_1.funcky' || FunckySimpleType.BOOLEAN                                                 | 1
-        '/compilation_error/invalid_main_error_2.funcky' || new FunckyFunctionType(FunckySimpleType.NUMBER, FunckySimpleType.NUMBER) | 3
+        script                                           || type                                             | line
+        '/compilation_error/invalid_main_error_1.funcky' || $Boolean                                         | 1
+        '/compilation_error/invalid_main_error_2.funcky' || new FunckyFunctionType(engine, $Number, $Number) | 3
     }
 }
