@@ -114,8 +114,7 @@ public class Linker {
             if (otherImport.isPresent()) {
                 throw new SneakyCompilationException(new PrefixAlreadyBoundException(inport, otherImport.get()));
             }
-            engine.getManager().setImport(inport.file(), inport.prefix(), normalize(script.getFile(),
-                    inport.namespace()));
+            engine.getManager().setImport(inport, normalize(inport.file(), inport.namespace()));
         }
     }
 

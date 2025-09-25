@@ -109,7 +109,7 @@ public final class FunckyReference extends FunckyExpression {
             if (prefix == null) {
                 return file;
             } else {
-                final URI namespace = engine.getManager().getImport(file, prefix);
+                final URI namespace = engine.getManager().getImport(this);
                 if (namespace == null) {
                     throw new SneakyCompilationException(new UnboundPrefixException(this));
                 }

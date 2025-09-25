@@ -9,6 +9,7 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
@@ -48,12 +49,13 @@ public class ContextManager {
         context.setAttribute(script.toString(), true, ScriptContext.ENGINE_SCOPE);
     }
 
-    public URI getImport(final URI script, final String prefix) {
-        return (URI) context.getAttribute(String.format(IMPORT, script, prefix), ScriptContext.ENGINE_SCOPE);
+    public URI getImport(final FunckyReference reference) {
+        return (URI) context.getAttribute(String.format(IMPORT, reference.getFile(), reference.getPrefix()),
+                ScriptContext.ENGINE_SCOPE);
     }
 
-    public void setImport(final URI script, final String prefix, final URI namespace) {
-        context.setAttribute(String.format(IMPORT, script, prefix), namespace, ScriptContext.ENGINE_SCOPE);
+    public void setImport(final FunckyImport inport, final URI namespace) { // TODO resolve namespace from import
+        context.setAttribute(String.format(IMPORT, inport.file(), inport.prefix()), namespace, ScriptContext.ENGINE_SCOPE);
     }
 
     public FunckyExpression getDefinitionExpression(final FunckyReference reference) {
