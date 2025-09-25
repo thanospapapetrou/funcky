@@ -22,12 +22,10 @@ public class FunckyFactory implements ScriptEngineFactory {
 
     private final Properties parameters;
 
-    public FunckyFactory() {
+    public FunckyFactory() throws IOException {
         this(new Properties());
         try (final InputStream parameters = FunckyFactory.class.getResourceAsStream(PARAMETERS)) {
             this.parameters.load(parameters);
-        } catch (final IOException e) {
-            throw new ExceptionInInitializerError(e); // TODO
         }
         LOGGER.config(String.format(CONFIG_LANGUAGE_NAME_VERSION, getLanguageName(), getLanguageVersion()));
         LOGGER.config(String.format(CONFIG_ENGINE_NAME_VERSION, getEngineName(), getEngineVersion()));

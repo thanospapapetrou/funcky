@@ -26,7 +26,7 @@ public class Funcky {
 
     private final FunckyEngine engine;
 
-    public static void main(final String[] arguments) {
+    public static void main(final String[] arguments) throws IOException {
         if (arguments.length == 0) {
             configureLogger(Tokenizer.class, Level.FINEST);
             configureLogger(Parser.class, Level.FINER);
@@ -49,7 +49,7 @@ public class Funcky {
         logger.addHandler(handler);
     }
 
-    public Funcky() {
+    public Funcky() throws IOException {
         this(new FunckyFactory());
     }
 
@@ -83,8 +83,8 @@ public class Funcky {
     }
 
     private void runScript(final String script, final String... arguments) {
-        try (final InputStreamReader reader = new InputStreamReader(engine.getLinker().normalize(engine.getLinker().getStdin(),
-                new URI(script)).toURL().openStream())) {
+        try (final InputStreamReader reader = new InputStreamReader(engine.getLinker().normalize(engine.getLinker()
+                .getStdin(), new URI(script)).toURL().openStream())) {
             engine.getManager().setFile(script);
             engine.getManager().setArguments(arguments);
             System.exit(engine.eval(reader).getValue().intValue());
