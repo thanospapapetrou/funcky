@@ -7,7 +7,6 @@ Nice to Have
 
 test records
 monads
-remove engine from ast, these are not compiled scripts any more
 thread safety
 
 Funcky> "funcky:records".unit
@@ -17,9 +16,9 @@ use logging instead of System.out.println and System.err.println, because messag
 
 instanceof -> pattern matching
 cleanup, factory, engine and reduce eval methods
-engine in values
-engine always in expressions
-cleanup linker, parser, tokenizer etc
+cleanup linker, context manager
+converter -> part of engine?
+escape helper -> part of parser?
 separate bindings in context into scripts, imports, definitions etc
 transpile
 generics
@@ -38,3 +37,4 @@ java monad
 -
 -Funcky> exit
 -java.net.MalformedURLException: unknown protocol: funcky
+rethink static methods

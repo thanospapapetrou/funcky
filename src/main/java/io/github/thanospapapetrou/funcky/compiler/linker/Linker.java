@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -38,8 +39,9 @@ import io.github.thanospapapetrou.funcky.runtime.prelude.Numbers;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public class Linker {
-    public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE =
-            engine -> new FunckyFunctionType(engine, new FunckyListType(engine, FunckyListType.STRING.apply(engine)),
+    public static final String JAVA_PREFIX = "$"; // TODO move to transpiler
+    public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE = engine ->
+            new FunckyFunctionType(engine, new FunckyListType(engine, FunckyListType.STRING.apply(engine)),
                     FunckySimpleType.NUMBER.apply(engine));
     public static final URI STDIN;
 
@@ -47,18 +49,9 @@ public class Linker {
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
     private static final String ERROR_RESOLVING_LIBRARY_NAMESPACE = "Error resolving library namespace";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
-    private static final Set<Class<? extends FunckyLibrary>> PRELUDE = Set.of(
-            Types.class, // TODO get permitted subclasses instead
-            Numbers.class,
-            Booleans.class,
-            Characters.class,
-            Lists.class,
-            Commons.class,
-            Combinators.class
-    );
     private static final String PRELUDE_SCHEME = FunckyFactory.getParameters(FunckyEngine.LANGUAGE).get(0)
             .toLowerCase(Locale.ROOT);
-    private static final String PRELUDE_SCRIPT = "/prelude/%1$s.funcky";
+    private static final String PRELUDE_SCRIPT = "/prelude/%1$s.funcky"; // TODO use extension
     private static final URI USER_DIR;
 
     static {
@@ -143,8 +136,7 @@ public class Linker {
                 throw new SneakyCompilationException(
                         new NameAlreadyDefinedException(definition, otherDefinition.get()));
             }
-            engine.getManager().setDefinitionExpression(definition.file(), definition.name(),
-                    definition.expression());
+            engine.getManager().setDefinitionExpression(definition);
         }
         engine.getManager().setLoaded(script.getFile());
         for (final FunckyDefinition definition : script.getDefinitions()) {
@@ -166,9 +158,10 @@ public class Linker {
     }
 
     private Class<? extends FunckyLibrary> getLibrary(final URI file) {
-        return PRELUDE.stream()
-                .filter(library -> getNamespace(library).equals(file))
-                .findFirst().orElse(null);
+        return (Class<? extends FunckyLibrary>) Arrays.stream(FunckyLibrary.class.getPermittedSubclasses())
+                .filter(library -> getNamespace((Class<? extends FunckyLibrary>) library).equals(file))
+                .findFirst()
+                .orElse(null);
     }
 
     private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {

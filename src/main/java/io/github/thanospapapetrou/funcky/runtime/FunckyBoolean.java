@@ -28,7 +28,7 @@ public final class FunckyBoolean extends FunckyValue implements Comparable<Funck
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(engine, Booleans.class, Boolean.toString(value));
+        return new FunckyReference(engine, new Booleans(engine).getFile(), Boolean.toString(value));
     }
 
     @Override

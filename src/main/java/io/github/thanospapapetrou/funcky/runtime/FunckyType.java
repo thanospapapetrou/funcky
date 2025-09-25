@@ -18,7 +18,8 @@ public sealed abstract class FunckyType extends FunckyValue implements Comparabl
             FunckyFunctionType.class,
             FunckyListType.class,
             FunckyRecordType.class,
-            FunckyTypeVariable.class);
+            FunckyTypeVariable.class
+    );
 
     private static int getOrder(final FunckyType type) {
         return IntStream.range(0, ORDERING.size())

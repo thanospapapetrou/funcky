@@ -92,7 +92,6 @@ public class Preprocessor {
                 && (((FunckyLiteral) ((FunckyApplication) expression).getArgument()).getValue() instanceof FunckyNumber)
                 && (((FunckyNumber) ((FunckyLiteral) ((FunckyApplication) expression).getArgument()).getValue())
                 .getValue().intValue() == argument);
-        // TODO validate
     }
 
     private boolean containsArgument(final int argument, final FunckyExpression expression) {

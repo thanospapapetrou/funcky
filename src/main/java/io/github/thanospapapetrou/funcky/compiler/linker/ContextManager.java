@@ -8,7 +8,9 @@ import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyFactory;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
 public class ContextManager {
@@ -55,22 +57,23 @@ public class ContextManager {
         context.setAttribute(String.format(IMPORT, script, prefix), namespace, ScriptContext.GLOBAL_SCOPE);
     }
 
-    public FunckyExpression getDefinitionExpression(final URI namespace, final String name) {
-        return (FunckyExpression) context.getAttribute(String.format(DEFINITION_EXPRESSION, namespace, name),
+    public FunckyExpression getDefinitionExpression(final FunckyReference reference) {
+        return (FunckyExpression) context.getAttribute(String.format(DEFINITION_EXPRESSION, reference.getNamespace(), reference.getName()),
                 ScriptContext.GLOBAL_SCOPE);
     }
 
-    public void setDefinitionExpression(final URI script, final String name, final FunckyExpression expression) {
-        context.setAttribute(String.format(DEFINITION_EXPRESSION, script, name), expression,
+    public void setDefinitionExpression(final FunckyDefinition definition) {
+        context.setAttribute(String.format(DEFINITION_EXPRESSION, definition.file(), definition.name()), definition.expression(),
                 ScriptContext.GLOBAL_SCOPE);
     }
 
-    public FunckyType getDefinitionType(final URI namespace, final String name) {
-        return (FunckyType) context.getAttribute(String.format(DEFINITION_TYPE, namespace, name),
+    public FunckyType getDefinitionType(final FunckyReference reference) {
+        return (FunckyType) context.getAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()),
                 ScriptContext.GLOBAL_SCOPE);
     }
 
-    public void setDefinitionType(final URI script, final String name, final FunckyType type) {
-        context.setAttribute(String.format(DEFINITION_TYPE, script, name), type, ScriptContext.GLOBAL_SCOPE);
+    public void setDefinitionType(final FunckyReference reference, final FunckyType type) {
+        context.setAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()),
+                type, ScriptContext.GLOBAL_SCOPE);
     }
 }

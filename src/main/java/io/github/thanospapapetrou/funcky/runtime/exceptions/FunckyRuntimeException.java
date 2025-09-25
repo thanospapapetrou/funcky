@@ -67,7 +67,7 @@ public class FunckyRuntimeException extends ScriptException {
 
     private String formatStack(final FunckyReference reference) {
             final FunckyExpression expression = reference.getEngine().getManager()
-                    .getDefinitionExpression(reference.resolveNamespace(), reference.getName());
+                    .getDefinitionExpression(reference.normalize());
             return String.format(DEFINITION, new FunckyDefinition(expression.getFile(), expression.getLine(),
                     reference.getName(), expression), expression.getFile(), expression.getLine(), 1);
     }

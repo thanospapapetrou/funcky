@@ -7,13 +7,10 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
@@ -22,6 +19,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 
 public sealed class FunckyLibrary extends FunckyScript
         permits Types, Numbers, Booleans, Characters, Lists, Commons, Combinators {
+    private static final String ERROR_RESOLVING_FIELD = "Error resolving field %s";
 
     protected static int requireInt(final FunckyNumber number, final String message) {
         if ((number.getValue().compareTo(BigDecimal.valueOf(number.getValue().intValue())) != 0)) {
@@ -39,7 +37,7 @@ public sealed class FunckyLibrary extends FunckyScript
                 .orElseThrow(() -> new SneakyRuntimeException(message));
     }
 
-    protected FunckyLibrary(final FunckyEngine engine, final FunckyValue... values) { // TODO remove values
+    protected FunckyLibrary(final FunckyEngine engine) {
         super(engine, null);
     }
 
@@ -50,21 +48,18 @@ public sealed class FunckyLibrary extends FunckyScript
 
     @Override
     public List<FunckyDefinition> getDefinitions() {
-        return Arrays.stream(getClass().getDeclaredFields())
+        return Arrays.stream(getClass().getDeclaredFields()).filter(field -> Modifier.isPublic(field.getModifiers()))
+                .filter(field -> field.getName().startsWith(Linker.JAVA_PREFIX))
                 .map(this::getDefinition)
-                .filter(Objects::nonNull)
                 .toList();
     }
 
     private FunckyDefinition getDefinition(final Field field) {
         try {
-            final int modifiers = field.getModifiers();
-            return (Modifier.isPublic(modifiers) && field.getName().startsWith("$"))
-                    // TODO improve starts with
-                    ? new FunckyDefinition(getFile(), -1, field.getName().substring(1), // TODO improve substring
-                    new FunckyLiteral(engine, (FunckyValue) field.get(this))) : null;
+            return new FunckyDefinition(getFile(), -1, field.getName().substring(Linker.JAVA_PREFIX.length()),
+                    new FunckyLiteral(engine, (FunckyValue) field.get(this)));
         } catch (final IllegalAccessException e) {
-            return null;
+            throw new IllegalStateException(String.format(ERROR_RESOLVING_FIELD, field.getName()), e);
         }
     }
 }

@@ -12,6 +12,7 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
@@ -30,12 +31,6 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     HigherOrderFunction(final FunckyEngine engine, final FunckyLibrary library, final FunckyType... types) {
         this(engine, new FunckyFunctionType(engine, types), types.length - 1, library, null, List.of());
     }
-
-    HigherOrderFunction(final FunckyEngine engine, final Class<? extends FunckyLibrary> library, final String name,
-            final FunckyType... types) {
-        this(engine, new FunckyFunctionType(engine, types), types.length - 1, null,
-                new FunckyReference(engine, library, name), List.of());
-    } // TODO remove
 
     private HigherOrderFunction(final FunckyEngine engine, final FunckyFunctionType type, final int order,
             final FunckyLibrary library, final FunckyExpression expression, final List<FunckyExpression> arguments) {
@@ -67,15 +62,14 @@ public abstract class HigherOrderFunction extends FunckyFunction {
 
     @Override
     public FunckyExpression toExpression() {
-        return (expression == null) ? new FunckyReference(engine, library.getClass(), getName()) : expression;
+        return (expression == null) ? new FunckyReference(engine, library.getFile(), getName()) : expression;
     }
 
     private String getName() {
         return Arrays.stream(library.getClass().getDeclaredFields())
                 .filter(field -> Modifier.isPublic(field.getModifiers()))
                 .filter(this::isThis)
-                .map(Field::getName)
-                .map(name -> name.substring(1)) // TODO improve logic
+                .map(Field::getName).map(name -> name.substring(Linker.JAVA_PREFIX.length()))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException(ERROR_RESOLVING_NAME));
     }
