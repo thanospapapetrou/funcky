@@ -20,7 +20,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public abstract class HigherOrderFunction extends FunckyFunction {
-    private static final String ERROR_RESOLVING_FIELD = "Error resolving field %s";
+    private static final String ERROR_RESOLVING_FIELD = "Error resolving field `%1$s`";
     private static final String ERROR_RESOLVING_NAME = "Error resolving name";
 
     private final int order;

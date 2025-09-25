@@ -78,12 +78,12 @@ public class Funcky {
                 System.out.printf(PROMPT, engine.getFactory().getLanguageName());
             }
         } catch (final IOException e) {
-            LOGGER.log(Level.SEVERE, String.format(ERROR_READING, Linker.STDIN), e);
+            LOGGER.log(Level.SEVERE, String.format(ERROR_READING, engine.getLinker().getStdin()), e);
         }
     }
 
     private void runScript(final String script, final String... arguments) {
-        try (final InputStreamReader reader = new InputStreamReader(Linker.normalize(Linker.STDIN,
+        try (final InputStreamReader reader = new InputStreamReader(engine.getLinker().normalize(engine.getLinker().getStdin(),
                 new URI(script)).toURL().openStream())) {
             engine.getManager().setFile(script);
             engine.getManager().setArguments(arguments);

@@ -45,12 +45,16 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
 
     FunckyEngine(final FunckyFactory factory) {
         this.factory = factory;
-        tokenizer = new Tokenizer();
+        tokenizer = new Tokenizer(this);
         parser = new Parser(this);
-        preprocessor = new Preprocessor();
+        preprocessor = new Preprocessor(this);
         linker = new Linker(this);
         manager = new ContextManager(this.getContext());
         converter = new FunckyJavaConverter(this);
+    }
+
+    public Linker getLinker() {
+        return linker;
     }
 
     public ContextManager getManager() {

@@ -19,7 +19,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 
 public sealed class FunckyLibrary extends FunckyScript
         permits Types, Numbers, Booleans, Characters, Lists, Commons, Combinators {
-    private static final String ERROR_RESOLVING_FIELD = "Error resolving field %s";
+    private static final String ERROR_RESOLVING_FIELD = "Error resolving field `%1$``";
 
     protected static int requireInt(final FunckyNumber number, final String message) {
         if ((number.getValue().compareTo(BigDecimal.valueOf(number.getValue().intValue())) != 0)) {
@@ -43,7 +43,7 @@ public sealed class FunckyLibrary extends FunckyScript
 
     @Override
     public URI getFile() {
-        return Linker.getNamespace(getClass());
+        return engine.getLinker().getNamespace(getClass());
     }
 
     @Override

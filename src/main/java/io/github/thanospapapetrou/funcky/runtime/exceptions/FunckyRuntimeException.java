@@ -15,7 +15,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 public class FunckyRuntimeException extends ScriptException {
     private static final String APPLICATION = "%n    in `%1$s` in %2$s at line %3$d at column %4$d";
     private static final String DEFINITION = "%n  in `%1$s` in %2$s at line %3$d at column %4$d";
-    private static final String ERROR_FORMATTING_STACK = "Error formatting stack for %1$s";
+    private static final String ERROR_FORMATTING_STACK = "Error formatting stack for literal `%1$s`";
     private final List<FunckyExpression> stack;
 
     FunckyRuntimeException(final String message) {

@@ -59,7 +59,7 @@ public class Parser {
     private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
     private static final String SCRIPT = "Script %1$s 1 1";
     private static final String TYPE_VARIABLE = "$_";
-    private static final String UNEXPECTED_TOKEN = "Unexpected token %1$s";
+    private static final String UNEXPECTED_TOKEN = "Unexpected token `%1$s`";
 
     private final FunckyEngine engine;
 

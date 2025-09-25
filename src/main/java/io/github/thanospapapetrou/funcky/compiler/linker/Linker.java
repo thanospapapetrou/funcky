@@ -9,13 +9,12 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
@@ -29,60 +28,58 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Characters;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Commons;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Lists;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Numbers;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public class Linker {
     public static final String JAVA_PREFIX = "$"; // TODO move to transpiler
     public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE = engine ->
             new FunckyFunctionType(engine, new FunckyListType(engine, FunckyListType.STRING.apply(engine)),
                     FunckySimpleType.NUMBER.apply(engine));
-    public static final URI STDIN;
 
     private static final String DEFINITION = "  %1$s%n    %2$s";
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
-    private static final String ERROR_RESOLVING_LIBRARY_NAMESPACE = "Error resolving library namespace";
+    private static final String ERROR_NORMALISING_NAMESPACE = "Error normalising namespace %1$s";
+    private static final String ERROR_RESOLVING_NAMESPACE = "Error resolving namespace for library `%1$s`";
+    private static final String ERROR_RESOLVING_STDIN = "Error resolving stdin";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
-    private static final String PRELUDE_SCHEME = FunckyFactory.getParameters(FunckyEngine.LANGUAGE).get(0)
-            .toLowerCase(Locale.ROOT);
-    private static final String PRELUDE_SCRIPT = "/prelude/%1$s.funcky"; // TODO use extension
-    private static final URI USER_DIR;
-
-    static {
-        try {
-            STDIN = new URI(PRELUDE_SCHEME, "stdin", null);
-            USER_DIR = new File(System.getProperty("user.dir")).getCanonicalFile().toURI();
-        } catch (final IOException | URISyntaxException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+    private static final String PRELUDE_SCRIPT = "/prelude/%1$s.%2$s";
+    private static final String STDIN = "stdin";
+    private static final String USER_DIR = "user.dir";
 
     private final FunckyEngine engine;
-
-    public static URI normalize(final URI base, final URI namespace) {
-        return namespace.isAbsolute() ? namespace : (base.equals(STDIN) ? USER_DIR : base).resolve(namespace);
-    }
-
-    public static URI getNamespace(final Class<? extends FunckyLibrary> library) {
-        try {
-            return new URI(PRELUDE_SCHEME, library.getSimpleName().toLowerCase(Locale.ROOT), null);
-        } catch (final URISyntaxException e) {
-            throw new IllegalStateException(ERROR_RESOLVING_LIBRARY_NAMESPACE, e);
-        }
-    }
 
     public Linker(final FunckyEngine engine) {
         this.engine = engine;
     }
 
+    public URI getNamespace(final Class<? extends FunckyLibrary> library) {
+        try {
+            return new URI(getPreludeScheme(), library.getSimpleName().toLowerCase(Locale.ROOT), null);
+        } catch (final URISyntaxException e) {
+            throw new IllegalStateException(String.format(ERROR_RESOLVING_NAMESPACE, library.getName()), e);
+        }
+    }
+
+    public URI getStdin() {
+        try {
+            return new URI(getPreludeScheme(), STDIN, null);
+        } catch (final URISyntaxException e) {
+            throw new IllegalStateException(ERROR_RESOLVING_STDIN, e);
+        }
+    }
+
+    public URI normalize(final URI base, final URI namespace) {
+        try {
+            return namespace.isAbsolute() ? namespace
+                    : (base.equals(getStdin()) ? new File(System.getProperty(USER_DIR)).getCanonicalFile().toURI()
+                            : base).resolve(namespace);
+        } catch (final IOException e) {
+            throw new IllegalStateException(String.format(ERROR_NORMALISING_NAMESPACE, namespace), e);
+        }
+    }
+
     public FunckyExpression link(final FunckyExpression expression) {
-        engine.getManager().setLoaded(Linker.STDIN);
+        engine.getManager().setLoaded(getStdin());
         if (expression != null) {
             LOGGER.fine(expression.getType().toString());
         }
@@ -103,8 +100,9 @@ public class Linker {
     }
 
     public InputStream getScript(final URI file) throws IOException {
-        return ((getLibrary(file) != null) ? Linker.class.getResource(String.format(PRELUDE_SCRIPT,
-                file.getSchemeSpecificPart())) : file.toURL()).openStream();
+        return Objects.requireNonNull((getLibrary(file) != null) ? Linker.class.getResource(
+                String.format(PRELUDE_SCRIPT, file.getSchemeSpecificPart(),
+                        engine.getFactory().getExtensions().getFirst())) : file.toURL()).openStream();
     }
 
     private void validateImports(final FunckyScript script) {
@@ -157,6 +155,7 @@ public class Linker {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Class<? extends FunckyLibrary> getLibrary(final URI file) {
         return (Class<? extends FunckyLibrary>) Arrays.stream(FunckyLibrary.class.getPermittedSubclasses())
                 .filter(library -> getNamespace((Class<? extends FunckyLibrary>) library).equals(file))
@@ -170,5 +169,9 @@ public class Linker {
         } catch (final ReflectiveOperationException e) {
             throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
         }
+    }
+
+    private String getPreludeScheme() {
+        return engine.getFactory().getLanguageName().toLowerCase(Locale.ROOT);
     }
 }

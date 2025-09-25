@@ -3,6 +3,7 @@ package io.github.thanospapapetrou.funcky.compiler.preprocessor;
 import java.util.AbstractMap;
 import java.util.Map;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
@@ -19,6 +20,12 @@ public class Preprocessor {
     private static final String COMBINATOR_S = "s";
     private static final String REFERENCE_ARGUMENT = "$";
     private static final String REFERENCE_FUNCTION = "$$";
+
+    private final FunckyEngine engine;
+
+    public Preprocessor(final FunckyEngine engine) {
+        this.engine = engine;
+    }
 
     public FunckyExpression preprocess(final FunckyExpression expression) {
         final Map.Entry<Integer, FunckyExpression> function = isFunction(expression);
@@ -102,19 +109,20 @@ public class Preprocessor {
 
     private FunckyReference i(final FunckyExpression expression) {
         return new FunckyReference(expression.getEngine(), expression.getFile(), expression.getLine(),
-                expression.getColumn(), Linker.getNamespace(Combinators.class), COMBINATOR_I);
+                expression.getColumn(), engine.getLinker().getNamespace(Combinators.class), COMBINATOR_I);
     }
 
     private FunckyApplication k(final FunckyExpression expression) {
         return new FunckyApplication(new FunckyReference(expression.getEngine(), expression.getFile(),
-                expression.getLine(), expression.getColumn(), Linker.getNamespace(Combinators.class), COMBINATOR_K),
+                expression.getLine(), expression.getColumn(), engine.getLinker().getNamespace(Combinators.class),
+                COMBINATOR_K),
                 expression);
     }
 
     private FunckyApplication s(final int argument, final FunckyExpression expression) {
         return new FunckyApplication(new FunckyApplication(new FunckyReference(expression.getEngine(),
                 expression.getFile(), expression.getLine(), expression.getColumn(),
-                Linker.getNamespace(Combinators.class), COMBINATOR_S),
+                engine.getLinker().getNamespace(Combinators.class), COMBINATOR_S),
                 transform(argument, ((FunckyApplication) expression).getFunction())),
                 transform(argument, ((FunckyApplication) expression).getArgument()));
     }

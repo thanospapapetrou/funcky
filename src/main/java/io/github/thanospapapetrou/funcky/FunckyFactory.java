@@ -34,11 +34,6 @@ public class FunckyFactory implements ScriptEngineFactory {
         }
     }
 
-    public static List<String> getParameters(final String key) {
-        final String parameters = PARAMETERS.getProperty(key);
-        return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
-    }
-
     public FunckyFactory() {
         LOGGER.config(String.format(CONFIG_LANGUAGE_NAME_VERSION, getLanguageName(), getLanguageVersion()));
         LOGGER.config(String.format(CONFIG_ENGINE_NAME_VERSION, getEngineName(), getEngineVersion()));
@@ -87,7 +82,7 @@ public class FunckyFactory implements ScriptEngineFactory {
     @Override
     public String getParameter(final String key) {
         final List<String> parameters = getParameters(key);
-        return parameters.isEmpty() ? null : parameters.get(0);
+        return parameters.isEmpty() ? null : parameters.getFirst();
     }
 
     @Override
@@ -112,5 +107,10 @@ public class FunckyFactory implements ScriptEngineFactory {
         final FunckyEngine engine = new FunckyEngine(this);
         engine.setBindings(GLOBAL.getBindings(ScriptContext.GLOBAL_SCOPE), ScriptContext.GLOBAL_SCOPE);
         return engine;
+    }
+
+    private List<String> getParameters(final String key) {
+        final String parameters = PARAMETERS.getProperty(key);
+        return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
     }
 }

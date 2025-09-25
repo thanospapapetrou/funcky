@@ -14,13 +14,12 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public class FunckyJavaConverter {
-    private final String ERROR_CONVERTING_TO_FUNCKY = "Error converting %1$s (%2$s) to %3$s";
-    private final String ERROR_CONVERTING_TO_JAVA = "Error converting %1$s (%2$s) to Java";
-    private final String LANGUAGE = FunckyFactory.getParameters(FunckyEngine.LANGUAGE).get(0);
+    private static final String ERROR_CONVERTING_TO_FUNCKY = "Error converting %1$s (%2$s) to %3$s";
+    private static final String ERROR_CONVERTING_TO_JAVA = "Error converting %1$s (%2$s) to Java";
 
     // TODO convert types?
 
-    private FunckyEngine engine;
+    private final FunckyEngine engine;
 
     public FunckyJavaConverter(final FunckyEngine engine) {
         this.engine = engine;
@@ -65,7 +64,7 @@ public class FunckyJavaConverter {
         final FunckyListType tailType =
                 (tail == null) ? new FunckyListType(engine, new FunckyTypeVariable(engine)) : tail.getType();
         final String error = String.format(ERROR_CONVERTING_TO_FUNCKY, iterator.getClass().getName(), iterator,
-                LANGUAGE);
+                engine.getFactory().getLanguageName());
         final FunckyListType listType = (FunckyListType) new FunckyListType(engine, headType).unify(tailType);
             if (listType == null) {
                 throw new IllegalArgumentException(error);
@@ -106,7 +105,8 @@ public class FunckyJavaConverter {
             return convert((String) object);
         }
         throw new IllegalArgumentException(
-                String.format(ERROR_CONVERTING_TO_FUNCKY, object.getClass().getName(), object, LANGUAGE));
+                String.format(ERROR_CONVERTING_TO_FUNCKY, object.getClass().getName(), object,
+                        engine.getFactory().getLanguageName()));
     }
 
     private Object convert(final FunckyValue value) {
