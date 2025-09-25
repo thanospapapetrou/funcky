@@ -46,7 +46,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
             final HigherOrderFunction that = this;
             final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(
                     new FunckyFunctionType(engine, argument.getType(), new FunckyTypeVariable(engine)))).getRange()
-                    .eval();
+                    .eval(engine.getContext());
             final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
             arguments.add(argument);
         return (order > 1) ? new HigherOrderFunction(engine, (FunckyFunctionType) range, order - 1,

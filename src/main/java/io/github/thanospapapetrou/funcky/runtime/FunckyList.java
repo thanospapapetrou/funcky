@@ -16,7 +16,7 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
     private final FunckyExpression tail;
 
     private static String toString(final FunckyExpression expression) {
-            return expression.eval().toString();
+        return expression.eval(expression.getEngine().getContext()).toString();
     }
 
     public FunckyList(final FunckyEngine engine, final FunckyListType type, final FunckyExpression head,
@@ -41,6 +41,17 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
         return tail;
     }
 
+    public String toString(final Function<FunckyExpression, String> toString) {
+        final StringBuilder string = new StringBuilder(PREFIX);
+        for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval(engine.getContext())) {
+            string.append(toString.apply(list.head)).append(DELIMITER);
+        }
+        if (string.length() > PREFIX.length()) {
+            string.setLength(string.length() - DELIMITER.length());
+        }
+        return string.append(SUFFIX).toString();
+    }
+
     @Override
     public FunckyListType getType() {
         return type;
@@ -53,43 +64,37 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
 
     @Override
     public int compareTo(final FunckyList list) {
-            final int headComparison = (head == null) ? ((list.head == null) ? 0 : -1)
-                    : ((list.head == null) ? 1 : ((Comparable<FunckyValue>) head.eval()).compareTo(list.head.eval()));
-            return (headComparison == 0) ? ((tail == null) ? ((list.tail == null) ? 0 : -1)
-                    : ((list.tail == null) ? 1 : ((Comparable<FunckyValue>) tail.eval()).compareTo(list.tail.eval())))
+        final int headComparison = (head == null) ? ((list.head == null) ? 0 : -1) : ((list.head == null) ? 1
+                : ((Comparable<FunckyValue>) head.eval(engine.getContext())).compareTo(
+                        list.head.eval(engine.getContext())));
+        return (headComparison == 0) ? ((tail == null) ? ((list.tail == null) ? 0 : -1) : ((list.tail == null) ? 1
+                : ((Comparable<FunckyValue>) tail.eval(engine.getContext())).compareTo(
+                        list.tail.eval(engine.getContext()))))
                     : headComparison;
     }
 
     @Override
     public boolean equals(final Object object) {
             return (object instanceof FunckyList) && ((head == null) ? (((FunckyList) object).head == null)
-                    : ((((FunckyList) object).head != null) && head.eval().equals(((FunckyList) object).head.eval())))
+                    : ((((FunckyList) object).head != null) && head.eval(engine.getContext())
+                            .equals(((FunckyList) object).head.eval(engine.getContext()))))
                     && ((tail == null) ? (((FunckyList) object).tail == null)
-                    : ((((FunckyList) object).tail != null) && tail.eval().equals(((FunckyList) object).tail.eval())));
+                    : ((((FunckyList) object).tail != null) && tail.eval(engine.getContext())
+                            .equals(((FunckyList) object).tail.eval(engine.getContext()))));
     }
 
     @Override
     public int hashCode() {
-            return ((head == null) ? 0 : head.eval().hashCode()) + ((tail == null) ? 0 : tail.eval().hashCode());
-    }
-
-    public String toString(final Function<FunckyExpression, String> toString) {
-            final StringBuilder string = new StringBuilder(PREFIX);
-            for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval()) {
-                string.append(toString.apply(list.head)).append(DELIMITER);
-            }
-            if (string.length() > PREFIX.length()) {
-                string.setLength(string.length() - DELIMITER.length());
-            }
-            return string.append(SUFFIX).toString();
+        return ((head == null) ? 0 : head.eval(engine.getContext()).hashCode()) + ((tail == null) ? 0
+                : tail.eval(engine.getContext()).hashCode());
     }
 
     @Override
     public String toString() {
         if (type.equals(FunckyListType.STRING.apply(engine))) {
                 final StringBuilder string = new StringBuilder();
-                for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval()) {
-                    string.append(((FunckyCharacter) list.head.eval()).getValue());
+            for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval(engine.getContext())) {
+                string.append(((FunckyCharacter) list.head.eval(engine.getContext())).getValue());
                 }
                 return string.toString();
             }

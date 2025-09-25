@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.script.Bindings;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
-import javax.script.SimpleScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 
 public class FunckyScript extends CompiledScript {
@@ -57,22 +54,5 @@ public class FunckyScript extends CompiledScript {
                     new FunckyLiteral(engine,
                             engine.getConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval(
                     context);
-    }
-
-    @Override
-    public FunckyNumber eval(final Bindings bindings) {
-        final SimpleScriptContext context = new SimpleScriptContext();
-        context.setReader(engine.getContext().getReader());
-        context.setWriter(engine.getContext().getWriter());
-        context.setErrorWriter(engine.getContext().getErrorWriter());
-        context.setBindings(engine.getContext().getBindings(ScriptContext.GLOBAL_SCOPE), ScriptContext.GLOBAL_SCOPE);
-        context.setBindings((bindings == null) ? engine.getContext().getBindings(ScriptContext.ENGINE_SCOPE) : bindings,
-                ScriptContext.ENGINE_SCOPE);
-        return eval(context);
-    }
-
-    @Override
-    public FunckyNumber eval() {
-        return eval(engine.getContext());
     }
 }

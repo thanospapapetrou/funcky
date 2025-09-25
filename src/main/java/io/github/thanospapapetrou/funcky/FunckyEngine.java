@@ -8,7 +8,6 @@ import java.util.ArrayDeque;
 import java.util.stream.Collectors;
 
 import javax.script.AbstractScriptEngine;
-import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
@@ -76,8 +75,8 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     }
 
     @Override
-    public FunckyValue eval(final String expression, final ScriptContext context)
-            throws FunckyCompilationException, FunckyRuntimeException {
+    public FunckyValue eval(final String expression, final ScriptContext context) throws FunckyCompilationException,
+            FunckyRuntimeException {
         final FunckyExpression expr = compile(expression);
         try {
             return (expr == null) ? null : expr.eval(context);
@@ -87,29 +86,8 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     }
 
     @Override
-    public FunckyValue eval(final String expression, final Bindings bindings)
-            throws FunckyCompilationException, FunckyRuntimeException {
-        final FunckyExpression expr = compile(expression);
-        try {
-            return (expr == null) ? null : expr.eval(bindings);
-        } catch (final SneakyRuntimeException e) {
-            throw e.getCause();
-        }
-    }
-
-    @Override
-    public FunckyValue eval(final String expression) throws FunckyCompilationException, FunckyRuntimeException {
-        final FunckyExpression expr = compile(expression);
-        try {
-            return (expr == null) ? null : expr.eval();
-        } catch (final SneakyRuntimeException e) {
-            throw e.getCause();
-        }
-    }
-
-    @Override
-    public FunckyNumber eval(final Reader script, final ScriptContext context)
-            throws FunckyCompilationException, FunckyRuntimeException {
+    public FunckyNumber eval(final Reader script, final ScriptContext context) throws FunckyCompilationException,
+            FunckyRuntimeException {
         try {
             return compile(script).eval(context);
         } catch (final SneakyRuntimeException e) {
@@ -117,29 +95,9 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
         }
     }
 
-    @Override
-    public FunckyNumber eval(final Reader script, final Bindings bindings)
-            throws FunckyCompilationException, FunckyRuntimeException {
-        try {
-            return compile(script).eval(bindings);
-        } catch (final SneakyRuntimeException e) {
-            throw e.getCause();
-        }
-
-    }
-
-    @Override
-    public FunckyNumber eval(final Reader script) throws FunckyCompilationException, FunckyRuntimeException {
-        try {
-            return compile(script).eval();
-        } catch (final SneakyRuntimeException e) {
-            throw e.getCause();
-        }
-    }
-
-    public FunckyScript compile(final URI file) throws FunckyCompilationException {
+    public void compile(final URI file) throws FunckyCompilationException {
         try (final InputStreamReader input = new InputStreamReader(linker.getScript(file))) {
-            return compile(input, file, false);
+            compile(input, file, false);
         } catch (final IOException e) {
             throw new FunckyCompilationException(e);
         }
@@ -148,9 +106,9 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     @Override
     public FunckyExpression compile(final String expression) throws FunckyCompilationException {
         try {
-            return linker.link(preprocessor.preprocess(parser.parse(
-                    tokenizer.tokenize(expression).stream().filter(token -> !token.type().equals(TokenType.COMMENT))
-                            .collect(Collectors.toCollection(ArrayDeque::new)))));
+            return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
+                    .filter(token -> !token.type().equals(TokenType.COMMENT))
+                    .collect(Collectors.toCollection(ArrayDeque::new)))));
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }
@@ -162,17 +120,6 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
             return compile(script, getManager().getFile(), true);
         } catch (final IOException e) {
             throw new FunckyCompilationException(e);
-        }
-    }
-
-    private FunckyScript compile(final Reader script, final URI file, final boolean main) throws
-            FunckyCompilationException {
-        try {
-            return linker.link(preprocessor.preprocess(parser.parse(
-                    tokenizer.tokenize(script, file).stream().filter(token -> !token.type().equals(TokenType.COMMENT))
-                            .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
-        } catch (final SneakyCompilationException e) {
-            throw e.getCause();
         }
     }
 
@@ -200,5 +147,16 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     public <T> T getInterface(final Object object, final Class<T> clazz) {
         // TODO
         return null;
+    }
+
+    private FunckyScript compile(final Reader script, final URI file, final boolean main)
+            throws FunckyCompilationException {
+        try {
+            return linker.link(preprocessor.preprocess(parser.parse(
+                    tokenizer.tokenize(script, file).stream().filter(token -> !token.type().equals(TokenType.COMMENT))
+                            .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
+        } catch (final SneakyCompilationException e) {
+            throw e.getCause();
+        }
     }
 }

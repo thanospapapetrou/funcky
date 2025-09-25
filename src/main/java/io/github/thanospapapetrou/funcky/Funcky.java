@@ -67,7 +67,7 @@ public class Funcky {
             System.out.printf(PROMPT, engine.getFactory().getLanguageName());
             while ((expression = reader.readLine()) != null) {
                 try {
-                    Optional.ofNullable(engine.eval(expression))
+                    Optional.ofNullable(engine.eval(expression, engine.getContext()))
                             .map(FunckyValue::toString)
                             .ifPresent(System.out::println);
                 } catch (final FunckyRuntimeException e) {
@@ -87,7 +87,7 @@ public class Funcky {
                 .getStdin(), new URI(script)).toURL().openStream())) {
             engine.getManager().setFile(script);
             engine.getManager().setArguments(arguments);
-            System.exit(engine.eval(reader).getValue().intValue());
+            System.exit(engine.eval(reader, engine.getContext()).getValue().intValue());
         } catch (final FunckyRuntimeException e) {
             System.err.println(e.getMessage());
         } catch (final FunckyCompilationException e) {

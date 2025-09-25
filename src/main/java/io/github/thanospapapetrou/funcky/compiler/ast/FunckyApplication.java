@@ -65,7 +65,7 @@ public final class FunckyApplication extends FunckyExpression {
             final FunckyFunctionType type = (FunckyFunctionType) functionType.unify(
                     new FunckyFunctionType(engine, argumentType, new FunckyTypeVariable(engine)));
             if (type != null) {
-                return ((FunckyType) type.getRange().eval());
+                return ((FunckyType) type.getRange().eval(engine.getContext()));
             } else {
                 throw new SneakyCompilationException(new IllegalApplicationException(this, functionType, argumentType));
             }

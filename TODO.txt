@@ -16,9 +16,7 @@ use logging instead of System.out.println and System.err.println, because messag
 
 rethink multiple constructors in values and expressions
 simplify type literal factories
-make factory configuration non-static, remove global context
 instanceof -> pattern matching
-cleanup engine and reduce eval methods
 cleanup context manager
 converter -> part of engine?
 escape helper -> part of parser?

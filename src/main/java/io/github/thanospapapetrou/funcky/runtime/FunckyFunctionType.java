@@ -50,35 +50,35 @@ public final class FunckyFunctionType extends FunckyType {
             final int classComparison = super.compareTo(type);
             if (classComparison == 0) {
                 final int domainComparison =
-                        ((FunckyType) domain.eval()).compareTo((FunckyType) ((FunckyFunctionType) type).domain.eval());
-                return (domainComparison == 0) ? ((FunckyType) range.eval()).compareTo(
-                        (FunckyType) ((FunckyFunctionType) type).range.eval()) : domainComparison;
+                        ((FunckyType) domain.eval(engine.getContext())).compareTo((FunckyType) ((FunckyFunctionType) type).domain.eval(engine.getContext()));
+                return (domainComparison == 0) ? ((FunckyType) range.eval(engine.getContext())).compareTo(
+                        (FunckyType) ((FunckyFunctionType) type).range.eval(engine.getContext())) : domainComparison;
             }
             return classComparison;
     }
 
     @Override
     public boolean equals(final Object object) {
-            return (object instanceof FunckyFunctionType) && domain.eval()
-                    .equals(((FunckyFunctionType) object).domain.eval())
-                    && range.eval().equals(((FunckyFunctionType) object).range.eval());
+            return (object instanceof FunckyFunctionType) && domain.eval(engine.getContext())
+                    .equals(((FunckyFunctionType) object).domain.eval(engine.getContext()))
+                    && range.eval(engine.getContext()).equals(((FunckyFunctionType) object).range.eval(engine.getContext()));
     }
 
     @Override
     public int hashCode() {
-            return domain.eval().hashCode() + range.eval().hashCode();
+            return domain.eval(engine.getContext()).hashCode() + range.eval(engine.getContext()).hashCode();
     }
 
     @Override
     protected Set<FunckyTypeVariable> getTypeVariables() {
-        final Set<FunckyTypeVariable> typeVariables = new HashSet<>(((FunckyType) domain.eval()).getTypeVariables());
-        typeVariables.addAll(((FunckyType) range.eval()).getTypeVariables());
+        final Set<FunckyTypeVariable> typeVariables = new HashSet<>(((FunckyType) domain.eval(engine.getContext())).getTypeVariables());
+        typeVariables.addAll(((FunckyType) range.eval(engine.getContext())).getTypeVariables());
         return typeVariables;
     }
 
     @Override
     protected FunckyFunctionType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return new FunckyFunctionType(engine, ((FunckyType) domain.eval()).bind(bindings),
-                ((FunckyType) range.eval()).bind(bindings));
+        return new FunckyFunctionType(engine, ((FunckyType) domain.eval(engine.getContext())).bind(bindings),
+                ((FunckyType) range.eval(engine.getContext())).bind(bindings));
     }
 }

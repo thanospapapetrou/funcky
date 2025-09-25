@@ -40,7 +40,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     public int compareTo(final FunckyRecord record) {
             for (int i = 0; i < components.size(); i++) {
                 final int componentComparison =
-                        ((Comparable<FunckyValue>) components.get(i).eval()).compareTo(record.components.get(i).eval());
+                        ((Comparable<FunckyValue>) components.get(i).eval(engine.getContext())).compareTo(record.components.get(i).eval(engine.getContext()));
                 if (componentComparison != 0) {
                     return componentComparison;
                 }
@@ -57,7 +57,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     public int hashCode() {
             int hashCode = 0;
             for (final FunckyExpression component : components) {
-                hashCode += component.eval().hashCode();
+                hashCode += component.eval(engine.getContext()).hashCode();
             }
             return hashCode;
     }
@@ -66,7 +66,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     public String toString() {
             final StringBuilder string = new StringBuilder(PREFIX);
             for (final FunckyExpression component : components) {
-                string.append(component.eval().toString()).append(DELIMITER);
+                string.append(component.eval(engine.getContext()).toString()).append(DELIMITER);
             }
             if (string.length() > PREFIX.length()) {
                 string.setLength(string.length() - DELIMITER.length());
@@ -77,7 +77,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     private List<FunckyValue> eval() {
         final List<FunckyValue> values = new ArrayList<>();
         for (final FunckyExpression component : components) {
-            values.add(component.eval());
+            values.add(component.eval(engine.getContext()));
         }
         return values;
     }

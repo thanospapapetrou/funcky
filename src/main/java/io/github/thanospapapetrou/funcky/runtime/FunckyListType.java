@@ -37,28 +37,28 @@ public final class FunckyListType extends FunckyType {
     @Override
     public int compareTo(final FunckyType type) {
             final int classComparison = super.compareTo(type);
-            return (classComparison == 0) ? ((FunckyType) element.eval()).compareTo(
-                    (FunckyType) ((FunckyListType) type).element.eval()) : classComparison;
+        return (classComparison == 0) ? ((FunckyType) element.eval(engine.getContext())).compareTo(
+                (FunckyType) ((FunckyListType) type).element.eval(engine.getContext())) : classComparison;
     }
 
     @Override
     public boolean equals(final Object object) {
-            return (object instanceof FunckyListType) && element.eval()
-                    .equals(((FunckyListType) object).element.eval());
+        return (object instanceof FunckyListType) && element.eval(engine.getContext())
+                .equals(((FunckyListType) object).element.eval(engine.getContext()));
     }
 
     @Override
     public int hashCode() {
-            return element.eval().hashCode();
+        return element.eval(engine.getContext()).hashCode();
     }
 
     @Override
     protected Set<FunckyTypeVariable> getTypeVariables() {
-        return ((FunckyType) element.eval()).getTypeVariables();
+        return ((FunckyType) element.eval(engine.getContext())).getTypeVariables();
     }
 
     @Override
     protected FunckyListType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return new FunckyListType(engine, ((FunckyType) element.eval()).bind(bindings));
+        return new FunckyListType(engine, ((FunckyType) element.eval(engine.getContext())).bind(bindings));
     }
 }

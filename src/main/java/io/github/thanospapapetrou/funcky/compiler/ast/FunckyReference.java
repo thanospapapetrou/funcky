@@ -11,7 +11,6 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationEx
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
@@ -66,17 +65,17 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     @Override
-    public FunckyReference normalize() {
-        return new FunckyReference(engine, file, line, column, resolveNamespace(), name);
-    }
-
-    @Override
     public FunckyType getType() {
         final FunckyReference normalized = normalize();
         if (engine.getManager().getDefinitionType(normalized) == null) {
             engine.getManager().setDefinitionType(normalized, super.getType());
         }
         return engine.getManager().getDefinitionType(normalized);
+    }
+
+    @Override
+    public FunckyReference normalize() {
+        return new FunckyReference(engine, file, line, column, resolveNamespace(), name);
     }
 
     @Override

@@ -35,13 +35,13 @@ public final class FunckyLiteral extends FunckyExpression {
     }
 
     @Override
-    public FunckyValue eval(final ScriptContext context) {
-        return value;
+    public FunckyLiteral normalize() {
+        return this;
     }
 
     @Override
-    public FunckyLiteral normalize() {
-        return this;
+    public FunckyValue eval(final ScriptContext context) {
+        return value;
     }
 
     @Override

@@ -41,27 +41,27 @@ public final class FunckyRecordType extends FunckyType {
     @Override
     public int compareTo(final FunckyType type) {
             final int classComparison = super.compareTo(type);
-            return (classComparison == 0) ? ((FunckyList) components.eval()).compareTo(
-                    (FunckyList) ((FunckyRecordType) type).components.eval()) : classComparison;
+        return (classComparison == 0) ? ((FunckyList) components.eval(engine.getContext())).compareTo(
+                (FunckyList) ((FunckyRecordType) type).components.eval(engine.getContext())) : classComparison;
     }
 
     @Override
     public boolean equals(final Object object) {
-            return (object instanceof FunckyRecordType) && components.eval()
-                    .equals(((FunckyRecordType) object).components.eval());
+        return (object instanceof FunckyRecordType) && components.eval(engine.getContext())
+                .equals(((FunckyRecordType) object).components.eval(engine.getContext()));
     }
 
     @Override
     public int hashCode() {
-            return components.eval().hashCode();
+        return components.eval(engine.getContext()).hashCode();
     }
 
     @Override
     protected Set<FunckyTypeVariable> getTypeVariables() {
         final Set<FunckyTypeVariable> typeVariables = new HashSet<>();
-        for (FunckyList list = (FunckyList) components.eval(); list.getTail() != null;
-                list = (FunckyList) list.getTail().eval()) {
-            typeVariables.addAll(((FunckyType) list.getHead().eval()).getTypeVariables());
+        for (FunckyList list = (FunckyList) components.eval(engine.getContext()); list.getTail() != null;
+                list = (FunckyList) list.getTail().eval(engine.getContext())) {
+            typeVariables.addAll(((FunckyType) list.getHead().eval(engine.getContext())).getTypeVariables());
         }
         return typeVariables;
     }
@@ -69,9 +69,9 @@ public final class FunckyRecordType extends FunckyType {
     @Override
     protected FunckyRecordType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
         final List<FunckyType> types = new ArrayList<>();
-        for (FunckyList list = (FunckyList) components.eval(); list.getTail() != null;
-                list = (FunckyList) list.getTail().eval()) {
-            types.add(((FunckyType) list.getHead().eval()).bind(bindings));
+        for (FunckyList list = (FunckyList) components.eval(engine.getContext()); list.getTail() != null;
+                list = (FunckyList) list.getTail().eval(engine.getContext())) {
+            types.add(((FunckyType) list.getHead().eval(engine.getContext())).bind(bindings));
         }
         return new FunckyRecordType(engine, engine.getConverter().convert(types));
     }
