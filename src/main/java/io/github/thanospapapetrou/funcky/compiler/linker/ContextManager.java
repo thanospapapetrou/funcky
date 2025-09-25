@@ -7,7 +7,6 @@ import java.net.URI;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
@@ -21,7 +20,7 @@ public class ContextManager {
     private final ScriptContext context;
 
     public ContextManager(final ScriptContext context) {
-        this.context = (context == null) ? FunckyFactory.GLOBAL : context;
+        this.context = context;
     }
 
     public URI getFile() throws IOException {
@@ -42,38 +41,38 @@ public class ContextManager {
     }
 
     public boolean isLoaded(final URI script) {
-        return context.getAttribute(script.toString(), ScriptContext.GLOBAL_SCOPE) != null;
+        return context.getAttribute(script.toString(), ScriptContext.ENGINE_SCOPE) != null;
     }
 
     public void setLoaded(final URI script) {
-        context.setAttribute(script.toString(), true, ScriptContext.GLOBAL_SCOPE);
+        context.setAttribute(script.toString(), true, ScriptContext.ENGINE_SCOPE);
     }
 
     public URI getImport(final URI script, final String prefix) {
-        return (URI) context.getAttribute(String.format(IMPORT, script, prefix), ScriptContext.GLOBAL_SCOPE);
+        return (URI) context.getAttribute(String.format(IMPORT, script, prefix), ScriptContext.ENGINE_SCOPE);
     }
 
     public void setImport(final URI script, final String prefix, final URI namespace) {
-        context.setAttribute(String.format(IMPORT, script, prefix), namespace, ScriptContext.GLOBAL_SCOPE);
+        context.setAttribute(String.format(IMPORT, script, prefix), namespace, ScriptContext.ENGINE_SCOPE);
     }
 
     public FunckyExpression getDefinitionExpression(final FunckyReference reference) {
         return (FunckyExpression) context.getAttribute(String.format(DEFINITION_EXPRESSION, reference.getNamespace(), reference.getName()),
-                ScriptContext.GLOBAL_SCOPE);
+                ScriptContext.ENGINE_SCOPE);
     }
 
     public void setDefinitionExpression(final FunckyDefinition definition) {
         context.setAttribute(String.format(DEFINITION_EXPRESSION, definition.file(), definition.name()), definition.expression(),
-                ScriptContext.GLOBAL_SCOPE);
+                ScriptContext.ENGINE_SCOPE);
     }
 
     public FunckyType getDefinitionType(final FunckyReference reference) {
         return (FunckyType) context.getAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()),
-                ScriptContext.GLOBAL_SCOPE);
+                ScriptContext.ENGINE_SCOPE);
     }
 
     public void setDefinitionType(final FunckyReference reference, final FunckyType type) {
-        context.setAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()),
-                type, ScriptContext.GLOBAL_SCOPE);
+        context.setAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()), type,
+                ScriptContext.ENGINE_SCOPE);
     }
 }

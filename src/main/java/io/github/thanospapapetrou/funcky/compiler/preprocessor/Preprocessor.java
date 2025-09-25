@@ -15,7 +15,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
 
 public class Preprocessor {
-    private static final String COMBINATOR_I = "i";
+    private static final String COMBINATOR_I = "i"; // TODO remplace with references
     private static final String COMBINATOR_K = "k";
     private static final String COMBINATOR_S = "s";
     private static final String REFERENCE_ARGUMENT = "$";

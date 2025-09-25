@@ -6,14 +6,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.script.ScriptContext;
 import javax.script.ScriptEngineFactory;
-import javax.script.SimpleBindings;
-import javax.script.SimpleScriptContext;
 
 public class FunckyFactory implements ScriptEngineFactory {
-    public static final ScriptContext GLOBAL = new SimpleScriptContext();
-
     private static final String CONFIG_ENGINE_NAME_VERSION = "Engine: %1$s %2$s";
     private static final String CONFIG_EXTENSIONS = "Extensions: %1$s";
     private static final String CONFIG_LANGUAGE_NAME_VERSION = "Language: %1$s %2$s";
@@ -23,18 +18,17 @@ public class FunckyFactory implements ScriptEngineFactory {
     private static final String DELIMITER_PARAMETER = ",";
     private static final String DELIMITER_STATEMENT = "\n";
     private static final Logger LOGGER = Logger.getLogger(FunckyFactory.class.getName());
-    private static final Properties PARAMETERS = new Properties();
+    private static final String PARAMETERS = "/funcky.properties";
 
-    static {
-        GLOBAL.setBindings(new SimpleBindings(), ScriptContext.GLOBAL_SCOPE);
-        try (final InputStream parameters = FunckyFactory.class.getResourceAsStream("/funcky.properties")) {
-            PARAMETERS.load(parameters);
-        } catch (final IOException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
+    private final Properties parameters;
 
     public FunckyFactory() {
+        this(new Properties());
+        try (final InputStream parameters = FunckyFactory.class.getResourceAsStream(PARAMETERS)) {
+            this.parameters.load(parameters);
+        } catch (final IOException e) {
+            throw new ExceptionInInitializerError(e); // TODO
+        }
         LOGGER.config(String.format(CONFIG_LANGUAGE_NAME_VERSION, getLanguageName(), getLanguageVersion()));
         LOGGER.config(String.format(CONFIG_ENGINE_NAME_VERSION, getEngineName(), getEngineVersion()));
         LOGGER.config(String.format(CONFIG_NAMES, getNames()));
@@ -42,6 +36,10 @@ public class FunckyFactory implements ScriptEngineFactory {
         LOGGER.config(String.format(CONFIG_EXTENSIONS, getExtensions()));
         LOGGER.config(String.format(CONFIG_THREADING, getParameter(FunckyEngine.PARAMETER_THREADING)));
         LOGGER.config("");
+    }
+
+    private FunckyFactory(final Properties parameters) {
+        this.parameters = parameters;
     }
 
     @Override
@@ -104,13 +102,11 @@ public class FunckyFactory implements ScriptEngineFactory {
 
     @Override
     public FunckyEngine getScriptEngine() {
-        final FunckyEngine engine = new FunckyEngine(this);
-        engine.setBindings(GLOBAL.getBindings(ScriptContext.GLOBAL_SCOPE), ScriptContext.GLOBAL_SCOPE);
-        return engine;
+        return new FunckyEngine(this);
     }
 
     private List<String> getParameters(final String key) {
-        final String parameters = PARAMETERS.getProperty(key);
+        final String parameters = this.parameters.getProperty(key);
         return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
     }
 }

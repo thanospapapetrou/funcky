@@ -14,6 +14,9 @@ java.net.MalformedURLException: unknown protocol: funcky
 
 use logging instead of System.out.println and System.err.println, because messages are not printed in correct order
 
+rethink multiple constructors in values and expressions
+simplify type literal factories
+make factory configuration non-static, remove global context
 instanceof -> pattern matching
 cleanup engine and reduce eval methods
 cleanup context manager

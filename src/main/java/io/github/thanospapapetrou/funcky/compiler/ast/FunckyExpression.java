@@ -67,7 +67,7 @@ public abstract sealed class FunckyExpression extends CompiledScript permits Fun
 
     @Override
     public FunckyValue eval() {
-        return eval((engine == null) ? FunckyFactory.GLOBAL : engine.getContext());
+        return eval(engine.getContext());
     }
 
     protected abstract FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions);
