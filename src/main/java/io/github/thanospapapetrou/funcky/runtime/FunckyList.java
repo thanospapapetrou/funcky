@@ -27,12 +27,6 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
         this.tail = tail;
     }
 
-    public FunckyList(final FunckyEngine engine, final FunckyListType type, final FunckyValue head,
-            final FunckyList tail) {
-        this(engine, type, (head == null) ? null : new FunckyLiteral(engine, head),
-                (tail == null) ? null : new FunckyLiteral(engine, tail));
-    }
-
     public FunckyExpression getHead() {
         return head;
     }

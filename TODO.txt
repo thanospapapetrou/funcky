@@ -12,14 +12,6 @@ thread safety
 Funcky> "funcky:records".unit
 java.net.MalformedURLException: unknown protocol: funcky
 
-rethink multiple constructors in values and expressions
-    HigherOrderFunction
-    List
-    Record
-    Function Type
-    List Type
-    Record Type
-simplify type literal factories
 instanceof -> pattern matching
 converter -> part of engine?
 transpile
@@ -28,14 +20,8 @@ new methods and tests for records
 monads
 java monad
 
+remove funckyjavaconverter
 
--cleanup
--    linker
--    ast
--    runtime
--remove
--    funckyjavaconverter
--
 -Funcky> exit
 -java.net.MalformedURLException: unknown protocol: funcky
 rethink static methods
