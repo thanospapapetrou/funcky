@@ -32,7 +32,7 @@ public class Funcky {
             configureLogger(Parser.class, Level.FINER);
             configureLogger(Linker.class, Level.FINE);
             configureLogger(FunckyFactory.class, Level.CONFIG);
-            configureLogger(Funcky.class, Level.WARNING);
+            configureLogger(Funcky.class, Level.INFO);
             new Funcky().readEvalPrintLoop();
         } else {
             new Funcky().runScript(arguments[0], Arrays.copyOfRange(arguments, 1, arguments.length));
