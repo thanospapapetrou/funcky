@@ -10,18 +10,24 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;
+
 public final class FunckyListType extends FunckyType {
-    public static final Function<FunckyEngine, FunckyListType> STRING =
-            engine -> new FunckyListType(engine, FunckySimpleType.CHARACTER.apply(engine));
+    public static final Function<FunckyEngine, FunckyListType> STRING = LIST(CHARACTER);
 
     private final FunckyExpression element;
+
+    public static Function<FunckyEngine, FunckyListType> LIST(
+            final Function<FunckyEngine, ? extends FunckyType> element) {
+        return engine -> new FunckyListType(engine, new FunckyLiteral(engine, element.apply(engine)));
+    }
 
     public FunckyListType(final FunckyEngine engine, final FunckyExpression element) {
         super(engine);
         this.element = element;
     }
 
-    public FunckyListType(final FunckyEngine engine, final FunckyType element) {
+    public FunckyListType(final FunckyEngine engine, final FunckyType element) { // TODO remove
         this(engine, new FunckyLiteral(engine, element));
     }
 

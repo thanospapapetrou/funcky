@@ -69,10 +69,8 @@ public class Funcky {
                 try {
                     Optional.ofNullable(engine.eval(expression, engine.getContext()))
                             .map(FunckyValue::toString)
-                            .ifPresent(System.out::println);
-                } catch (final FunckyRuntimeException e) {
-                    System.err.println(e.getMessage());
-                } catch (final FunckyCompilationException e) {
+                            .ifPresent(LOGGER::info);
+                } catch (final FunckyCompilationException | FunckyRuntimeException e) {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                 }
                 System.out.printf(PROMPT, engine.getFactory().getLanguageName());
@@ -88,9 +86,7 @@ public class Funcky {
             engine.getManager().setFile(script);
             engine.getManager().setArguments(arguments);
             System.exit(engine.eval(reader, engine.getContext()).getValue().intValue());
-        } catch (final FunckyRuntimeException e) {
-            System.err.println(e.getMessage());
-        } catch (final FunckyCompilationException e) {
+        } catch (final FunckyCompilationException | FunckyRuntimeException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
         } catch (final IOException | URISyntaxException e) {
             LOGGER.log(Level.SEVERE, String.format(ERROR_READING, script), e);

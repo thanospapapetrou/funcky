@@ -30,11 +30,14 @@ import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
+import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION;
+import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
+
 public class Linker {
     public static final String JAVA_PREFIX = "$"; // TODO move to transpiler
-    public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE = engine ->
-            new FunckyFunctionType(engine, new FunckyListType(engine, FunckyListType.STRING.apply(engine)),
-                    FunckySimpleType.NUMBER.apply(engine));
+    public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
 
     private static final String DEFINITION = "  %1$s%n    %2$s";
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";

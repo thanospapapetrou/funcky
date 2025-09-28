@@ -12,13 +12,16 @@ thread safety
 Funcky> "funcky:records".unit
 java.net.MalformedURLException: unknown protocol: funcky
 
-use logging instead of System.out.println and System.err.println, because messages are not printed in correct order
-
 rethink multiple constructors in values and expressions
+    HigherOrderFunction
+    List
+    Record
+    Function Type
+    List Type
+    Record Type
 simplify type literal factories
 instanceof -> pattern matching
 converter -> part of engine?
-separate bindings in context into scripts, imports, definitions etc
 transpile
 generics
 new methods and tests for records
@@ -27,7 +30,6 @@ java monad
 
 
 -cleanup
--    contextmanager
 -    linker
 -    ast
 -    runtime
@@ -37,3 +39,6 @@ java monad
 -Funcky> exit
 -java.net.MalformedURLException: unknown protocol: funcky
 rethink static methods
+
+ip-register-ipo-client
+missing tags 1.5.0-RC1.1

@@ -6,8 +6,11 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyNumber
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException
 import io.github.thanospapapetrou.funcky.runtime.prelude.Characters
-import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType
 import spock.lang.Unroll
+
+import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER
 
 class CharactersSpec extends BaseSpec {
     @Unroll('Test uppercase (expression: #expression)')
@@ -17,7 +20,7 @@ class CharactersSpec extends BaseSpec {
         where:
         expression                                          || result
         '"funcky:characters".uppercase'                     || new Characters(engine).$uppercase
-        '"funcky:types".type "funcky:characters".uppercase' || new FunckyFunctionType(engine, $Character, $Character)
+        '"funcky:types".type "funcky:characters".uppercase' || FUNCTION(CHARACTER, CHARACTER).apply(engine)
         '"funcky:characters".uppercase \'A\''               || new FunckyCharacter(engine, 'A' as char)
         '"funcky:characters".uppercase \'a\''               || new FunckyCharacter(engine, 'A' as char)
         '"funcky:characters".uppercase \'$\''               || new FunckyCharacter(engine, '$' as char)
@@ -30,7 +33,7 @@ class CharactersSpec extends BaseSpec {
         where:
         expression                                          || result
         '"funcky:characters".lowercase'                     || new Characters(engine).$lowercase
-        '"funcky:types".type "funcky:characters".lowercase' || new FunckyFunctionType(engine, $Character, $Character)
+        '"funcky:types".type "funcky:characters".lowercase' || FUNCTION(CHARACTER, CHARACTER).apply(engine)
         '"funcky:characters".lowercase \'A\''               || new FunckyCharacter(engine, 'a' as char)
         '"funcky:characters".lowercase \'a\''               || new FunckyCharacter(engine, 'a' as char)
         '"funcky:characters".lowercase \'$\''               || new FunckyCharacter(engine, '$' as char)
@@ -43,7 +46,7 @@ class CharactersSpec extends BaseSpec {
         where:
         expression                                       || result
         '"funcky:characters".number'                     || new Characters(engine).$number
-        '"funcky:types".type "funcky:characters".number' || new FunckyFunctionType(engine, $Character, $Number)
+        '"funcky:types".type "funcky:characters".number' || FUNCTION(CHARACTER, NUMBER).apply(engine)
         '"funcky:characters".number \'A\''               || new FunckyNumber(engine, 65.0G)
         '"funcky:characters".number \'a\''               || new FunckyNumber(engine, 97.0G)
         '"funcky:characters".number \'\\\\\''            || new FunckyNumber(engine, 92.0G)
@@ -72,7 +75,7 @@ class CharactersSpec extends BaseSpec {
         where:
         expression                                          || result
         '"funcky:characters".character'                     || new Characters(engine).$character
-        '"funcky:types".type "funcky:characters".character' || new FunckyFunctionType(engine, $Number, $Character)
+        '"funcky:types".type "funcky:characters".character' || FUNCTION(NUMBER, CHARACTER).apply(engine)
         '"funcky:characters".character 65'                  || new FunckyCharacter(engine, 'A' as char)
         '"funcky:characters".character 97'                  || new FunckyCharacter(engine, 'a' as char)
         '"funcky:characters".character 0'                   || new FunckyCharacter(engine, '\u0000' as char)

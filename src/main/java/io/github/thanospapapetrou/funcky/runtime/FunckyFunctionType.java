@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
+import io.github.thanospapapetrou.funcky.Funcky;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
@@ -16,17 +18,24 @@ public final class FunckyFunctionType extends FunckyType {
     private final FunckyExpression domain;
     private final FunckyExpression range;
 
+    public static Function<FunckyEngine, FunckyFunctionType> FUNCTION(final Function<FunckyEngine, ?
+            extends FunckyType>... types) {
+        return engine -> new FunckyFunctionType(engine, new FunckyLiteral(engine, types[0].apply(engine)),
+                new FunckyLiteral(engine, (types.length == 2) ? types[1].apply(engine) : FUNCTION(Arrays.copyOfRange(types, 1,
+                        types.length)).apply(engine)));
+    }
+
     public FunckyFunctionType(final FunckyEngine engine, final FunckyExpression domain, final FunckyExpression range) {
         super(engine);
         this.domain = domain;
         this.range = range;
     }
 
-    public FunckyFunctionType(final FunckyEngine engine, final FunckyType... types) {
+    public FunckyFunctionType(final FunckyEngine engine, final FunckyType... types) { // TODO remove
         this(engine, Arrays.asList(types));
     }
 
-    private FunckyFunctionType(final FunckyEngine engine, final List<FunckyType> types) {
+    private FunckyFunctionType(final FunckyEngine engine, final List<FunckyType> types) { // TODO remove
         this(engine, new FunckyLiteral(engine, types.get(0)), new FunckyLiteral(engine,
                 (types.size() == 2) ? types.get(1) : new FunckyFunctionType(engine, types.subList(1, types.size()))));
     }

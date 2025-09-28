@@ -1,6 +1,7 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,19 +14,27 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
+import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.TYPE;
+
 public final class FunckyRecordType extends FunckyType {
-    public static final Function<FunckyEngine, FunckyRecordType> UNIT = engine -> new FunckyRecordType(engine,
-            new FunckyList(engine, new FunckyListType(engine, FunckySimpleType.TYPE.apply(engine)), (FunckyValue) null,
-                    null));
+    public static final Function<FunckyEngine, FunckyRecordType> UNIT = RECORD();
 
     private final FunckyExpression components;
+
+    public static Function<FunckyEngine, FunckyRecordType> RECORD(final Function<FunckyEngine, ? extends FunckyType>... components) {
+        return engine -> new FunckyRecordType(engine, new FunckyLiteral(engine, new FunckyList(engine,
+                LIST(TYPE).apply(engine), (components.length > 0) ? new FunckyLiteral(engine,
+                components[0].apply(engine)) : null, (components.length > 0) ? RECORD(Arrays.copyOfRange(components,
+                1, components.length)).apply(engine).components : null)));
+    }
 
     public FunckyRecordType(final FunckyEngine engine, final FunckyExpression components) {
         super(engine);
         this.components = components;
     }
 
-    public FunckyRecordType(final FunckyEngine engine, final FunckyList components) {
+    public FunckyRecordType(final FunckyEngine engine, final FunckyList components) { // TODO remove
         this(engine, new FunckyLiteral(engine, components));
     }
 
