@@ -19,6 +19,12 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyListType
 import io.github.thanospapapetrou.funcky.runtime.FunckyType
 import spock.lang.Unroll
 
+import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION
+import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST
+import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER
+
 class CompilationErrorSpec extends BaseSpec {
     @Unroll('Test unrecognized input error in expression (expression: #expression)')
     def 'Test unrecognized input error in expression'(final String expression, final String unrecognized, final int column) {
@@ -180,9 +186,9 @@ class CompilationErrorSpec extends BaseSpec {
         e.lineNumber == 1
         e.columnNumber == column
         where:
-        expression                       || head                      | headType | tail    | tailType                            | column
-        '[1, \'a\']'                     || '1'                       | $Number  | '"a"'   | $String                             | 2
-        '["funcky:booleans".false, "a"]' || '"funcky:booleans".false' | $Boolean | '["a"]' | new FunckyListType(engine, $String) | 2
+        expression                       || head                      | headType | tail    | tailType                                | column
+        '[1, \'a\']'                     || '1'                       | NUMBER.apply(engine)  | '"a"'   | STRING.apply(engine)       | 2
+        '["funcky:booleans".false, "a"]' || '"funcky:booleans".false' | BOOLEAN.apply(engine) | '["a"]' | LIST(STRING).apply(engine) | 2
     }
 
     @Unroll('Test invalid list literal error in script (script: #script)')
@@ -201,9 +207,9 @@ class CompilationErrorSpec extends BaseSpec {
         cleanup:
         reader.close()
         where:
-        script                                                   || head                      | headType | tail    | tailType                            | line | column
-        '/compilation_error/invalid_list_literal_error_1.funcky' || '1'                       | $Number  | '"a"'   | $String                             | 1    | 8
-        '/compilation_error/invalid_list_literal_error_2.funcky' || '"funcky:booleans".false' | $Boolean | '["a"]' | new FunckyListType(engine, $String) | 2    | 8
+        script                                                   || head                      | headType              | tail    | tailType                   | line | column
+        '/compilation_error/invalid_list_literal_error_1.funcky' || '1'                       | NUMBER.apply(engine)  | '"a"'   | STRING.apply(engine)       | 1    | 8
+        '/compilation_error/invalid_list_literal_error_2.funcky' || '"funcky:booleans".false' | BOOLEAN.apply(engine) | '["a"]' | LIST(STRING).apply(engine) | 2    | 8
     }
 
     @Unroll('Test prefix already bound error (script: #script)')
@@ -336,9 +342,9 @@ class CompilationErrorSpec extends BaseSpec {
         e.lineNumber == 1
         e.columnNumber == column
         where:
-        expression                                       || function                 | functionType                                              | argument                  | argumentType | column
-        '"funcky:numbers".add "funcky:booleans".false'   || '"funcky:numbers".add'   | new FunckyFunctionType(engine, $Number, $Number, $Number) | '"funcky:booleans".false' | $Boolean     | 1
-        '"funcky:numbers".add 1 "funcky:booleans".false' || '"funcky:numbers".add 1' | new FunckyFunctionType(engine, $Number, $Number)          | '"funcky:booleans".false' | $Boolean     | 1
+        expression                                       || function                 | functionType                                   | argument                  | argumentType              | column
+        '"funcky:numbers".add "funcky:booleans".false'   || '"funcky:numbers".add'   | FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine) | '"funcky:booleans".false' | BOOLEAN.apply(engine)     | 1
+        '"funcky:numbers".add 1 "funcky:booleans".false' || '"funcky:numbers".add 1' | FUNCTION(NUMBER, NUMBER).apply(engine)         | '"funcky:booleans".false' | BOOLEAN.apply(engine)     | 1
     }
 
     @Unroll('Test illegal application error in script (script: #script)')
@@ -357,9 +363,9 @@ class CompilationErrorSpec extends BaseSpec {
         cleanup:
         reader.close()
         where:
-        script                                                  || function               | functionType                                              | argument                  | argumentType | line | column
-        '/compilation_error/illegal_application_error_1.funcky' || '"funcky:numbers".add' | new FunckyFunctionType(engine, $Number, $Number, $Number) | '"funcky:booleans".false' | $Boolean     | 1    | 7
-        '/compilation_error/illegal_application_error_2.funcky' || 'numbers.add 1'        | new FunckyFunctionType(engine, $Number, $Number)          | 'booleans.false'          | $Boolean     | 4    | 7
+        script                                                  || function               | functionType                                   | argument                  | argumentType          | line | column
+        '/compilation_error/illegal_application_error_1.funcky' || '"funcky:numbers".add' | FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine) | '"funcky:booleans".false' | BOOLEAN.apply(engine) | 1    | 7
+        '/compilation_error/illegal_application_error_2.funcky' || 'numbers.add 1'        | FUNCTION(NUMBER, NUMBER).apply(engine)         | 'booleans.false'          | BOOLEAN.apply(engine) | 4    | 7
     }
 
     @Unroll('Test undefined main error (script: #script)')
@@ -397,8 +403,8 @@ class CompilationErrorSpec extends BaseSpec {
         cleanup:
         reader.close()
         where:
-        script                                           || type                                             | line
-        '/compilation_error/invalid_main_error_1.funcky' || $Boolean                                         | 1
-        '/compilation_error/invalid_main_error_2.funcky' || new FunckyFunctionType(engine, $Number, $Number) | 3
+        script                                           || type                                   | line
+        '/compilation_error/invalid_main_error_1.funcky' || BOOLEAN.apply(engine)                  | 1
+        '/compilation_error/invalid_main_error_2.funcky' || FUNCTION(NUMBER, NUMBER).apply(engine) | 3
     }
 }
