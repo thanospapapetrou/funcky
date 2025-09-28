@@ -2,12 +2,10 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import io.github.thanospapapetrou.funcky.Funcky;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
@@ -29,15 +27,6 @@ public final class FunckyFunctionType extends FunckyType {
         super(engine);
         this.domain = domain;
         this.range = range;
-    }
-
-    public FunckyFunctionType(final FunckyEngine engine, final FunckyType... types) { // TODO remove
-        this(engine, Arrays.asList(types));
-    }
-
-    private FunckyFunctionType(final FunckyEngine engine, final List<FunckyType> types) { // TODO remove
-        this(engine, new FunckyLiteral(engine, types.get(0)), new FunckyLiteral(engine,
-                (types.size() == 2) ? types.get(1) : new FunckyFunctionType(engine, types.subList(1, types.size()))));
     }
 
     public FunckyExpression getDomain() {
@@ -87,7 +76,8 @@ public final class FunckyFunctionType extends FunckyType {
 
     @Override
     protected FunckyFunctionType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return new FunckyFunctionType(engine, ((FunckyType) domain.eval(engine.getContext())).bind(bindings),
-                ((FunckyType) range.eval(engine.getContext())).bind(bindings));
+        return new FunckyFunctionType(engine,
+                new FunckyLiteral(engine, ((FunckyType) domain.eval(engine.getContext())).bind(bindings)),
+                new FunckyLiteral(engine, ((FunckyType) range.eval(engine.getContext())).bind(bindings)));
     }
 }

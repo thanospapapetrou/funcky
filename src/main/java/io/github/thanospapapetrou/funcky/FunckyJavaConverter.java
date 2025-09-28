@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
@@ -62,10 +63,10 @@ public class FunckyJavaConverter {
         final FunckyList tail = (head == null) ? null : convert(iterator);
         final FunckyType headType = (head == null) ? new FunckyTypeVariable(engine) : head.getType();
         final FunckyListType tailType =
-                (tail == null) ? new FunckyListType(engine, new FunckyTypeVariable(engine)) : tail.getType();
+                (tail == null) ? new FunckyListType(engine, new FunckyLiteral(engine, new FunckyTypeVariable(engine))) : tail.getType();
         final String error = String.format(ERROR_CONVERTING_TO_FUNCKY, iterator.getClass().getName(), iterator,
                 engine.getFactory().getLanguageName());
-        final FunckyListType listType = (FunckyListType) new FunckyListType(engine, headType).unify(tailType);
+        final FunckyListType listType = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine, headType)).unify(tailType);
             if (listType == null) {
                 throw new IllegalArgumentException(error);
             }

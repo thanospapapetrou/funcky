@@ -252,9 +252,9 @@ public class Parser {
             final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
             final FunckyLiteral tail = elements.isEmpty() ? null
                     : parseList(elements.subList(1, elements.size()), leftSquareBracket);
-        final FunckyListType listType = (FunckyListType) new FunckyListType(engine,
-                (head == null) ? new FunckyTypeVariable(engine) : head.getType()).unify(
-                (tail == null) ? new FunckyListType(engine, new FunckyTypeVariable(engine)) : tail.getType());
+        final FunckyListType listType = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine,
+                (head == null) ? new FunckyTypeVariable(engine) : head.getType())).unify(
+                (tail == null) ? new FunckyListType(engine, new FunckyLiteral(engine, new FunckyTypeVariable(engine))) : tail.getType());
             if (listType == null) {
                 throw new SneakyCompilationException(new InvalidListLiteralException(engine, head, tail));
             }
@@ -268,7 +268,7 @@ public class Parser {
             types.add(component.getType());
         }
         return new FunckyLiteral(engine, leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),
-                new FunckyRecord(engine, new FunckyRecordType(engine, engine.getConverter().convert(types)),
+                new FunckyRecord(engine, new FunckyRecordType(engine, new FunckyLiteral(engine, engine.getConverter().convert(types))),
                         components));
     }
 

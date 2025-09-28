@@ -34,10 +34,6 @@ public final class FunckyRecordType extends FunckyType {
         this.components = components;
     }
 
-    public FunckyRecordType(final FunckyEngine engine, final FunckyList components) { // TODO remove
-        this(engine, new FunckyLiteral(engine, components));
-    }
-
     public FunckyExpression getComponents() {
         return components;
     }
@@ -82,6 +78,6 @@ public final class FunckyRecordType extends FunckyType {
                 list = (FunckyList) list.getTail().eval(engine.getContext())) {
             types.add(((FunckyType) list.getHead().eval(engine.getContext())).bind(bindings));
         }
-        return new FunckyRecordType(engine, engine.getConverter().convert(types));
+        return new FunckyRecordType(engine, new FunckyLiteral(engine, engine.getConverter().convert(types)));
     }
 }

@@ -27,10 +27,6 @@ public final class FunckyListType extends FunckyType {
         this.element = element;
     }
 
-    public FunckyListType(final FunckyEngine engine, final FunckyType element) { // TODO remove
-        this(engine, new FunckyLiteral(engine, element));
-    }
-
     public FunckyExpression getElement() {
         return element;
     }
@@ -65,6 +61,6 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     protected FunckyListType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return new FunckyListType(engine, ((FunckyType) element.eval(engine.getContext())).bind(bindings));
+        return new FunckyListType(engine, new FunckyLiteral(engine, ((FunckyType) element.eval(engine.getContext())).bind(bindings)));
     }
 }

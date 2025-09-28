@@ -5,12 +5,14 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
@@ -18,6 +20,8 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+
+import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION;
 
 public abstract class HigherOrderFunction extends FunckyFunction {
     private static final String ERROR_RESOLVING_FIELD = "Error resolving field `%1$s`";
@@ -28,8 +32,9 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     private final FunckyExpression expression;
     private final List<FunckyExpression> arguments;
 
-    HigherOrderFunction(final FunckyEngine engine, final FunckyLibrary library, final FunckyType... types) {
-        this(engine, new FunckyFunctionType(engine, types), types.length - 1, library, null, List.of());
+    HigherOrderFunction(final FunckyEngine engine, final FunckyLibrary library,
+            final Function<FunckyEngine, ? extends FunckyType>... types) {
+        this(engine, FUNCTION(types).apply(engine), types.length - 1, library, null, List.of());
     }
 
     private HigherOrderFunction(final FunckyEngine engine, final FunckyFunctionType type, final int order,
@@ -45,7 +50,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     public FunckyValue apply(final FunckyExpression argument, final ScriptContext context) {
             final HigherOrderFunction that = this;
             final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(
-                    new FunckyFunctionType(engine, argument.getType(), new FunckyTypeVariable(engine)))).getRange()
+                    new FunckyFunctionType(engine, new FunckyLiteral(engine, argument.getType()), new FunckyLiteral(engine, new FunckyTypeVariable(engine))))).getRange()
                     .eval(engine.getContext());
             final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
             arguments.add(argument);

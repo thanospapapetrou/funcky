@@ -3,8 +3,9 @@ package io.github.thanospapapetrou.funcky.compiler.exceptions;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+
+import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
 
 public final class InvalidListLiteralException extends FunckyCompilationException {
     private static final String MESSAGE =
@@ -13,7 +14,7 @@ public final class InvalidListLiteralException extends FunckyCompilationExceptio
     public InvalidListLiteralException(final FunckyEngine engine, final FunckyExpression head,
             final FunckyLiteral tail) {
         super(String.format(MESSAGE, head, (head == null) ? new FunckyTypeVariable(engine) : head.getType(), tail,
-                        (tail == null) ? new FunckyListType(engine, new FunckyTypeVariable(engine)) : tail.getType()),
+                        (tail == null) ? LIST(FunckyTypeVariable::new).apply(engine) : tail.getType()),
                 (head == null) ? null : head.getFile(), (head == null) ? -1 : head.getLine(),
                 (head == null) ? -1 : head.getColumn());
     }

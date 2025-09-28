@@ -9,8 +9,9 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
+
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
 
 public final class Numbers extends FunckyLibrary {
     private static final String ERROR_DIVISION_BY_ZERO = "Division by zero";
@@ -18,51 +19,40 @@ public final class Numbers extends FunckyLibrary {
     private static final String ERROR_INVALID_SCALE = "Invalid scale `%1$s`, should be an int";
     private static final String ERROR_INVALID_ROUNDING_MODE = "Invalid rounding mode `%1$s`";
 
-    public final HigherOrderFunction $plus = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $plus = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return (FunckyNumber) arguments.getFirst().eval(context);
         }
     };
-    public final HigherOrderFunction $minus = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $minus = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.getFirst().eval(context)).getValue().negate());
         }
     };
-    public final HigherOrderFunction $add = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine),
-            FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $add = new HigherOrderFunction(engine, this, NUMBER, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .add(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction $subtract = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine),
-            FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $subtract = new HigherOrderFunction(engine, this, NUMBER, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .subtract(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction $multiply = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine),
-            FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $multiply = new HigherOrderFunction(engine, this, NUMBER, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .multiply(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction $divide = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine),
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine),
-            FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $divide = new HigherOrderFunction(engine, this, NUMBER, NUMBER, NUMBER, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             final BigDecimal divisor = ((FunckyNumber) arguments.get(1).eval(context)).getValue();
@@ -81,48 +71,42 @@ public final class Numbers extends FunckyLibrary {
             }
         }
     };
-    public final HigherOrderFunction $byte = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $byte = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().byteValue()));
         }
     };
-    public final HigherOrderFunction $short = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $short = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().shortValue()));
         }
     };
-    public final HigherOrderFunction $int = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $int = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().intValue()));
         }
     };
-    public final HigherOrderFunction $long = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $long = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().longValue()));
         }
     };
-    public final HigherOrderFunction $float = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $float = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().floatValue()));
         }
     };
-    public final HigherOrderFunction $double = new HigherOrderFunction(engine, this,
-            FunckySimpleType.NUMBER.apply(engine), FunckySimpleType.NUMBER.apply(engine)) {
+    public final HigherOrderFunction $double = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
