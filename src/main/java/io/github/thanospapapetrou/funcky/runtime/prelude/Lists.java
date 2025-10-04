@@ -15,7 +15,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
 
-public final class Lists extends FunckyLibrary {
+public non-sealed class Lists extends FunckyLibrary {
     private static final String ERROR_HEAD = "Can not get head of empty list";
     private static final String ERROR_TAIL = "Can not get tail of empty list";
 

@@ -20,7 +20,7 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN
 import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.TYPE;
 
-public final class Types extends FunckyLibrary {
+public non-sealed class Types extends FunckyLibrary {
     private static final String ERROR_COMPONENTS = "Can not get components of non-record type `%1$s`";
     private static final String ERROR_DOMAIN = "Can not get domain of non-function type `%1$s`";
     private static final String ERROR_ELEMENT = "Can not get element of non-list type `%1$s`";

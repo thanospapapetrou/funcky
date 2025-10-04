@@ -12,7 +12,7 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
+import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
@@ -49,14 +49,14 @@ public sealed class FunckyLibrary extends FunckyScript
     @Override
     public List<FunckyDefinition> getDefinitions() {
         return Arrays.stream(getClass().getDeclaredFields()).filter(field -> Modifier.isPublic(field.getModifiers()))
-                .filter(field -> field.getName().startsWith(Linker.JAVA_PREFIX))
+                .filter(field -> field.getName().startsWith(Transpiler.JAVA_PREFIX))
                 .map(this::getDefinition)
                 .toList();
     }
 
     private FunckyDefinition getDefinition(final Field field) {
         try {
-            return new FunckyDefinition(getFile(), -1, field.getName().substring(Linker.JAVA_PREFIX.length()),
+            return new FunckyDefinition(getFile(), -1, field.getName().substring(Transpiler.JAVA_PREFIX.length()),
                     new FunckyLiteral(engine, (FunckyValue) field.get(this)));
         } catch (final IllegalAccessException e) {
             throw new IllegalStateException(String.format(ERROR_RESOLVING_FIELD, field.getName()), e);

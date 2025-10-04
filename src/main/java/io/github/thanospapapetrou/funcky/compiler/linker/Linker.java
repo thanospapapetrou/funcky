@@ -25,8 +25,6 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.PrefixAlreadyBoundE
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedMainException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
@@ -36,18 +34,24 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
 
 public class Linker {
-    public static final String JAVA_PREFIX = "$"; // TODO move to transpiler
     public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
 
     private static final String DEFINITION = "  %1$s%n    %2$s";
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
-    private static final String ERROR_NORMALISING_NAMESPACE = "Error normalising namespace %1$s";
     private static final String ERROR_RESOLVING_NAMESPACE = "Error resolving namespace for library `%1$s`";
     private static final String ERROR_RESOLVING_STDIN = "Error resolving stdin";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
     private static final String PRELUDE_SCRIPT = "/prelude/%1$s.%2$s";
     private static final String STDIN = "stdin";
-    private static final String USER_DIR = "user.dir";
+    private static final URI USER_DIR;
+
+    static {
+        try {
+            USER_DIR = new File(System.getProperty("user.dir")).getCanonicalFile().toURI();
+        } catch (final IOException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private final FunckyEngine engine;
 
@@ -55,12 +59,8 @@ public class Linker {
         this.engine = engine;
     }
 
-    public URI getNamespace(final Class<? extends FunckyLibrary> library) {
-        try {
-            return new URI(getPreludeScheme(), library.getSimpleName().toLowerCase(Locale.ROOT), null);
-        } catch (final URISyntaxException e) {
-            throw new IllegalStateException(String.format(ERROR_RESOLVING_NAMESPACE, library.getName()), e);
-        }
+    public URI normalize(final URI base, final URI namespace) {
+        return namespace.isAbsolute() ? namespace : (base.equals(getStdin()) ? USER_DIR : base).resolve(namespace);
     }
 
     public URI getStdin() {
@@ -71,14 +71,18 @@ public class Linker {
         }
     }
 
-    public URI normalize(final URI base, final URI namespace) {
+    public URI getNamespace(final Class<? extends FunckyLibrary> library) {
         try {
-            return namespace.isAbsolute() ? namespace
-                    : (base.equals(getStdin()) ? new File(System.getProperty(USER_DIR)).getCanonicalFile().toURI()
-                            : base).resolve(namespace);
-        } catch (final IOException e) {
-            throw new IllegalStateException(String.format(ERROR_NORMALISING_NAMESPACE, namespace), e);
+            return new URI(getPreludeScheme(), library.getSimpleName().toLowerCase(Locale.ROOT), null);
+        } catch (final URISyntaxException e) {
+            throw new IllegalStateException(String.format(ERROR_RESOLVING_NAMESPACE, library.getName()), e);
         }
+    }
+
+    public Class<? extends FunckyLibrary> getLibrary(final URI file) {
+        return (Class<? extends FunckyLibrary>) Arrays.stream(FunckyLibrary.class.getPermittedSubclasses())
+                .filter(library -> getNamespace((Class<? extends FunckyLibrary>) library).equals(file)).findFirst()
+                .orElse(null);
     }
 
     public FunckyExpression link(final FunckyExpression expression) {
@@ -155,14 +159,6 @@ public class Linker {
         if (main.get().expression().getType().unify(MAIN_TYPE.apply(engine)) == null) {
             throw new SneakyCompilationException(new InvalidMainException(main.get()));
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private Class<? extends FunckyLibrary> getLibrary(final URI file) {
-        return (Class<? extends FunckyLibrary>) Arrays.stream(FunckyLibrary.class.getPermittedSubclasses())
-                .filter(library -> getNamespace((Class<? extends FunckyLibrary>) library).equals(file))
-                .findFirst()
-                .orElse(null);
     }
 
     private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {

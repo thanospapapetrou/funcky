@@ -15,7 +15,8 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 
 public final class FunckyApplication extends FunckyExpression {
     private static final String FORMAT_APPLICATION = "%1$s %2$s";
-    private static final String NESTED_APPLICATION = "%1$s (%2$s)";
+    private static final String FORMAT_NESTED_APPLICATION = "%1$s (%2$s)";
+    private static final String JAVA = "((%1$s) %2$s).apply(new %3$s(engine, %4$s), engine.getContext())";
 
     private final FunckyExpression function;
     private final FunckyExpression argument;
@@ -40,6 +41,12 @@ public final class FunckyApplication extends FunckyExpression {
     }
 
     @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyFunction.class.getName(), function.toJava(), FunckyLiteral.class.getName(),
+                argument.toJava());
+    }
+
+    @Override
     public FunckyValue eval(final ScriptContext context) {
         try {
             return ((FunckyFunction) function.eval(context)).apply(argument, context);
@@ -54,7 +61,7 @@ public final class FunckyApplication extends FunckyExpression {
         return String.format(((argument instanceof FunckyApplication)
                 || ((argument instanceof FunckyLiteral)
                 && (((FunckyLiteral) argument).getValue().toExpression() instanceof FunckyApplication)))
-                ? NESTED_APPLICATION
+                ? FORMAT_NESTED_APPLICATION
                 : FORMAT_APPLICATION, function, argument);
     }
 

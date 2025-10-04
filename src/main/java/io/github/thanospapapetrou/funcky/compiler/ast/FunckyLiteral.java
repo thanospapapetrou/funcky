@@ -40,6 +40,11 @@ public final class FunckyLiteral extends FunckyExpression {
     }
 
     @Override
+    public String toJava() {
+        return value.toJava();
+    }
+
+    @Override
     public FunckyValue eval(final ScriptContext context) {
         return value;
     }

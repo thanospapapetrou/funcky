@@ -4,11 +4,13 @@ import java.util.function.Function;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 
 public final class FunckyBoolean extends FunckyValue implements Comparable<FunckyBoolean> {
     public static final Function<FunckyEngine, FunckyBoolean> FALSE = engine -> new FunckyBoolean(engine, false);
     public static final Function<FunckyEngine, FunckyBoolean> TRUE = engine -> new FunckyBoolean(engine, true);
+    private static final String JAVA = "%1$s.%2$s%3$b";
 
     private final boolean value;
 
@@ -19,6 +21,11 @@ public final class FunckyBoolean extends FunckyValue implements Comparable<Funck
 
     public boolean getValue() {
         return value;
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, Booleans.class.getName(), Transpiler.JAVA_PREFIX, value);
     }
 
     @Override

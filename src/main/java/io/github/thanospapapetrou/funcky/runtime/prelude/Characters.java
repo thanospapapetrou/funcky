@@ -14,7 +14,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
 
-public final class Characters extends FunckyLibrary {
+public non-sealed class Characters extends FunckyLibrary {
     private static final String ERROR_INVALID_UNICODE_CODE_POINT = "Invalid Unicode code point `%1$s`";
 
     public final HigherOrderFunction $uppercase = new HigherOrderFunction(engine, this, CHARACTER, CHARACTER) {

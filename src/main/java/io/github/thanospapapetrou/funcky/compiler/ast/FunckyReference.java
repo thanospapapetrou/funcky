@@ -12,6 +12,7 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationEx
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
+import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -20,6 +21,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 public final class FunckyReference extends FunckyExpression {
     private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
     private static final String FORMAT_PREFIX = "%1$s.%2$s";
+    private static final String JAVA = "new %1$s(engine).%2$s%3$s";
 
     private final URI namespace;
     private final String prefix;
@@ -76,6 +78,12 @@ public final class FunckyReference extends FunckyExpression {
     @Override
     public FunckyReference normalize() {
         return new FunckyReference(engine, file, line, column, resolveNamespace(), name);
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, engine.getTranspiler().getClassName(normalize().namespace), Transpiler.JAVA_PREFIX,
+                name);
     }
 
     @Override

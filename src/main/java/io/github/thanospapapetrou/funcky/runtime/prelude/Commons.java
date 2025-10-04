@@ -18,7 +18,7 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN;
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
 
-public final class Commons extends FunckyLibrary {
+public non-sealed class Commons extends FunckyLibrary {
     private static final String ERROR_INVALID_NUMBER = "Invalid number `%1$s`";
 
     private final FunckyTypeVariable $_a = new FunckyTypeVariable(engine);

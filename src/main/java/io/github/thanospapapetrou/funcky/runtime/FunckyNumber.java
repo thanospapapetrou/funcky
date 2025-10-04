@@ -6,6 +6,8 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
 public final class FunckyNumber extends FunckyValue implements Comparable<FunckyNumber> {
+    private static final String JAVA = "new %1$s(engine, new %2$s(%3$f))";
+
     private final BigDecimal value;
 
     public FunckyNumber(final FunckyEngine engine, final BigDecimal value) {
@@ -15,6 +17,11 @@ public final class FunckyNumber extends FunckyValue implements Comparable<Funcky
 
     public BigDecimal getValue() {
         return value;
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyNumber.class.getName(), BigDecimal.class.getName(), value);
     }
 
     @Override

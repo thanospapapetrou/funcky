@@ -3,6 +3,7 @@ package io.github.thanospapapetrou.funcky;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.stream.Collectors;
@@ -24,6 +25,7 @@ import io.github.thanospapapetrou.funcky.compiler.parser.Parser;
 import io.github.thanospapapetrou.funcky.compiler.preprocessor.Preprocessor;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Tokenizer;
+import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
@@ -40,6 +42,7 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     private final Preprocessor preprocessor;
     private final Linker linker;
     private final ContextManager manager;
+    private final Transpiler transpiler;
     private final FunckyJavaConverter converter;
 
     FunckyEngine(final FunckyFactory factory) {
@@ -49,6 +52,11 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
         preprocessor = new Preprocessor(this);
         linker = new Linker(this);
         manager = new ContextManager(this.getContext());
+        try {
+            transpiler = new Transpiler(this);
+        } catch (final MalformedURLException e) {
+            throw new RuntimeException(e); // TODO
+        }
         converter = new FunckyJavaConverter(this);
     }
 
@@ -58,6 +66,10 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
 
     public ContextManager getManager() {
         return manager;
+    }
+
+    public Transpiler getTranspiler() {
+        return transpiler;
     }
 
     public FunckyJavaConverter getConverter() {
@@ -106,9 +118,10 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     @Override
     public FunckyExpression compile(final String expression) throws FunckyCompilationException {
         try {
-            return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
+            return transpiler.transpile(
+                    linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
                     .filter(token -> !token.type().equals(TokenType.COMMENT))
-                    .collect(Collectors.toCollection(ArrayDeque::new)))));
+                            .collect(Collectors.toCollection(ArrayDeque::new))))));
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }
@@ -152,9 +165,9 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     private FunckyScript compile(final Reader script, final URI file, final boolean main)
             throws FunckyCompilationException {
         try {
-            return linker.link(preprocessor.preprocess(parser.parse(
+            return transpiler.transpile(linker.link(preprocessor.preprocess(parser.parse(
                     tokenizer.tokenize(script, file).stream().filter(token -> !token.type().equals(TokenType.COMMENT))
-                            .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
+                            .collect(Collectors.toCollection(ArrayDeque::new)), file)), main));
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }

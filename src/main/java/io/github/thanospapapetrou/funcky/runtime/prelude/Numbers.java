@@ -13,7 +13,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
 
-public final class Numbers extends FunckyLibrary {
+public non-sealed class Numbers extends FunckyLibrary {
     private static final String ERROR_DIVISION_BY_ZERO = "Division by zero";
     private static final String ERROR_INSUFFICIENT_SCALE = "Insufficient scale `%1$s` for rounding mode `%2$s`";
     private static final String ERROR_INVALID_SCALE = "Invalid scale `%1$s`, should be an int";

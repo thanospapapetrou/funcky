@@ -14,7 +14,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
+import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
@@ -74,7 +74,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
         return Arrays.stream(library.getClass().getDeclaredFields())
                 .filter(field -> Modifier.isPublic(field.getModifiers()))
                 .filter(this::isThis)
-                .map(Field::getName).map(name -> name.substring(Linker.JAVA_PREFIX.length()))
+                .map(Field::getName).map(name -> name.substring(Transpiler.JAVA_PREFIX.length()))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException(ERROR_RESOLVING_NAME));
     }

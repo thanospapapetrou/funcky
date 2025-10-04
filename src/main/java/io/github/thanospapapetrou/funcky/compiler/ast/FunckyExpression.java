@@ -43,6 +43,8 @@ public abstract sealed class FunckyExpression extends CompiledScript
 
     public abstract FunckyExpression normalize();
 
+    public abstract String toJava();
+
     @Override
     public FunckyEngine getEngine() {
         return engine;

@@ -12,7 +12,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION;
 
-public final class Combinators extends FunckyLibrary {
+public non-sealed class Combinators extends FunckyLibrary {
     private final FunckyTypeVariable $_a = new FunckyTypeVariable(engine);
     private final FunckyTypeVariable $_b = new FunckyTypeVariable(engine);
     private final FunckyTypeVariable $_c = new FunckyTypeVariable(engine);

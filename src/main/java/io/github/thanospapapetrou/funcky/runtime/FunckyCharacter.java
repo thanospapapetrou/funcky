@@ -2,8 +2,11 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 
 public final class FunckyCharacter extends FunckyValue implements Comparable<FunckyCharacter> {
+    private static final String JAVA = "new %1$s(engine, '%2$s')";
+
     private final char value;
 
     public FunckyCharacter(final FunckyEngine engine, final char value) {
@@ -13,6 +16,11 @@ public final class FunckyCharacter extends FunckyValue implements Comparable<Fun
 
     public char getValue() {
         return value;
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyCharacter.class.getName(), EscapeHelper.escape(Character.toString(value)));
     }
 
     @Override
