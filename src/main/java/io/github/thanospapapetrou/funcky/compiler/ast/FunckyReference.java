@@ -12,7 +12,6 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationEx
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
-import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -21,7 +20,8 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 public final class FunckyReference extends FunckyExpression {
     private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
     private static final String FORMAT_PREFIX = "%1$s.%2$s";
-    private static final String JAVA = "%1$s.%2$s%3$s";
+    private static final String JAVA =
+            "new %1$s(engine, %2$s.create(\"%3$s\"), %4$d, %5$d, %2$s.create(\"%6$s\"), \"%7$s\")";
 
     private final URI namespace;
     private final String prefix;
@@ -82,8 +82,9 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public String toJava() {
-        return String.format(JAVA, engine.getTranspiler().getClass(normalize().namespace), Transpiler.JAVA_PREFIX,
-                name);
+        return String.format(JAVA, FunckyReference.class.getName(), URI.class.getName(),
+                EscapeHelper.escape(file.toString()), line, column,
+                EscapeHelper.escape(normalize().namespace.toString()), name);
     }
 
     @Override

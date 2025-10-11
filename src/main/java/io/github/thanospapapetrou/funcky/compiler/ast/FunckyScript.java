@@ -21,10 +21,9 @@ public class FunckyScript extends CompiledScript {
                     %1$s() {
                         super(%3$s.this.engine%4$s);
                     }
-                    
-            %5$s
-                }
-                
+            
+            %5$s    }
+            
                 final %1$s %1$s = new %1$s();
                 
             """;
