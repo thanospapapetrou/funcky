@@ -15,7 +15,8 @@ import java.nio.file.attribute.PosixFileAttributeView;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.script.CompiledScript;
 import javax.tools.Diagnostic;
@@ -26,25 +27,40 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
+import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
+import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
 
 public class Transpiler {
     public static final String JAVA_PREFIX = "$";
     private static final String DELIMITER_EXTENSION = ".";
-    private static final String DELIMITER_PACKAGE = ".";
     private static final String EXTENSION_JAVA = "java";
+    private static final String JAVA = """
+            public class %1$s {
+                final %2$s engine = new %3$s().getScriptEngine();
+                
+            %4$s
+                public static void main(final String[] arguments) throws %5$s {
+                    var it = new %1$s();
+                    %6$s.exit(((%7$s) ((%8$s) it.%9$s.%10$smain).apply(new %11$s(it.engine, it.engine.getConverter().convert(%12$s.asList(arguments))), it.engine.getContext())).getValue().intValue());
+                }
+            
+                %1$s() throws %5$s {
+                }
+            }
+            """;
     private static final String OPTION_OUTPUT = "-d";
-    private static final String PATTERN_NON_WORD = "\\W";
+    private static final String PATTERN_NON_WORD = "\\W+";
     private static final String PREFIX_POSIX_HIDDEN = ".";
     private static final String PREFIX_UNDERSCORE = "_";
-    private static final File TMP_DIR;
     private static final File USER_HOME;
 
     static {
         try {
-            TMP_DIR = new File(System.getProperty("java.io.tmpdir")).getCanonicalFile();
             USER_HOME = new File(System.getProperty("user.home")).getCanonicalFile();
         } catch (final IOException e) {
             throw new ExceptionInInitializerError(e);
@@ -83,8 +99,8 @@ public class Transpiler {
         this.loader = loader;
     }
 
-    public String getClassName(final URI file) {
-        return String.join(DELIMITER_PACKAGE, split(file));
+    public String getClass(final URI file) {
+        return JAVA_PREFIX + String.join(PREFIX_UNDERSCORE, file.toString().split(PATTERN_NON_WORD));
     }
 
     public FunckyExpression transpile(final FunckyExpression expression) {
@@ -99,10 +115,8 @@ public class Transpiler {
 
     public FunckyScript transpile(final FunckyScript script) {
         final File java = generateJava(script);
-        if (java != null) {
-            compile(java);
-        }
-        return load(getClassName(script.getFile()));
+        compile(java);
+        return load(getClass(script.getFile()));
     }
 
     private File generateJava(final FunckyExpression expression) {
@@ -111,50 +125,28 @@ public class Transpiler {
 
     private File generateJava(final FunckyScript script) {
         try {
-            final File java = getJavaFile(script.getFile());
-            java.getParentFile().mkdirs();
-            if (!java.createNewFile()) {
-                System.out.println("File already exists"); // TODO
-                return null;
-            }
-            try (final FileWriter writer = new FileWriter(java, StandardCharsets.UTF_8)) {
-                writer.write(script.toJava(getPackage(script.getFile()), getSimpleName(script.getFile()),
-                        getParent(script)));
+            final File file = File.createTempFile(engine.getFactory().getNames().getFirst() + JAVA_PREFIX,
+                    DELIMITER_EXTENSION + EXTENSION_JAVA);
+            // file.deleteOnExit(); TODO
+            try (final FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
+                final String clazz = file.getName()
+                        .substring(0, file.getName().length() - (DELIMITER_EXTENSION + EXTENSION_JAVA).length());
+                writer.write(String.format(JAVA, clazz, FunckyEngine.class.getName(), FunckyFactory.class.getName(),
+                        Stream.of(new Combinators(engine), script)// TODO resolve dependencies
+                                .map(scr -> scr.toJava(clazz))
+                                .collect(Collectors.joining()),
+                        IOException.class.getName(), System.class.getSimpleName(), FunckyNumber.class.getName(),
+                        FunckyFunction.class.getName(), getClass(script.getFile()), JAVA_PREFIX,
+                        FunckyLiteral.class.getName(), Arrays.class.getName()));
                 writer.flush();
             }
-            return java;
+            return file;
         } catch (final IOException e) {
             throw new RuntimeException(e); // TODO
         }
-
-        //        final File file = engine.getManager().getLoaded(script.getFile());
-        //        final Class<? extends FunckyLibrary> library = Linker.getLibrary(script.getFile());
-        //        try (final FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
-        //            writer.write(
-        //                    String.format(TEMPLATES.get((library == null) ? FunckyScript.class : FunckyLibrary.class),
-        //                            file.getName().replace(EXTENSION_JAVA, ""),
-        //                            ((library == null) ? FunckyScript.class : library).getName(),
-        //                            script.getFile(),
-        //                            script.getDefinitions().stream()
-        //                                    .map(this::generateSource)
-        //                                    .collect(Collectors.joining(TEMPLATE_DELIMITER)))); // TODO escape URIs
-        //            System.out.println(
-        //                    String.format(TEMPLATES.get((library == null) ? FunckyScript.class : FunckyLibrary.class),
-        //                            file.getName().replace(EXTENSION_JAVA, ""),
-        //                            ((library == null) ? FunckyScript.class : library).getName(),
-        //                            script.getFile(),
-        //                            script.getDefinitions().stream()
-        //                                    .filter(definition -> definition.getLine() != -1)
-        //                                    .map(this::generateSource)
-        //                                    .collect(Collectors.joining(TEMPLATE_DELIMITER)))); // TODO escape URIs
-        //        } catch (final IOException e) {
-        //            throw new RuntimeException(e); // TODO
-        //        }
-        //        return file;
     }
 
     private void compile(final File source) {
-        System.out.println("Output: " + getOuputDir(engine));
         final DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<>();
         try (final StandardJavaFileManager manager = compiler.getStandardFileManager(collector, Locale.ROOT,
                 StandardCharsets.UTF_8)) {
@@ -176,46 +168,12 @@ public class Transpiler {
     }
 
     private <T extends CompiledScript> T load(final String clazz) {
-        try {
-            return (T) loader.loadClass(clazz).getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
-        } catch (final ReflectiveOperationException e) {
-            throw new RuntimeException(e); // TODO
-        }
-    }
-
-    private File getJavaFile(final URI file) { // TODO check if this and the following should instead get a script as
-        // an argument
-        return new File(TMP_DIR,
-                engine.getFactory().getNames().getFirst() + File.separator + String.join(File.separator, split(file))
-                        + DELIMITER_EXTENSION + EXTENSION_JAVA);
-    }
-
-    private String getPackage(final URI file) {
-        return getClassName(file).substring(0, getClassName(file).lastIndexOf(DELIMITER_PACKAGE));
-    }
-
-    private String getSimpleName(final URI file) {
-        return getClassName(file).substring(getClassName(file).lastIndexOf(DELIMITER_PACKAGE) + 1);
-    }
-
-    private Class<? extends FunckyScript> getParent(final FunckyScript script) {
-        final Class<? extends FunckyLibrary> library = engine.getLinker().getLibrary(script.getFile());
-        return (library == null) ? FunckyScript.class : library;
-    }
-
-    private List<String> split(final URI file) {
-        return Arrays.stream(removeExtensions(file).split(PATTERN_NON_WORD)).filter(Predicate.not(String::isEmpty))
-                .map(string -> Character.isJavaIdentifierStart(string.charAt(0)) ? string
-                        : (PREFIX_UNDERSCORE + string)).toList();
-    }
-
-    private String removeExtensions(final URI file) {
-        for (final String extension : engine.getFactory().getExtensions()) {
-            if (file.toString().endsWith(DELIMITER_EXTENSION + extension)) {
-                return file.toString()
-                        .substring(0, file.toString().length() - (DELIMITER_EXTENSION + extension).length());
-            }
-        }
-        return file.toString();
+        //        try {
+        //            return (T) loader.loadClass(clazz).getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
+        //        } catch (final ReflectiveOperationException e) {
+        //            throw new RuntimeException(e); // TODO
+        //        }
+        // TODO
+        return null;
     }
 }

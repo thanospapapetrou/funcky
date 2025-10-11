@@ -6,7 +6,7 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
 public final class FunckyNumber extends FunckyValue implements Comparable<FunckyNumber> {
-    private static final String JAVA = "new %1$s(engine, new %2$s(%3$f))";
+    private static final String JAVA = "new %1$s(engine, new %2$s(\"%3$f\"))"; // TODO improve argument ordering here and in other JAVAs
 
     private final BigDecimal value;
 

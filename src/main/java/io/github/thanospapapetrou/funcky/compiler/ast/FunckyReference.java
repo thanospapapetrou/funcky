@@ -21,7 +21,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 public final class FunckyReference extends FunckyExpression {
     private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
     private static final String FORMAT_PREFIX = "%1$s.%2$s";
-    private static final String JAVA = "new %1$s(engine).%2$s%3$s";
+    private static final String JAVA = "%1$s.%2$s%3$s";
 
     private final URI namespace;
     private final String prefix;
@@ -82,7 +82,7 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public String toJava() {
-        return String.format(JAVA, engine.getTranspiler().getClassName(normalize().namespace), Transpiler.JAVA_PREFIX,
+        return String.format(JAVA, engine.getTranspiler().getClass(normalize().namespace), Transpiler.JAVA_PREFIX,
                 name);
     }
 
