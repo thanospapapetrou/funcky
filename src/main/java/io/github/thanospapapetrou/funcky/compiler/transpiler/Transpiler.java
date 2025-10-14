@@ -3,22 +3,18 @@ package io.github.thanospapapetrou.funcky.compiler.transpiler;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileStore;
-import java.nio.file.Files;
-import java.nio.file.attribute.DosFileAttributeView;
-import java.nio.file.attribute.PosixFileAttributeView;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.script.CompiledScript;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -36,6 +32,10 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
 
 public class Transpiler {
+    // TODO cleanup
+    // TODO generate jar
+    // TODO use flags from factory
+    // TODO types, values, to string, equals, hashcode in transpiled code
     public static final String JAVA_PREFIX = "$";
     private static final String DELIMITER_EXTENSION = ".";
     private static final String EXTENSION_JAVA = "java";
@@ -54,48 +54,23 @@ public class Transpiler {
             """;
     private static final String OPTION_OUTPUT = "-d";
     private static final String PATTERN_NON_WORD = "\\W+";
-    private static final String PREFIX_POSIX_HIDDEN = ".";
     private static final String PREFIX_UNDERSCORE = "_";
-    private static final File USER_HOME;
-
-    static {
-        try {
-            USER_HOME = new File(System.getProperty("user.home")).getCanonicalFile();
-        } catch (final IOException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     private final FunckyEngine engine;
     private final JavaCompiler compiler;
-    private final URLClassLoader loader;
-
-    private static File getOuputDir(final FunckyEngine engine) {
-        try {
-            final FileStore store = Files.getFileStore(USER_HOME.toPath());
-            final File output = new File(USER_HOME,
-                    (store.supportsFileAttributeView(PosixFileAttributeView.class) ? PREFIX_POSIX_HIDDEN : "") + engine
-                            .getFactory().getNames().getFirst());
-            output.mkdirs();
-            if (store.supportsFileAttributeView(DosFileAttributeView.class)) {
-                Files.getFileAttributeView(output.toPath(), DosFileAttributeView.class).setHidden(true);
-            }
-            return output;
-        } catch (final IOException e) { // TODO
-            throw new RuntimeException(e);
-        }
-    }
 
     public Transpiler(final FunckyEngine engine) throws MalformedURLException {
-        this(engine, ToolProvider.getSystemJavaCompiler(),
-                new URLClassLoader(new URL[]{getOuputDir(engine).toURI().toURL()})); //
+        this(engine, ToolProvider.getSystemJavaCompiler()); //
         // TODO
     }
 
-    private Transpiler(final FunckyEngine engine, final JavaCompiler compiler, final URLClassLoader loader) {
+    private Transpiler(final FunckyEngine engine, final JavaCompiler compiler) {
         this.engine = engine;
         this.compiler = compiler;
-        this.loader = loader;
+    }
+
+    public String getClass(final File java) {
+        return java.getName().substring(0, java.getName().length() - (DELIMITER_EXTENSION + EXTENSION_JAVA).length());
     }
 
     public String getClass(final URI file) {
@@ -115,7 +90,7 @@ public class Transpiler {
     public FunckyScript transpile(final FunckyScript script) {
         final File java = generateJava(script);
         compile(java);
-        return load(getClass(script.getFile()));
+        return load(java, getClass(script.getFile()));
     }
 
     private File generateJava(final FunckyExpression expression) {
@@ -124,34 +99,33 @@ public class Transpiler {
 
     private File generateJava(final FunckyScript script) {
         try {
-            final File file = File.createTempFile(engine.getFactory().getNames().getFirst() + JAVA_PREFIX,
-                    DELIMITER_EXTENSION + EXTENSION_JAVA);
-            // file.deleteOnExit(); TODO
-            try (final FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
-                final String clazz = file.getName()
-                        .substring(0, file.getName().length() - (DELIMITER_EXTENSION + EXTENSION_JAVA).length());
-                writer.write(String.format(JAVA, clazz, FunckyEngine.class.getName(), FunckyFactory.class.getName(),
+            final File java = File.createTempFile(engine.getFactory().getNames().getFirst() + JAVA_PREFIX,
+                    DELIMITER_EXTENSION + EXTENSION_JAVA, engine.getFactory().getTmpDir());
+            // java.deleteOnExit(); TODO
+            try (final FileWriter writer = new FileWriter(java, StandardCharsets.UTF_8)) {
+                writer.write(
+                        String.format(JAVA, getClass(java), FunckyEngine.class.getName(), FunckyFactory.class.getName(),
                         Stream.of(new Combinators(engine), script)// TODO resolve dependencies
-                                .map(scr -> scr.toJava(clazz))
+                                .map(FunckyScript::toJava)
                                 .collect(Collectors.joining()),
                         IOException.class.getName(), System.class.getSimpleName(), FunckyNumber.class.getName(),
                         FunckyFunction.class.getName(), getClass(script.getFile()), JAVA_PREFIX,
                         FunckyLiteral.class.getName(), Arrays.class.getName()));
                 writer.flush();
             }
-            return file;
+            return java;
         } catch (final IOException e) {
             throw new RuntimeException(e); // TODO
         }
     }
 
-    private void compile(final File source) {
+    private void compile(final File java) {
         final DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<>();
         try (final StandardJavaFileManager manager = compiler.getStandardFileManager(collector, Locale.ROOT,
                 StandardCharsets.UTF_8)) {
-            if (compiler.getTask(null, manager, collector, List.of(OPTION_OUTPUT, getOuputDir(engine).toString()), null,
-                    manager.getJavaFileObjectsFromFiles(List.of(source))).call()) {
-            } else {
+            if (!compiler.getTask(null, manager, collector,
+                    List.of(OPTION_OUTPUT, engine.getFactory().getTmpDir().getCanonicalPath()), null,
+                    manager.getJavaFileObjectsFromFiles(List.of(java))).call()) {
                 for (Diagnostic<? extends JavaFileObject> d : collector.getDiagnostics()) {
                     // TODO
                     System.out.println(d.getCode() + " " + d.getKind());
@@ -166,13 +140,20 @@ public class Transpiler {
         }
     }
 
-    private <T extends CompiledScript> T load(final String clazz) {
-        //        try {
-        //            return (T) loader.loadClass(clazz).getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
-        //        } catch (final ReflectiveOperationException e) {
-        //            throw new RuntimeException(e); // TODO
-        //        }
+    private <T extends FunckyScript> T load(final File java, final String clazz) {
+        try (final URLClassLoader loader =
+                new URLClassLoader(new URL[]{engine.getFactory().getTmpDir().toURI().toURL()})) {
+            final Class<T> s = (Class<T>) Arrays.stream(loader.loadClass(getClass(java)).getDeclaredClasses())
+                    .filter(c -> c.getSimpleName().equals(clazz)).findAny()
+                    .orElseThrow(() -> new RuntimeException("Error loading clazz: " + clazz));
+            // TODO instantiate nested class
+            final Constructor<T> constructor = s.getDeclaredConstructor(FunckyEngine.class);
+            constructor.setAccessible(true);
+            return constructor.newInstance(engine);
+        } catch (final IOException | ReflectiveOperationException e) {
+            throw new RuntimeException(e); // TODO
+        }
         // TODO
-        return null;
+        //             Class.class.getProtectionDomain().getCodeSource().getLocation();
     }
 }

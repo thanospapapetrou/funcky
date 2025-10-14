@@ -32,9 +32,12 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeExcepti
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
 public class FunckyEngine extends AbstractScriptEngine implements Compilable, Invocable {
+    public static final String PARAMETER_CURRENT_DIR = "io.github.thanospapapetrou.funcky.current.dir";
     public static final String PARAMETER_EXTENSIONS = "io.github.thanospapapetrou.funcky.extensions";
     public static final String PARAMETER_MIME_TYPES = "io.github.thanospapapetrou.funcky.mime_types";
     public static final String PARAMETER_THREADING = "THREADING";
+    public static final String PARAMETER_TMP_DIR = "io.github.thanospapapetrou.funcky.tmp.dir";
+    public static final String PARAMETER_TRANSPILING = "io.github.thanospapapetrou.funcky.transpiling";
 
     private final FunckyFactory factory;
     private final Tokenizer tokenizer;
@@ -118,10 +121,10 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     @Override
     public FunckyExpression compile(final String expression) throws FunckyCompilationException {
         try {
-            return transpiler.transpile(
-                    linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
+            final FunckyExpression expr = linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
                     .filter(token -> !token.type().equals(TokenType.COMMENT))
-                            .collect(Collectors.toCollection(ArrayDeque::new))))));
+                            .collect(Collectors.toCollection(ArrayDeque::new)))));
+            return factory.isTranspiling() ? transpiler.transpile(expr) : expr;
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }
@@ -168,7 +171,7 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
             final FunckyScript scr = linker.link(preprocessor.preprocess(parser.parse(
                     tokenizer.tokenize(script, file).stream().filter(token -> !token.type().equals(TokenType.COMMENT))
                             .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
-            return main ? transpiler.transpile(scr) : scr;
+            return (factory.isTranspiling() && main) ? transpiler.transpile(scr) : scr;
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }

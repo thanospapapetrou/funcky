@@ -43,15 +43,6 @@ public class Linker {
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
     private static final String PRELUDE_SCRIPT = "/prelude/%1$s.%2$s";
     private static final String STDIN = "stdin";
-    private static final URI USER_DIR;
-
-    static {
-        try {
-            USER_DIR = new File(System.getProperty("user.dir")).getCanonicalFile().toURI();
-        } catch (final IOException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 
     private final FunckyEngine engine;
 
@@ -60,7 +51,9 @@ public class Linker {
     }
 
     public URI normalize(final URI base, final URI namespace) {
-        return namespace.isAbsolute() ? namespace : (base.equals(getStdin()) ? USER_DIR : base).resolve(namespace);
+        return namespace.isAbsolute() ? namespace : (base.equals(getStdin())
+                ? new File(engine.getFactory().getParameter(FunckyEngine.PARAMETER_CURRENT_DIR)).toURI()
+                : base).resolve(namespace);
     }
 
     public URI getStdin() {

@@ -17,14 +17,14 @@ import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 public class FunckyScript extends CompiledScript {
     public static final String MAIN = "main";
     private static final String JAVA = """
-                class %1$s extends %2$s {
-                    %1$s() {
-                        super(%3$s.this.engine%4$s);
+                static class %1$s extends %2$s {
+                    %1$s(final %3$s engine) {
+                        super(engine%4$s);
                     }
             
             %5$s    }
             
-                final %1$s %1$s = new %1$s();
+                final %1$s %1$s = new %1$s(engine);
                 
             """;
     private static final String JAVA_URI = ", %1$s.create(\"%2$s\")";
@@ -58,10 +58,10 @@ public class FunckyScript extends CompiledScript {
         return definitions;
     }
 
-    public String toJava(final String outer) {
+    public String toJava() {
         final Class<? extends FunckyLibrary> parent = engine.getLinker().getLibrary(getFile());
         return String.format(JAVA, engine.getTranspiler().getClass(getFile()),
-                ((parent == null) ? FunckyScript.class : parent).getName(), outer,
+                ((parent == null) ? FunckyScript.class : parent).getName(), FunckyEngine.class.getName(),
                 (parent == null) ? String.format(JAVA_URI, URI.class.getName(),
                         EscapeHelper.escape(getFile().toString())) : "",
                 definitions.stream()
