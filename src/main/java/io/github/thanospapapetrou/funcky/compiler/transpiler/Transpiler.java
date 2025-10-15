@@ -1,6 +1,7 @@
 package io.github.thanospapapetrou.funcky.compiler.transpiler;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -9,11 +10,18 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -36,8 +44,10 @@ public class Transpiler {
     // TODO generate jar
     // TODO use flags from factory
     // TODO types, values, to string, equals, hashcode in transpiled code
-    public static final String JAVA_PREFIX = "$";
+    public static final String JAVA_PREFIX = "_";
     private static final String DELIMITER_EXTENSION = ".";
+    private static final String EXTENSION_CLASS = "class";
+    private static final String EXTENSION_JAR = "jar";
     private static final String EXTENSION_JAVA = "java";
     private static final String JAVA = """
             public class %1$s {
@@ -52,9 +62,9 @@ public class Transpiler {
                 }
             }
             """;
+    private static final String MANIFEST_VERSION = "1.0";
     private static final String OPTION_OUTPUT = "-d";
     private static final String PATTERN_NON_WORD = "\\W+";
-    private static final String PREFIX_UNDERSCORE = "_";
 
     private final FunckyEngine engine;
     private final JavaCompiler compiler;
@@ -69,12 +79,8 @@ public class Transpiler {
         this.compiler = compiler;
     }
 
-    public String getClass(final File java) {
-        return java.getName().substring(0, java.getName().length() - (DELIMITER_EXTENSION + EXTENSION_JAVA).length());
-    }
-
-    public String getClass(final URI file) {
-        return JAVA_PREFIX + String.join(PREFIX_UNDERSCORE, file.toString().split(PATTERN_NON_WORD));
+    public String getClass(final URI script) {
+        return JAVA_PREFIX + String.join(JAVA_PREFIX, script.toString().split(PATTERN_NON_WORD));
     }
 
     public FunckyExpression transpile(final FunckyExpression expression) {
@@ -90,6 +96,7 @@ public class Transpiler {
     public FunckyScript transpile(final FunckyScript script) {
         final File java = generateJava(script);
         compile(java);
+        packadze(script, java);
         return load(java, getClass(script.getFile()));
     }
 
@@ -124,7 +131,7 @@ public class Transpiler {
         try (final StandardJavaFileManager manager = compiler.getStandardFileManager(collector, Locale.ROOT,
                 StandardCharsets.UTF_8)) {
             if (!compiler.getTask(null, manager, collector,
-                    List.of(OPTION_OUTPUT, engine.getFactory().getTmpDir().getCanonicalPath()), null,
+                    List.of(OPTION_OUTPUT, engine.getFactory().getTmpDir().getPath()), null,
                     manager.getJavaFileObjectsFromFiles(List.of(java))).call()) {
                 for (Diagnostic<? extends JavaFileObject> d : collector.getDiagnostics()) {
                     // TODO
@@ -138,6 +145,29 @@ public class Transpiler {
         } catch (final IOException e) {
             throw new RuntimeException(e); // TODO
         }
+    }
+
+    private void packadze(final FunckyScript script, final File java) {
+        final File jar = getJar(script.getFile());
+        final String clazz = getClass(java) + DELIMITER_EXTENSION + EXTENSION_CLASS;
+        try (final JarOutputStream output = new JarOutputStream(new FileOutputStream(jar), getManifest(java))) {
+            output.putNextEntry(new ZipEntry(clazz));
+            Files.copy(new File(engine.getFactory().getTmpDir(), clazz).toPath(), output);
+            output.closeEntry();
+            try (final JarInputStream input = new JarInputStream(
+            engine.getClass().getProtectionDomain().getCodeSource().getLocation().openStream())) {
+                JarEntry entry;
+                while ((entry = input.getNextJarEntry()) != null) {
+                    output.putNextEntry(new JarEntry(entry.getName()));
+                    output.write(input.readAllBytes());
+                    output.closeEntry();
+                }
+            }
+            System.out.println("Created JAR: " + jar.getAbsolutePath());
+        } catch (final IOException e) {
+            throw new RuntimeException(e); // TODO
+        }
+        System.out.println("Engine is in: " + engine.getClass().getProtectionDomain().getCodeSource().getLocation());
     }
 
     private <T extends FunckyScript> T load(final File java, final String clazz) {
@@ -155,5 +185,26 @@ public class Transpiler {
         }
         // TODO
         //             Class.class.getProtectionDomain().getCodeSource().getLocation();
+    }
+
+    private String getClass(final File java) {
+        return java.getName().substring(0, java.getName().length() - (DELIMITER_EXTENSION + EXTENSION_JAVA).length());
+    }
+
+    private File getJar(final URI script) {
+        return new File(engine.getFactory().getOutputDir(), getClass(script) + DELIMITER_EXTENSION + EXTENSION_JAR);
+    }
+
+    private Manifest getManifest(final File java) {
+        final Manifest manifest = new Manifest();
+        manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, MANIFEST_VERSION);
+        manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, getClass(java));
+        manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_TITLE, engine.getFactory().getLanguageName());
+        manifest.getMainAttributes()
+                .put(Attributes.Name.SPECIFICATION_VERSION, engine.getFactory().getLanguageVersion());
+        manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_TITLE, engine.getFactory().getEngineName());
+        manifest.getMainAttributes()
+                .put(Attributes.Name.IMPLEMENTATION_VERSION, engine.getFactory().getEngineVersion());
+        return manifest;
     }
 }

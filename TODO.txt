@@ -26,5 +26,5 @@ remove funckyjavaconverter
 -java.net.MalformedURLException: unknown protocol: funcky
 rethink static methods
 
-ip-register-ipo-client
-missing tags 1.5.0-RC1.1
+separate output dir and current dir
+store only scripts in context

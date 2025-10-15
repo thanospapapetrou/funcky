@@ -32,9 +32,9 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeExcepti
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
 public class FunckyEngine extends AbstractScriptEngine implements Compilable, Invocable {
-    public static final String PARAMETER_CURRENT_DIR = "io.github.thanospapapetrou.funcky.current.dir";
     public static final String PARAMETER_EXTENSIONS = "io.github.thanospapapetrou.funcky.extensions";
     public static final String PARAMETER_MIME_TYPES = "io.github.thanospapapetrou.funcky.mime_types";
+    public static final String PARAMETER_OUTPUT_DIR = "io.github.thanospapapetrou.funcky.output.dir";
     public static final String PARAMETER_THREADING = "THREADING";
     public static final String PARAMETER_TMP_DIR = "io.github.thanospapapetrou.funcky.tmp.dir";
     public static final String PARAMETER_TRANSPILING = "io.github.thanospapapetrou.funcky.transpiling";

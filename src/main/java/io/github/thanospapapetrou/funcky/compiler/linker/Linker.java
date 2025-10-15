@@ -52,7 +52,7 @@ public class Linker {
 
     public URI normalize(final URI base, final URI namespace) {
         return namespace.isAbsolute() ? namespace : (base.equals(getStdin())
-                ? new File(engine.getFactory().getParameter(FunckyEngine.PARAMETER_CURRENT_DIR)).toURI()
+                ? engine.getFactory().getOutputDir().toURI()
                 : base).resolve(namespace);
     }
 
