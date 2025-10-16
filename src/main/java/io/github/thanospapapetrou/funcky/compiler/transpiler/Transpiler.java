@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -35,14 +36,14 @@ import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
 
 public class Transpiler {
     // TODO cleanup
-    // TODO generate jar
-    // TODO use flags from factory
     // TODO types, values, to string, equals, hashcode in transpiled code
     public static final String JAVA_DELIMITER = "$";
     private static final String DELIMITER_EXTENSION = ".";
@@ -94,21 +95,25 @@ public class Transpiler {
     }
 
     public FunckyScript transpile(final FunckyScript script) {
-        final File java = generateJava(script);
-        compile(java);
-        packadze(script, java);
-        return load(java, getClass(script.getFile()));
+        try {
+            final File java = generateJava(script);
+            compile(java);
+            final File jar = packadze(script, java);
+            return load(jar, java, getClass(script.getFile()));
+        } catch (final IOException e) {
+            throw new SneakyCompilationException(new FunckyCompilationException(e));
+        } catch (final ReflectiveOperationException e) {
+            throw new RuntimeException(e); // TODO
+        }
     }
 
     private File generateJava(final FunckyExpression expression) {
         return null;
     }
 
-    private File generateJava(final FunckyScript script) {
-        try {
+    private File generateJava(final FunckyScript script) throws IOException {
             final File java = File.createTempFile(engine.getFactory().getNames().getFirst() + JAVA_DELIMITER,
                     DELIMITER_EXTENSION + EXTENSION_JAVA, engine.getFactory().getTmpDir());
-            // java.deleteOnExit(); TODO
             try (final FileWriter writer = new FileWriter(java, StandardCharsets.UTF_8)) {
                 writer.write(
                         String.format(JAVA, getClass(java), FunckyEngine.class.getName(), FunckyFactory.class.getName(),
@@ -121,18 +126,17 @@ public class Transpiler {
                 writer.flush();
             }
             return java;
-        } catch (final IOException e) {
-            throw new RuntimeException(e); // TODO
-        }
     }
 
-    private void compile(final File java) {
+    private void compile(final File java) throws IOException {
         final DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<>();
         try (final StandardJavaFileManager manager = compiler.getStandardFileManager(collector, Locale.ROOT,
                 StandardCharsets.UTF_8)) {
-            if (!compiler.getTask(null, manager, collector,
-                    List.of(OPTION_OUTPUT, engine.getFactory().getTmpDir().getPath()), null,
-                    manager.getJavaFileObjectsFromFiles(List.of(java))).call()) {
+            final boolean compilation = compiler.getTask(null, manager, collector, List.of(OPTION_OUTPUT,
+                            engine.getFactory().getTmpDir().getPath()), null,
+                    manager.getJavaFileObjectsFromFiles(List.of(java))).call();
+            java.delete();
+            if (!compilation) {
                 for (Diagnostic<? extends JavaFileObject> d : collector.getDiagnostics()) {
                     // TODO
                     System.out.println(d.getCode() + " " + d.getKind());
@@ -142,20 +146,20 @@ public class Transpiler {
                 }
                 throw new IllegalStateException("Compilation failed"); // TODO
             }
-        } catch (final IOException e) {
-            throw new RuntimeException(e); // TODO
         }
     }
 
-    private void packadze(final FunckyScript script, final File java) {
-        final File jar = getJar(script.getFile());
+    private File packadze(final FunckyScript script, final File java) throws IOException {
+        final File jar = new File(engine.getFactory().getOutputDir(), getClass(script.getFile())
+                + DELIMITER_EXTENSION + EXTENSION_JAR);
         try (final JarOutputStream output = new JarOutputStream(new FileOutputStream(jar), getManifest(java))) {
-            for (final File clazz : engine.getFactory().getTmpDir().listFiles((dir, name) ->
-                    name.startsWith(getClass(java)) && name.endsWith(DELIMITER_EXTENSION + EXTENSION_CLASS))) {
+            for (final File clazz : Objects.requireNonNull(engine.getFactory().getTmpDir()
+                    .listFiles((dir, name) -> name.startsWith(getClass(java))
+                            && name.endsWith(DELIMITER_EXTENSION + EXTENSION_CLASS)))) {
                 output.putNextEntry(new ZipEntry(clazz.getName()));
-                // TODO add nested classes
                 Files.copy(clazz.toPath(), output);
                 output.closeEntry();
+                clazz.delete();
             }
             try (final JarInputStream input = new JarInputStream(
             engine.getClass().getProtectionDomain().getCodeSource().getLocation().openStream())) {
@@ -166,36 +170,25 @@ public class Transpiler {
                     output.closeEntry();
                 }
             }
-            System.out.println("Created JAR: " + jar.getAbsolutePath());
-        } catch (final IOException e) {
-            throw new RuntimeException(e); // TODO
         }
-        System.out.println("Engine is in: " + engine.getClass().getProtectionDomain().getCodeSource().getLocation());
+        return jar;
     }
 
-    private <T extends FunckyScript> T load(final File java, final String clazz) {
-        try (final URLClassLoader loader =
-                new URLClassLoader(new URL[]{engine.getFactory().getTmpDir().toURI().toURL()})) {
-            final Class<T> s = (Class<T>) Arrays.stream(loader.loadClass(getClass(java)).getDeclaredClasses())
-                    .filter(c -> c.getSimpleName().equals(clazz)).findAny()
-                    .orElseThrow(() -> new RuntimeException("Error loading clazz: " + clazz));
-            // TODO instantiate nested class
-            final Constructor<T> constructor = s.getDeclaredConstructor(FunckyEngine.class);
+    private <T> T load(final File jar, final File java, final String clazz) throws IOException,
+            ReflectiveOperationException {
+        try (final URLClassLoader loader = new URLClassLoader(new URL[]{jar.toURI().toURL()})) {
+            final Constructor<?> constructor = Arrays.stream(loader.loadClass(getClass(java)).getDeclaredClasses())
+                    .filter(c -> c.getSimpleName().equals(clazz))
+                    .findAny()
+                    .orElseThrow(() -> new RuntimeException("Error loading clazz: " + clazz))
+                    .getDeclaredConstructor(FunckyEngine.class);
             constructor.setAccessible(true);
-            return constructor.newInstance(engine);
-        } catch (final IOException | ReflectiveOperationException e) {
-            throw new RuntimeException(e); // TODO
+            return (T) constructor.newInstance(engine);
         }
-        // TODO
-        //             Class.class.getProtectionDomain().getCodeSource().getLocation();
     }
 
     private String getClass(final File java) {
         return java.getName().substring(0, java.getName().length() - (DELIMITER_EXTENSION + EXTENSION_JAVA).length());
-    }
-
-    private File getJar(final URI script) {
-        return new File(engine.getFactory().getOutputDir(), getClass(script) + DELIMITER_EXTENSION + EXTENSION_JAR);
     }
 
     private Manifest getManifest(final File java) {
@@ -203,11 +196,11 @@ public class Transpiler {
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, MANIFEST_VERSION);
         manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, getClass(java));
         manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_TITLE, engine.getFactory().getLanguageName());
-        manifest.getMainAttributes()
-                .put(Attributes.Name.SPECIFICATION_VERSION, engine.getFactory().getLanguageVersion());
+        manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_VERSION,
+                engine.getFactory().getLanguageVersion());
         manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_TITLE, engine.getFactory().getEngineName());
-        manifest.getMainAttributes()
-                .put(Attributes.Name.IMPLEMENTATION_VERSION, engine.getFactory().getEngineVersion());
+        manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_VERSION,
+                engine.getFactory().getEngineVersion());
         return manifest;
     }
 }

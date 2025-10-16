@@ -26,5 +26,5 @@ remove funckyjavaconverter
 -java.net.MalformedURLException: unknown protocol: funcky
 rethink static methods
 
-separate output dir and current dir
 store only scripts in context
+transpiler -> delete java and class files once used

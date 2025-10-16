@@ -1,6 +1,5 @@
 package io.github.thanospapapetrou.funcky.compiler.linker;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -19,6 +18,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidMainException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.PrefixAlreadyBoundException;
@@ -51,9 +51,13 @@ public class Linker {
     }
 
     public URI normalize(final URI base, final URI namespace) {
-        return namespace.isAbsolute() ? namespace : (base.equals(getStdin())
-                ? engine.getFactory().getOutputDir().toURI()
-                : base).resolve(namespace);
+        try {
+            return namespace.isAbsolute() ? namespace : (base.equals(getStdin())
+                    ? engine.getFactory().getBaseDir().toURI()
+                    : base).resolve(namespace);
+        } catch (final IOException e) {
+            throw new SneakyCompilationException(new FunckyCompilationException(e));
+        }
     }
 
     public URI getStdin() {

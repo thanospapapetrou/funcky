@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import javax.script.ScriptEngineFactory;
 
 public class FunckyFactory implements ScriptEngineFactory {
+    private static final String CONFIG_BASE_DIR = "Base Directory: %1$s";
     private static final String CONFIG_ENGINE_NAME_VERSION = "Engine: %1$s %2$s";
     private static final String CONFIG_EXTENSIONS = "Extensions: %1$s";
     private static final String CONFIG_LANGUAGE_NAME_VERSION = "Language: %1$s %2$s";
@@ -21,28 +22,17 @@ public class FunckyFactory implements ScriptEngineFactory {
     private static final String CONFIG_TRANSPILING = "Transpiling: %1$s";
     private static final String DELIMITER_PARAMETER = ",";
     private static final String DELIMITER_STATEMENT = "\n";
-    private static final File DIR_CURRENT;
-    private static final File DIR_TMP;
     private static final Logger LOGGER = Logger.getLogger(FunckyFactory.class.getName());
     private static final String PARAMETERS = "/funcky.properties";
+    private static final String SYSTEM_USER_DIR = "user.dir";
+    private static final String SYSTEM_TMP_DIR = "java.io.tmpdir";
 
     private final Properties parameters;
 
-    static {
-        try {
-            DIR_CURRENT = new File(System.getProperty("user.dir")).getCanonicalFile();
-            DIR_TMP = new File(System.getProperty("java.io.tmpdir")).getCanonicalFile();
-        } catch (final IOException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
     public FunckyFactory() throws IOException {
-        this(new Properties());
+        this(new Properties(System.getProperties()));
         try (final InputStream parameters = FunckyFactory.class.getResourceAsStream(PARAMETERS)) {
             this.parameters.load(parameters);
-            this.parameters.setProperty(FunckyEngine.PARAMETER_OUTPUT_DIR, DIR_CURRENT.getPath());
-            this.parameters.setProperty(FunckyEngine.PARAMETER_TMP_DIR, DIR_TMP.getPath());
         }
         LOGGER.config(String.format(CONFIG_LANGUAGE_NAME_VERSION, getLanguageName(), getLanguageVersion()));
         LOGGER.config(String.format(CONFIG_ENGINE_NAME_VERSION, getEngineName(), getEngineVersion()));
@@ -50,9 +40,10 @@ public class FunckyFactory implements ScriptEngineFactory {
         LOGGER.config(String.format(CONFIG_MIME_TYPES, getMimeTypes()));
         LOGGER.config(String.format(CONFIG_EXTENSIONS, getExtensions()));
         LOGGER.config(String.format(CONFIG_THREADING, getParameter(FunckyEngine.PARAMETER_THREADING)));
-        LOGGER.config(String.format(CONFIG_TRANSPILING, getParameter(FunckyEngine.PARAMETER_TRANSPILING)));
-        LOGGER.config(String.format(CONFIG_OUTPUT_DIR, getParameter(FunckyEngine.PARAMETER_OUTPUT_DIR)));
-        LOGGER.config(String.format(CONFIG_TMP_DIR, getParameter(FunckyEngine.PARAMETER_TMP_DIR)));
+        LOGGER.config(String.format(CONFIG_TRANSPILING, isTranspiling()));
+        LOGGER.config(String.format(CONFIG_BASE_DIR, getBaseDir()));
+        LOGGER.config(String.format(CONFIG_OUTPUT_DIR, getOutputDir()));
+        LOGGER.config(String.format(CONFIG_TMP_DIR, getTmpDir()));
         LOGGER.config("");
     }
 
@@ -61,27 +52,38 @@ public class FunckyFactory implements ScriptEngineFactory {
     }
 
     public boolean isTranspiling() {
-        return Boolean.parseBoolean(getParameter(FunckyEngine.PARAMETER_TRANSPILING));
+        return Boolean.parseBoolean(parameters.getProperty(FunckyEngine.PARAMETER_TRANSPILING, Boolean.toString(true)));
     }
 
     public void setTranspiling(final boolean transpiling) {
         parameters.setProperty(FunckyEngine.PARAMETER_TRANSPILING, Boolean.toString(transpiling));
     }
 
-    public File getOutputDir() {
-        return new File(getParameter(FunckyEngine.PARAMETER_OUTPUT_DIR));
+    public File getBaseDir() throws IOException {
+        return new File(parameters.getProperty(FunckyEngine.PARAMETER_BASE_DIR, System.getProperty(SYSTEM_USER_DIR)))
+                .getCanonicalFile();
     }
 
-    public void setOutputDir(final File outputDir) throws IOException {
-        parameters.setProperty(FunckyEngine.PARAMETER_OUTPUT_DIR, outputDir.getCanonicalPath());
+    public void setBaseDir(final File base) throws IOException {
+        parameters.setProperty(FunckyEngine.PARAMETER_BASE_DIR, base.getCanonicalPath());
     }
 
-    public File getTmpDir() {
-        return new File(getParameter(FunckyEngine.PARAMETER_TMP_DIR));
+    public File getOutputDir() throws IOException {
+        return new File(parameters.getProperty(FunckyEngine.PARAMETER_OUTPUT_DIR, System.getProperty(SYSTEM_USER_DIR)))
+                .getCanonicalFile();
     }
 
-    public void setTmpDir(final File tmpDir) throws IOException {
-        parameters.setProperty(FunckyEngine.PARAMETER_TMP_DIR, tmpDir.getCanonicalPath());
+    public void setOutputDir(final File output) throws IOException {
+        parameters.setProperty(FunckyEngine.PARAMETER_OUTPUT_DIR, output.getCanonicalPath());
+    }
+
+    public File getTmpDir() throws IOException {
+        return new File(parameters.getProperty(FunckyEngine.PARAMETER_TMP_DIR, System.getProperty(SYSTEM_TMP_DIR)))
+                .getCanonicalFile();
+    }
+
+    public void setTmpDir(final File tmp) throws IOException {
+        parameters.setProperty(FunckyEngine.PARAMETER_TMP_DIR, tmp.getCanonicalPath());
     }
 
     @Override
