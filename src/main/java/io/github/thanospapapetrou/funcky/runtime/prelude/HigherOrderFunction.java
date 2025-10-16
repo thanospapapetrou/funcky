@@ -74,7 +74,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
         return Arrays.stream(library.getClass().getDeclaredFields())
                 .filter(field -> Modifier.isPublic(field.getModifiers()))
                 .filter(this::isThis)
-                .map(Field::getName).map(name -> name.substring(Transpiler.JAVA_PREFIX.length()))
+                .map(Field::getName).map(name -> name.substring(Transpiler.JAVA_DELIMITER.length()))
                 .findAny()
                 .orElseThrow(() -> new IllegalStateException(ERROR_RESOLVING_NAME));
     }

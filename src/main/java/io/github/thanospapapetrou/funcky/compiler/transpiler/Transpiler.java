@@ -44,7 +44,7 @@ public class Transpiler {
     // TODO generate jar
     // TODO use flags from factory
     // TODO types, values, to string, equals, hashcode in transpiled code
-    public static final String JAVA_PREFIX = "_";
+    public static final String JAVA_DELIMITER = "$";
     private static final String DELIMITER_EXTENSION = ".";
     private static final String EXTENSION_CLASS = "class";
     private static final String EXTENSION_JAR = "jar";
@@ -80,7 +80,7 @@ public class Transpiler {
     }
 
     public String getClass(final URI script) {
-        return JAVA_PREFIX + String.join(JAVA_PREFIX, script.toString().split(PATTERN_NON_WORD));
+        return JAVA_DELIMITER + String.join(JAVA_DELIMITER, script.toString().split(PATTERN_NON_WORD));
     }
 
     public FunckyExpression transpile(final FunckyExpression expression) {
@@ -106,7 +106,7 @@ public class Transpiler {
 
     private File generateJava(final FunckyScript script) {
         try {
-            final File java = File.createTempFile(engine.getFactory().getNames().getFirst() + JAVA_PREFIX,
+            final File java = File.createTempFile(engine.getFactory().getNames().getFirst() + JAVA_DELIMITER,
                     DELIMITER_EXTENSION + EXTENSION_JAVA, engine.getFactory().getTmpDir());
             // java.deleteOnExit(); TODO
             try (final FileWriter writer = new FileWriter(java, StandardCharsets.UTF_8)) {
@@ -116,7 +116,7 @@ public class Transpiler {
                                 .map(FunckyScript::toJava)
                                 .collect(Collectors.joining()),
                         IOException.class.getName(), System.class.getSimpleName(), FunckyNumber.class.getName(),
-                        FunckyFunction.class.getName(), getClass(script.getFile()), JAVA_PREFIX,
+                                FunckyFunction.class.getName(), getClass(script.getFile()), JAVA_DELIMITER,
                         FunckyLiteral.class.getName(), Arrays.class.getName()));
                 writer.flush();
             }
@@ -149,11 +149,14 @@ public class Transpiler {
 
     private void packadze(final FunckyScript script, final File java) {
         final File jar = getJar(script.getFile());
-        final String clazz = getClass(java) + DELIMITER_EXTENSION + EXTENSION_CLASS;
         try (final JarOutputStream output = new JarOutputStream(new FileOutputStream(jar), getManifest(java))) {
-            output.putNextEntry(new ZipEntry(clazz));
-            Files.copy(new File(engine.getFactory().getTmpDir(), clazz).toPath(), output);
-            output.closeEntry();
+            for (final File clazz : engine.getFactory().getTmpDir().listFiles((dir, name) ->
+                    name.startsWith(getClass(java)) && name.endsWith(DELIMITER_EXTENSION + EXTENSION_CLASS))) {
+                output.putNextEntry(new ZipEntry(clazz.getName()));
+                // TODO add nested classes
+                Files.copy(clazz.toPath(), output);
+                output.closeEntry();
+            }
             try (final JarInputStream input = new JarInputStream(
             engine.getClass().getProtectionDomain().getCodeSource().getLocation().openStream())) {
                 JarEntry entry;

@@ -3,7 +3,9 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.script.CompiledScript;
@@ -70,6 +72,12 @@ public class FunckyScript extends CompiledScript {
                         .collect(Collectors.joining()));
     }
 
+    public Set<URI> getDependencies() {
+        final Set<URI> dependencies = new HashSet<>();
+        getDependencies(dependencies, new HashSet<>());
+        return dependencies;
+    }
+
     @Override
     public FunckyEngine getEngine() {
         return engine;
@@ -81,5 +89,19 @@ public class FunckyScript extends CompiledScript {
                     new FunckyLiteral(engine,
                             engine.getConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval(
                     context);
+    }
+
+    private void getDependencies(final Set<URI> dependencies, final Set<URI> visited) {
+        final Set<URI> localDependencies = new HashSet<>();
+        definitions.stream()
+                .map(FunckyDefinition::getDependencies)
+                .forEach(localDependencies::addAll);
+        dependencies.addAll(localDependencies);
+        visited.add(this.file);
+        for (final URI dependency : localDependencies) {
+            if (!visited.contains(dependency)) {
+                getDependencies(dependencies, visited);
+            }
+        }
     }
 }

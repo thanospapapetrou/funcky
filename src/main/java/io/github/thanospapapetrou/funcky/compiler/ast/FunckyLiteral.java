@@ -2,6 +2,7 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Set;
 
 import javax.script.ScriptContext;
 
@@ -44,6 +45,11 @@ public final class FunckyLiteral extends FunckyExpression {
     public String toJava() {
         return String.format(JAVA, FunckyLiteral.class.getName(), URI.class.getName(),
                 EscapeHelper.escape(file.toString()), line, column, value.toJava());
+    }
+
+    @Override
+    public Set<URI> getDependencies() {
+        return Set.of();
     }
 
     @Override

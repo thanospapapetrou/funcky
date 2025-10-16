@@ -3,6 +3,7 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.script.ScriptContext;
 
@@ -85,6 +86,11 @@ public final class FunckyReference extends FunckyExpression {
         return String.format(JAVA, FunckyReference.class.getName(), URI.class.getName(),
                 EscapeHelper.escape(file.toString()), line, column,
                 EscapeHelper.escape(normalize().namespace.toString()), name);
+    }
+
+    @Override
+    public Set<URI> getDependencies() {
+        return Set.of(normalize().getNamespace());
     }
 
     @Override

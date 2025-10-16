@@ -2,6 +2,7 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Set;
 
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -44,6 +45,8 @@ public abstract sealed class FunckyExpression extends CompiledScript
     public abstract FunckyExpression normalize();
 
     public abstract String toJava();
+
+    public abstract Set<URI> getDependencies();
 
     @Override
     public FunckyEngine getEngine() {

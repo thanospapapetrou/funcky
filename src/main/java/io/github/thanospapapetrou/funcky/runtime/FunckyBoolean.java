@@ -25,7 +25,7 @@ public final class FunckyBoolean extends FunckyValue implements Comparable<Funck
 
     @Override
     public String toJava() {
-        return String.format(JAVA, Booleans.class.getName(), Transpiler.JAVA_PREFIX, value);
+        return String.format(JAVA, Booleans.class.getName(), Transpiler.JAVA_DELIMITER, value);
     }
 
     @Override

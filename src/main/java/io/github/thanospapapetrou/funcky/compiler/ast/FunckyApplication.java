@@ -1,6 +1,9 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
+import java.net.URI;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.script.ScriptContext;
 
@@ -43,6 +46,14 @@ public final class FunckyApplication extends FunckyExpression {
     @Override
     public String toJava() {
         return String.format(JAVA, FunckyApplication.class.getName(), function.toJava(), argument.toJava());
+    }
+
+    @Override
+    public Set<URI> getDependencies() {
+        final Set<URI> dependencies = new HashSet<>();
+        dependencies.addAll(function.getDependencies());
+        dependencies.addAll(argument.getDependencies());
+        return dependencies;
     }
 
     @Override
