@@ -21,8 +21,7 @@ public final class TranspilationException extends FunckyCompilationException {
                 diagnostic.getPosition(), diagnostic.getStartPosition(), diagnostic.getEndPosition()));
     }
 
-    public TranspilationException(final FunckyScript script,
-            final List<Diagnostic<? extends JavaFileObject>> diagnostics) {
+    public TranspilationException(final List<Diagnostic<? extends JavaFileObject>> diagnostics) {
         super(String.format(MESSAGE, diagnostics.stream()
                 .map(TranspilationException::format)
                 .collect(Collectors.joining())), null, -1, -1);

@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
-import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -48,6 +47,7 @@ public class Transpiler {
     // TODO types, values, to string, equals, hashcode in transpiled code
     public static final String JAVA_DELIMITER = "$";
     private static final String DELIMITER_EXTENSION = ".";
+    private static final String ERROR_LOADING = "Error loading %1$s!%2$s$%3$s";
     private static final String EXTENSION_CLASS = "class";
     private static final String EXTENSION_JAR = "jar";
     private static final String EXTENSION_JAVA = "java";
@@ -97,8 +97,8 @@ public class Transpiler {
     public FunckyScript transpile(final FunckyScript script) {
         try {
             final File java = generateJava(script);
-            compile(script, java);
-            return load(packadze(script, java), java, script);
+            compile(java);
+            return load(packadze(java), getClass(java), getClass(script.getFile()));
         } catch (final IOException e) {
             throw new SneakyCompilationException(new FunckyCompilationException(e));
         } catch (final ReflectiveOperationException e) {
@@ -127,7 +127,7 @@ public class Transpiler {
             return java;
     }
 
-    private void compile(final FunckyScript script, final File java) throws IOException {
+    private void compile(final File java) throws IOException {
         final DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<>();
         try (final StandardJavaFileManager manager = compiler.getStandardFileManager(collector, Locale.ROOT,
                 StandardCharsets.UTF_8)) {
@@ -136,13 +136,13 @@ public class Transpiler {
                     manager.getJavaFileObjectsFromFiles(List.of(java))).call();
             java.delete();
             if (!compilation) {
-                throw new SneakyCompilationException(new TranspilationException(script, collector.getDiagnostics()));
+                throw new SneakyCompilationException(new TranspilationException(collector.getDiagnostics()));
             }
         }
     }
 
-    private File packadze(final FunckyScript script, final File java) throws IOException {
-        final File jar = new File(engine.getFactory().getOutputDir(), getClass(script.getFile())
+    private File packadze(final File java) throws IOException {
+        final File jar = new File(engine.getFactory().getOutputDir(), getClass(java)
                 + DELIMITER_EXTENSION + EXTENSION_JAR);
         try (final JarOutputStream output = new JarOutputStream(new FileOutputStream(jar), getManifest(java))) {
             for (final File clazz : Objects.requireNonNull(engine.getFactory().getTmpDir()
@@ -166,13 +166,14 @@ public class Transpiler {
         return jar;
     }
 
-    private <T> T load(final File jar, final File java, final FunckyScript script) throws IOException,
+    private <T> T load(final File jar, final String outerClass, final String innerClass) throws IOException,
             ReflectiveOperationException {
         try (final URLClassLoader loader = new URLClassLoader(new URL[]{jar.toURI().toURL()})) {
-            final Constructor<?> constructor = Arrays.stream(loader.loadClass(getClass(java)).getDeclaredClasses())
-                    .filter(c -> c.getSimpleName().equals(getClass(script.getFile())))
+            final Constructor<?> constructor = Arrays.stream(loader.loadClass(outerClass).getDeclaredClasses())
+                    .filter(c -> c.getSimpleName().equals(innerClass))
                     .findAny()
-                    .orElseThrow(() -> new RuntimeException("Error loading script: " + script))// TODO improve
+                    .orElseThrow(() -> new IllegalStateException(String.format(ERROR_LOADING, jar, outerClass,
+                            innerClass)))
                     .getDeclaredConstructor(FunckyEngine.class);
             constructor.setAccessible(true);
             return (T) constructor.newInstance(engine);
