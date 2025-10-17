@@ -38,6 +38,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.TranspilationException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
@@ -71,8 +72,7 @@ public class Transpiler {
     private final JavaCompiler compiler;
 
     public Transpiler(final FunckyEngine engine) throws MalformedURLException {
-        this(engine, ToolProvider.getSystemJavaCompiler()); //
-        // TODO
+        this(engine, ToolProvider.getSystemJavaCompiler());
     }
 
     private Transpiler(final FunckyEngine engine, final JavaCompiler compiler) {
@@ -88,18 +88,17 @@ public class Transpiler {
         if (expression == null) {
             return null;
         }
-        final File source = generateJava(expression);
-        //        compile(source);
-        //        return load(source.getName().replace(EXTENSION_JAVA, ""));
+        final File java = generateJava(expression);
+//        compile(java); TODO
+//        return load(packadze(expression, java), java, expression);
         return null;
     }
 
     public FunckyScript transpile(final FunckyScript script) {
         try {
             final File java = generateJava(script);
-            compile(java);
-            final File jar = packadze(script, java);
-            return load(jar, java, getClass(script.getFile()));
+            compile(script, java);
+            return load(packadze(script, java), java, script);
         } catch (final IOException e) {
             throw new SneakyCompilationException(new FunckyCompilationException(e));
         } catch (final ReflectiveOperationException e) {
@@ -128,7 +127,7 @@ public class Transpiler {
             return java;
     }
 
-    private void compile(final File java) throws IOException {
+    private void compile(final FunckyScript script, final File java) throws IOException {
         final DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<>();
         try (final StandardJavaFileManager manager = compiler.getStandardFileManager(collector, Locale.ROOT,
                 StandardCharsets.UTF_8)) {
@@ -137,14 +136,7 @@ public class Transpiler {
                     manager.getJavaFileObjectsFromFiles(List.of(java))).call();
             java.delete();
             if (!compilation) {
-                for (Diagnostic<? extends JavaFileObject> d : collector.getDiagnostics()) {
-                    // TODO
-                    System.out.println(d.getCode() + " " + d.getKind());
-                    System.out.println(d.getMessage(Locale.ROOT));
-                    System.out.println(d.getSource().getName() + " " + d.getLineNumber() + " " + d.getColumnNumber());
-                    System.out.println(d.getPosition() + " " + d.getStartPosition() + " " + d.getEndPosition());
-                }
-                throw new IllegalStateException("Compilation failed"); // TODO
+                throw new SneakyCompilationException(new TranspilationException(script, collector.getDiagnostics()));
             }
         }
     }
@@ -174,13 +166,13 @@ public class Transpiler {
         return jar;
     }
 
-    private <T> T load(final File jar, final File java, final String clazz) throws IOException,
+    private <T> T load(final File jar, final File java, final FunckyScript script) throws IOException,
             ReflectiveOperationException {
         try (final URLClassLoader loader = new URLClassLoader(new URL[]{jar.toURI().toURL()})) {
             final Constructor<?> constructor = Arrays.stream(loader.loadClass(getClass(java)).getDeclaredClasses())
-                    .filter(c -> c.getSimpleName().equals(clazz))
+                    .filter(c -> c.getSimpleName().equals(getClass(script.getFile())))
                     .findAny()
-                    .orElseThrow(() -> new RuntimeException("Error loading clazz: " + clazz))
+                    .orElseThrow(() -> new RuntimeException("Error loading script: " + script))// TODO improve
                     .getDeclaredConstructor(FunckyEngine.class);
             constructor.setAccessible(true);
             return (T) constructor.newInstance(engine);

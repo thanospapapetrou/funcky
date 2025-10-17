@@ -8,12 +8,12 @@ import javax.script.ScriptException;
 public sealed class FunckyCompilationException extends ScriptException permits UnrecognizedInputException,
         UnexpectedTokenException, InvalidUriException, InvalidListLiteralException, PrefixAlreadyBoundException,
         NameAlreadyDefinedException, UnboundPrefixException, UndefinedNameException, IllegalApplicationException,
-        UndefinedMainException, InvalidMainException {
+        UndefinedMainException, InvalidMainException, TranspilationException {
     public FunckyCompilationException(final IOException e) {
         super(e);
     }
 
     protected FunckyCompilationException(final String message, final URI file, final int line, final int column) {
-        super(message, file.toString(), line, column);
+        super(message, (file == null) ? null : file.toString(), line, column);
     }
 }
