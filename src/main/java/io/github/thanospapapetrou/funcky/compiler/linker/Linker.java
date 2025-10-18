@@ -83,7 +83,9 @@ public class Linker {
     }
 
     public FunckyExpression link(final FunckyExpression expression) {
-        engine.getManager().setLoaded(getStdin());
+        engine.getManager().setScript(new FunckyScript(engine, getStdin()));
+        engine.getManager().getScript(getStdin()).getDefinitions()
+                .add(new FunckyDefinition(getStdin(), 1, FunckyScript.IT, expression));
         if (expression != null) {
             LOGGER.fine(expression.getType().toString());
         }
@@ -139,7 +141,7 @@ public class Linker {
             }
             engine.getManager().setDefinitionExpression(definition);
         }
-        engine.getManager().setLoaded(script.getFile());
+        engine.getManager().setScript(script);
         for (final FunckyDefinition definition : script.getDefinitions()) {
             definitionTypes.put(definition.name(), definition.expression().getType());
         }

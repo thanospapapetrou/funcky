@@ -17,6 +17,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
 public class FunckyScript extends CompiledScript {
+    public static final String IT = "it";
     public static final String MAIN = "main";
     private static final String JAVA = """
                 static class %1$s extends %2$s {
@@ -72,7 +73,7 @@ public class FunckyScript extends CompiledScript {
                         .collect(Collectors.joining()));
     }
 
-    public Set<URI> getDependencies() {
+    public Set<FunckyScript> getDependencies() {
         return getDependencies(new HashSet<>());
     }
 
@@ -89,18 +90,26 @@ public class FunckyScript extends CompiledScript {
                     context);
     }
 
-    private Set<URI> getDependencies(final Set<URI> visited) {
+    @Override
+    public String toString() {
+        return file.toString();
+    }
+
+    private Set<FunckyScript> getDependencies(final Set<URI> visited) {
         if (visited.contains(this.getFile())) {
             return Set.of();
         }
-        final Set<URI> dependencies = new HashSet<>();
+        final Set<FunckyScript> dependencies = new HashSet<>();
         definitions.stream()
                 .map(FunckyDefinition::getDependencies)
-                .forEach(dependencies::addAll);
+                .flatMap(Set::stream)
+                .map(engine.getManager()::getScript)
+                .forEach(dependencies::add);
         visited.add(this.getFile());
-        for (final URI dependency : dependencies) {
-//            dependencies.addAll(dependency.getDependencies(visited)); // TODO this should run for subscript
+        for (final FunckyScript dependency : dependencies) {
+            dependencies.addAll(dependency.getDependencies(visited));
         }
+        dependencies.add(this);
         return dependencies;
     }
 }

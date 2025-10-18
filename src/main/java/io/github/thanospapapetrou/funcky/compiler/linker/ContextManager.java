@@ -11,6 +11,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
 public class ContextManager {
@@ -41,12 +42,12 @@ public class ContextManager {
         context.setAttribute(FunckyEngine.ARGV, arguments, ScriptContext.ENGINE_SCOPE);
     }
 
-    public boolean isLoaded(final URI script) {
-        return context.getAttribute(script.toString(), ScriptContext.ENGINE_SCOPE) != null;
+    public FunckyScript getScript(final URI namespace) {
+        return (FunckyScript) context.getAttribute(namespace.toString(), ScriptContext.ENGINE_SCOPE);
     }
 
-    public void setLoaded(final URI script) {
-        context.setAttribute(script.toString(), true, ScriptContext.ENGINE_SCOPE);
+    public void setScript(final FunckyScript script) {
+        context.setAttribute(script.getFile().toString(), script, ScriptContext.ENGINE_SCOPE);
     }
 
     public URI getImport(final FunckyReference reference) {

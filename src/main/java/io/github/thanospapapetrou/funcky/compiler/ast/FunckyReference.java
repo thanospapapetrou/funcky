@@ -137,7 +137,7 @@ public final class FunckyReference extends FunckyExpression {
 
     private FunckyExpression resolveExpression() {
         final FunckyReference normalized = normalize();
-        if (!engine.getManager().isLoaded(normalized.getNamespace())) {
+        if (engine.getManager().getScript(normalized.getNamespace()) == null) {
             try {
                 engine.compile(normalized.getNamespace());
             } catch (final FunckyCompilationException e) {
