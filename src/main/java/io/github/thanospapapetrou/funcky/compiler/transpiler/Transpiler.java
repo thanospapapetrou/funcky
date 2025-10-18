@@ -114,6 +114,7 @@ public class Transpiler {
             final File java = File.createTempFile(engine.getFactory().getNames().getFirst() + JAVA_DELIMITER,
                     DELIMITER_EXTENSION + EXTENSION_JAVA, engine.getFactory().getTmpDir());
             try (final FileWriter writer = new FileWriter(java, StandardCharsets.UTF_8)) {
+                System.out.println("Dependencies: " + script.getDependencies()); // TODO
                 writer.write(
                         String.format(JAVA, getClass(java), FunckyEngine.class.getName(), FunckyFactory.class.getName(),
                         Stream.of(new Combinators(engine), script)// TODO resolve dependencies

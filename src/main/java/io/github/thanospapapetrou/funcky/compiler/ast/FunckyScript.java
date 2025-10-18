@@ -73,9 +73,7 @@ public class FunckyScript extends CompiledScript {
     }
 
     public Set<URI> getDependencies() {
-        final Set<URI> dependencies = new HashSet<>();
-        getDependencies(dependencies, new HashSet<>());
-        return dependencies;
+        return getDependencies(new HashSet<>());
     }
 
     @Override
@@ -91,17 +89,18 @@ public class FunckyScript extends CompiledScript {
                     context);
     }
 
-    private void getDependencies(final Set<URI> dependencies, final Set<URI> visited) {
-        final Set<URI> localDependencies = new HashSet<>();
+    private Set<URI> getDependencies(final Set<URI> visited) {
+        if (visited.contains(this.getFile())) {
+            return Set.of();
+        }
+        final Set<URI> dependencies = new HashSet<>();
         definitions.stream()
                 .map(FunckyDefinition::getDependencies)
-                .forEach(localDependencies::addAll);
-        dependencies.addAll(localDependencies);
-        visited.add(this.file);
-        for (final URI dependency : localDependencies) {
-            if (!visited.contains(dependency)) {
-                getDependencies(dependencies, visited);
-            }
+                .forEach(dependencies::addAll);
+        visited.add(this.getFile());
+        for (final URI dependency : dependencies) {
+//            dependencies.addAll(dependency.getDependencies(visited)); // TODO this should run for subscript
         }
+        return dependencies;
     }
 }
