@@ -8,6 +8,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
 public final class FunckyList extends FunckyValue implements Comparable<FunckyList> {
     private static final String DELIMITER = ", ";
+    private static final String JAVA = "new %1$s(engine, %2$s, %3$s, %4$s)";
     private static final String PREFIX = "[";
     private static final String SUFFIX = "]";
 
@@ -54,6 +55,13 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
     @Override
     public FunckyLiteral toExpression() {
         return new FunckyLiteral(engine, this);
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyList.class.getName(), type.toJava(),
+                (head == null) ? String.valueOf((Object) null) : head.toJava(),
+                (tail == null) ? String.valueOf((Object) null) : tail.toJava());
     }
 
     @Override

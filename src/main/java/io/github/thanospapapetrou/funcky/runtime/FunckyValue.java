@@ -15,13 +15,11 @@ public sealed abstract class FunckyValue
         return engine;
     }
 
-    public String toJava() {
-        return toExpression().toJava();
-    }
-
     public abstract FunckyType getType();
 
     public abstract FunckyExpression toExpression();
+
+    public abstract String toJava();
 
     @Override
     public String toString() {

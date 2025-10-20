@@ -20,7 +20,7 @@ public class FunckyScript extends CompiledScript {
     public static final String IT = "it";
     public static final String MAIN = "main";
     private static final String JAVA = """
-                static class %1$s extends %2$s {
+                class %1$s extends %2$s {
                     %1$s(final %3$s engine) {
                         super(engine%4$s);
                     }
@@ -39,6 +39,12 @@ public class FunckyScript extends CompiledScript {
 
     public FunckyScript(final FunckyEngine engine, final URI file) {
         this(engine, file, new ArrayList<>(), new ArrayList<>());
+    }
+
+    public FunckyScript(final FunckyExpression expression) {
+        this(expression.getEngine(), expression.getEngine().getLinker().getStdin());
+        definitions.add(new FunckyDefinition(expression.getEngine().getLinker().getStdin(), 1, FunckyScript.IT,
+                expression));
     }
 
     private FunckyScript(final FunckyEngine engine, final URI file, final List<FunckyImport> imports,
@@ -106,7 +112,7 @@ public class FunckyScript extends CompiledScript {
                 .map(engine.getManager()::getScript)
                 .forEach(dependencies::add);
         visited.add(this.getFile());
-        for (final FunckyScript dependency : dependencies) {
+        for (final FunckyScript dependency : Set.copyOf(dependencies)) {
             dependencies.addAll(dependency.getDependencies(visited));
         }
         dependencies.add(this);

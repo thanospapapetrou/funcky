@@ -10,6 +10,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 public final class FunckyTypeVariable extends FunckyType {
     private static final AtomicInteger HASH = new AtomicInteger();
     private static final String FORMAT = "$_%1$x";
+    private static final String JAVA = "new %1$s(engine, %2$d)";
 
     private final int hash;
 
@@ -17,7 +18,7 @@ public final class FunckyTypeVariable extends FunckyType {
         this(engine, HASH.getAndIncrement());
     }
 
-    private FunckyTypeVariable(final FunckyEngine engine, final int hash) {
+    public FunckyTypeVariable(final FunckyEngine engine, final int hash) {
         super(engine);
         this.hash = hash;
     }
@@ -25,6 +26,11 @@ public final class FunckyTypeVariable extends FunckyType {
     @Override
     public FunckyLiteral toExpression() {
         return new FunckyLiteral(engine, this);
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyTypeVariable.class.getName(), hash);
     }
 
     @Override

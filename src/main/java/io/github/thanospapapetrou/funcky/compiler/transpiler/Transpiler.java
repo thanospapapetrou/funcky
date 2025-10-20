@@ -40,7 +40,8 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationEx
 import io.github.thanospapapetrou.funcky.compiler.exceptions.TranspilationException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
+import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
+import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public class Transpiler {
     // TODO cleanup
@@ -114,9 +115,11 @@ public class Transpiler {
             final File java = File.createTempFile(engine.getFactory().getNames().getFirst() + JAVA_DELIMITER,
                     DELIMITER_EXTENSION + EXTENSION_JAVA, engine.getFactory().getTmpDir());
             try (final FileWriter writer = new FileWriter(java, StandardCharsets.UTF_8)) {
+                System.out.println("Dependencies: " + script.getDependencies()); // TODO
                 writer.write(
                         String.format(JAVA, getClass(java), FunckyEngine.class.getName(), FunckyFactory.class.getName(),
-                        script.getDependencies().stream()
+                        // TODO always include types?
+                        Stream.concat(Stream.of(new Types(engine)), script.getDependencies().stream())
                                 .map(FunckyScript::toJava)
                                 .collect(Collectors.joining()),
                         IOException.class.getName(), System.class.getSimpleName(), FunckyNumber.class.getName(),
@@ -134,7 +137,7 @@ public class Transpiler {
             final boolean compilation = compiler.getTask(null, manager, collector, List.of(OPTION_OUTPUT,
                             engine.getFactory().getTmpDir().getPath()), null,
                     manager.getJavaFileObjectsFromFiles(List.of(java))).call();
-            java.delete();
+            // TODO java.delete();
             if (!compilation) {
                 throw new SneakyCompilationException(new TranspilationException(collector.getDiagnostics()));
             }

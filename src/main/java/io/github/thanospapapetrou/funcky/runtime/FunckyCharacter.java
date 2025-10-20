@@ -19,11 +19,6 @@ public final class FunckyCharacter extends FunckyValue implements Comparable<Fun
     }
 
     @Override
-    public String toJava() {
-        return String.format(JAVA, FunckyCharacter.class.getName(), EscapeHelper.escape(Character.toString(value)));
-    }
-
-    @Override
     public FunckySimpleType getType() {
         return FunckySimpleType.CHARACTER.apply(engine);
     }
@@ -31,6 +26,11 @@ public final class FunckyCharacter extends FunckyValue implements Comparable<Fun
     @Override
     public FunckyLiteral toExpression() {
         return new FunckyLiteral(engine, this);
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyCharacter.class.getName(), EscapeHelper.escape(Character.toString(value)));
     }
 
     @Override

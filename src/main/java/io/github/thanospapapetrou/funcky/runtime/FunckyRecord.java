@@ -2,6 +2,7 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
@@ -9,6 +10,8 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
 public final class FunckyRecord extends FunckyValue implements Comparable<FunckyRecord> {
     private static final String DELIMITER = ", ";
+    private static final String JAVA = "new %1$s(engine, %2$s, %3$s.of(%4$s))";
+    private static final String JAVA_DELIMITER = ", ";
     private static final String PREFIX = "{";
     private static final String SUFFIX = "}";
 
@@ -34,6 +37,14 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     @Override
     public FunckyLiteral toExpression() {
         return new FunckyLiteral(engine, this);
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyRecord.class.getName(), type.toJava(), List.class.getName(),
+                components.stream()
+                        .map(FunckyExpression::toJava)
+                        .collect(Collectors.joining(JAVA_DELIMITER)));
     }
 
     @Override

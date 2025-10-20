@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckySimpleType extends FunckyType {
@@ -16,6 +17,7 @@ public final class FunckySimpleType extends FunckyType {
     public static final Function<FunckyEngine, FunckySimpleType> BOOLEAN = engine -> new FunckySimpleType(engine, "Boolean");
     public static final Function<FunckyEngine, FunckySimpleType> CHARACTER = engine -> new FunckySimpleType(engine, "Character");
 
+    private static final String JAVA = "%1$s.%2$s%3$s";
     private static final List<String> ORDERING = List.of("Type", "Number", "Boolean", "Character");
 
     private final String name;
@@ -35,6 +37,10 @@ public final class FunckySimpleType extends FunckyType {
     @Override
     public FunckyReference toExpression() {
         return new FunckyReference(engine, new Types(engine).getFile(), name);
+    }
+
+    public String toJava() {
+        return String.format(JAVA, engine.getTranspiler().getClass(engine.getLinker().getNamespace(Types.class)), Transpiler.JAVA_DELIMITER, name);
     }
 
     @Override

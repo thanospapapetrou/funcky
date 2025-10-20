@@ -15,6 +15,8 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACT
 public final class FunckyListType extends FunckyType {
     public static final Function<FunckyEngine, FunckyListType> STRING = LIST(CHARACTER);
 
+    private static final String JAVA = "((%1$s) %2$s.eval(engine.getContext()))";
+
     private final FunckyExpression element;
 
     public static Function<FunckyEngine, FunckyListType> LIST(
@@ -34,6 +36,11 @@ public final class FunckyListType extends FunckyType {
     @Override
     public FunckyApplication toExpression() {
         return new FunckyApplication(new Types(engine).$List.toExpression(), element);
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyListType.class.getName(), toExpression().toJava());
     }
 
     @Override

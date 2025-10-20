@@ -83,10 +83,8 @@ public class Linker {
     }
 
     public FunckyExpression link(final FunckyExpression expression) {
-        engine.getManager().setScript(new FunckyScript(engine, getStdin()));
-        engine.getManager().getScript(getStdin()).getDefinitions()
-                .add(new FunckyDefinition(getStdin(), 1, FunckyScript.IT, expression));
         if (expression != null) {
+            engine.getManager().setScript(new FunckyScript(expression));
             LOGGER.fine(expression.getType().toString());
         }
         return expression;

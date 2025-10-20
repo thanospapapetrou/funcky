@@ -70,6 +70,11 @@ public abstract class HigherOrderFunction extends FunckyFunction {
         return (expression == null) ? new FunckyReference(engine, library.getFile(), getName()) : expression;
     }
 
+    @Override
+    public String toJava() {
+        return toExpression().toJava();
+    }
+
     private String getName() {
         return Arrays.stream(library.getClass().getDeclaredFields())
                 .filter(field -> Modifier.isPublic(field.getModifiers()))

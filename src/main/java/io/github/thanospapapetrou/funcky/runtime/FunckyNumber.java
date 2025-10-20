@@ -20,11 +20,6 @@ public final class FunckyNumber extends FunckyValue implements Comparable<Funcky
     }
 
     @Override
-    public String toJava() {
-        return String.format(JAVA, FunckyNumber.class.getName(), BigDecimal.class.getName(), value);
-    }
-
-    @Override
     public FunckySimpleType getType() {
         return FunckySimpleType.NUMBER.apply(engine);
     }
@@ -32,6 +27,11 @@ public final class FunckyNumber extends FunckyValue implements Comparable<Funcky
     @Override
     public FunckyLiteral toExpression() {
         return new FunckyLiteral(engine, this);
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyNumber.class.getName(), BigDecimal.class.getName(), value);
     }
 
     @Override

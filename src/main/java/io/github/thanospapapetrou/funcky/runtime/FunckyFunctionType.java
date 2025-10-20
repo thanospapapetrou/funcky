@@ -13,6 +13,8 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckyFunctionType extends FunckyType {
+    private static final String JAVA = "((%1$s) %2$s.eval(engine.getContext()))";
+
     private final FunckyExpression domain;
     private final FunckyExpression range;
 
@@ -41,6 +43,11 @@ public final class FunckyFunctionType extends FunckyType {
     public FunckyApplication toExpression() {
         return new FunckyApplication(new FunckyApplication(new Types(engine).$Function.toExpression(),
                 domain), range);
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyFunctionType.class.getName(), toExpression().toJava());
     }
 
     @Override

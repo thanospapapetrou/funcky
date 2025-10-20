@@ -22,7 +22,8 @@ public final class FunckyReference extends FunckyExpression {
     private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
     private static final String FORMAT_PREFIX = "%1$s.%2$s";
     private static final String JAVA =
-            "new %1$s(engine, %2$s.create(\"%3$s\"), %4$d, %5$d, %2$s.create(\"%6$s\"), \"%7$s\")";
+            "new %1$s(engine, %2$s, %3$d, %4$d, %5$s, \"%6$s\")";
+    private static final String JAVA_URI = "%1$s.create(\"%2$s\")";
 
     private final URI namespace;
     private final String prefix;
@@ -83,9 +84,10 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public String toJava() {
-        return String.format(JAVA, FunckyReference.class.getName(), URI.class.getName(),
-                EscapeHelper.escape(file.toString()), line, column,
-                EscapeHelper.escape(normalize().namespace.toString()), name);
+        return String.format(JAVA, FunckyReference.class.getName(), (file == null) ? String.valueOf((Object) null)
+                        : String.format(JAVA_URI, URI.class.getName(), EscapeHelper.escape(file.toString())), line, column,
+                String.format(JAVA_URI, URI.class.getName(), EscapeHelper.escape(normalize().namespace.toString())),
+                name);
     }
 
     @Override

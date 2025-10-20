@@ -20,6 +20,8 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.TYPE;
 public final class FunckyRecordType extends FunckyType {
     public static final Function<FunckyEngine, FunckyRecordType> UNIT = RECORD();
 
+    private static final String JAVA = "((%1$s) %2$s.eval(engine.getContext()))";
+
     private final FunckyExpression components;
 
     public static Function<FunckyEngine, FunckyRecordType> RECORD(final Function<FunckyEngine, ? extends FunckyType>... components) {
@@ -41,6 +43,11 @@ public final class FunckyRecordType extends FunckyType {
     @Override
     public FunckyApplication toExpression() {
         return new FunckyApplication(new Types(engine).$Record.toExpression(), components);
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, FunckyRecordType.class.getName(), toExpression().toJava());
     }
 
     @Override

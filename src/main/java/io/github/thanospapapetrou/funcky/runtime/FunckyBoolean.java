@@ -24,11 +24,6 @@ public final class FunckyBoolean extends FunckyValue implements Comparable<Funck
     }
 
     @Override
-    public String toJava() {
-        return String.format(JAVA, Booleans.class.getName(), Transpiler.JAVA_DELIMITER, value);
-    }
-
-    @Override
     public FunckySimpleType getType() {
         return FunckySimpleType.BOOLEAN.apply(engine);
     }
@@ -36,6 +31,12 @@ public final class FunckyBoolean extends FunckyValue implements Comparable<Funck
     @Override
     public FunckyReference toExpression() {
         return new FunckyReference(engine, new Booleans(engine).getFile(), Boolean.toString(value));
+    }
+
+    @Override
+    public String toJava() {
+        return String.format(JAVA, engine.getTranspiler().getClass(engine.getLinker().getNamespace(Booleans.class)),
+                Transpiler.JAVA_DELIMITER, value);
     }
 
     @Override
