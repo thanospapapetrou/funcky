@@ -130,7 +130,7 @@ public final class FunckyReference extends FunckyExpression {
                 return namespace;
             }
         } else {
-            return engine.getLinker().normalize(file, namespace);
+            return engine.getLinker().canonicalize(file, namespace);
         }
     }
 

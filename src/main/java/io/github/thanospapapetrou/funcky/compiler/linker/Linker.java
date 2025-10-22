@@ -50,7 +50,7 @@ public class Linker {
         this.engine = engine;
     }
 
-    public URI normalize(final URI base, final URI namespace) {
+    public URI canonicalize(final URI base, final URI namespace) {
         try {
             return namespace.isAbsolute() ? namespace : (base.equals(getStdin())
                     ? engine.getFactory().getBaseDir().toURI()
@@ -118,7 +118,7 @@ public class Linker {
             if (otherImport.isPresent()) {
                 throw new SneakyCompilationException(new PrefixAlreadyBoundException(inport, otherImport.get()));
             }
-            engine.getManager().setImport(inport, normalize(inport.file(), inport.namespace()));
+            engine.getManager().setImport(inport, canonicalize(inport.file(), inport.namespace()));
         }
     }
 

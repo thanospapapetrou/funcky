@@ -52,7 +52,7 @@ public class FunckyFactory implements ScriptEngineFactory {
     }
 
     public boolean isTranspiling() {
-        return Boolean.parseBoolean(parameters.getProperty(FunckyEngine.PARAMETER_TRANSPILING, Boolean.toString(true)));
+        return Boolean.parseBoolean(parameters.getProperty(FunckyEngine.PARAMETER_TRANSPILING, Boolean.toString(false)));
     }
 
     public void setTranspiling(final boolean transpiling) {
