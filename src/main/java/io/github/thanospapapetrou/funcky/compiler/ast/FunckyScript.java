@@ -20,7 +20,7 @@ public class FunckyScript extends CompiledScript {
     public static final String IT = "it";
     public static final String MAIN = "main";
     private static final String JAVA = """
-                class %1$s extends %2$s {
+                static class %1$s extends %2$s {
                     %1$s(final %3$s engine) {
                         super(engine%4$s);
                     }

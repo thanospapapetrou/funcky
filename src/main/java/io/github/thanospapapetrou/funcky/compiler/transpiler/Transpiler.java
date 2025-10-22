@@ -58,7 +58,7 @@ public class Transpiler {
             
             %4$s    public static void main(final String[] arguments) throws %5$s {
                     var it = new %1$s();
-                    %6$s.exit(((%7$s) ((%8$s) it.%9$s.%10$smain.eval(it.engine.getContext())).apply(new %11$s(it.engine, it.engine.getConverter().convert(%12$s.asList(arguments))), it.engine.getContext())).getValue().intValue());
+                    %6$s.exit(((%7$s) ((%8$s) it.%9$s.%10$smain).apply(new %11$s(it.engine, it.engine.getConverter().convert(%12$s.asList(arguments))), it.engine.getContext())).getValue().intValue());
                 }
             
                 %1$s() throws %5$s {

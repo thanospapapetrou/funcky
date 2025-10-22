@@ -13,6 +13,7 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationEx
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
+import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -21,9 +22,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 public final class FunckyReference extends FunckyExpression {
     private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
     private static final String FORMAT_PREFIX = "%1$s.%2$s";
-    private static final String JAVA =
-            "new %1$s(engine, %2$s, %3$d, %4$d, %5$s, \"%6$s\")";
-    private static final String JAVA_URI = "%1$s.create(\"%2$s\")";
+    private static final String JAVA = "new %1$s(engine, %2$s.%3$s%4$s)";
 
     private final URI namespace;
     private final String prefix;
@@ -84,10 +83,8 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public String toJava() {
-        return String.format(JAVA, FunckyReference.class.getName(), (file == null) ? String.valueOf((Object) null)
-                        : String.format(JAVA_URI, URI.class.getName(), EscapeHelper.escape(file.toString())), line, column,
-                String.format(JAVA_URI, URI.class.getName(), EscapeHelper.escape(normalize().namespace.toString())),
-                name);
+        return String.format(JAVA, FunckyLiteral.class.getName(),
+                engine.getTranspiler().getClass(normalize().namespace), Transpiler.JAVA_DELIMITER, name);
     }
 
     @Override
