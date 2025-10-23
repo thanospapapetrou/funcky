@@ -38,7 +38,7 @@ public final class FunckyLiteral extends FunckyExpression {
     }
 
     @Override
-    public FunckyLiteral normalize() {
+    public FunckyLiteral canonicalize() {
         return this;
     }
 

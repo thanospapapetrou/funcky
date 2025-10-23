@@ -69,27 +69,27 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public FunckyType getType() {
-        final FunckyReference normalized = normalize();
-        if (engine.getManager().getDefinitionType(normalized) == null) {
-            engine.getManager().setDefinitionType(normalized, super.getType());
+        final FunckyReference canonical = canonicalize();
+        if (engine.getManager().getDefinitionType(canonical) == null) {
+            engine.getManager().setDefinitionType(canonical, super.getType());
         }
-        return engine.getManager().getDefinitionType(normalized);
+        return engine.getManager().getDefinitionType(canonical);
     }
 
     @Override
-    public FunckyReference normalize() {
+    public FunckyReference canonicalize() {
         return new FunckyReference(engine, file, line, column, resolveNamespace(), name);
     }
 
     @Override
     public String toJava() {
         return String.format(JAVA, FunckyLiteral.class.getName(),
-                engine.getTranspiler().getClass(normalize().namespace), Transpiler.JAVA_DELIMITER, name);
+                engine.getTranspiler().getClass(canonicalize().namespace), Transpiler.JAVA_DELIMITER, name);
     }
 
     @Override
     public Set<URI> getDependencies() {
-        return Set.of(normalize().getNamespace());
+        return Set.of(canonicalize().getNamespace());
     }
 
     @Override
@@ -135,17 +135,17 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     private FunckyExpression resolveExpression() {
-        final FunckyReference normalized = normalize();
-        if (engine.getManager().getScript(normalized.getNamespace()) == null) {
+        final FunckyReference canonical = canonicalize();
+        if (engine.getManager().getScript(canonical.getNamespace()) == null) {
             try {
-                engine.compile(normalized.getNamespace());
+                engine.compile(canonical.getNamespace());
             } catch (final FunckyCompilationException e) {
                 throw new SneakyCompilationException(e);
             }
         }
-        final FunckyExpression expression = engine.getManager().getDefinitionExpression(normalized);
+        final FunckyExpression expression = engine.getManager().getDefinitionExpression(canonical);
         if (expression == null) {
-            throw new SneakyCompilationException(new UndefinedNameException(normalized));
+            throw new SneakyCompilationException(new UndefinedNameException(canonical));
         }
         return expression;
     }

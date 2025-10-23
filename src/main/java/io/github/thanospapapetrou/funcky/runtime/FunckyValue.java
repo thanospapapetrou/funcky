@@ -23,6 +23,6 @@ public sealed abstract class FunckyValue
 
     @Override
     public String toString() {
-        return toExpression().normalize().toString();
+        return toExpression().canonicalize().toString();
     }
 }
