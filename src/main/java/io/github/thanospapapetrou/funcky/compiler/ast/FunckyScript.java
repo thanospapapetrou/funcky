@@ -93,6 +93,11 @@ public class FunckyScript extends CompiledScript {
     }
 
     @Override
+    public FunckyNumber eval() {
+        return eval(engine.getContext());
+    }
+
+    @Override
     public String toString() {
         return file.toString();
     }

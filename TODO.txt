@@ -15,7 +15,6 @@ java.net.MalformedURLException: unknown protocol: funcky
 instanceof -> pattern matching
 converter -> part of engine?
 transpile
-generics
 new methods and tests for records
 monads
 java monad
@@ -31,3 +30,6 @@ store only scripts in context
 separate transpilation and execution for scripts vs expressions
 do not use arbitrary context
 remove visitors
+
+remove engine from values
+linker decorates ast with types etc

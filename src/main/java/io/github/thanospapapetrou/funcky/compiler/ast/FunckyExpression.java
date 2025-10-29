@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
+import javax.script.SimpleScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
@@ -51,6 +52,11 @@ public abstract sealed class FunckyExpression extends CompiledScript
     @Override
     public FunckyEngine getEngine() {
         return engine;
+    }
+
+    @Override
+    public FunckyValue eval() {
+        return eval((engine == null) ? new SimpleScriptContext() : engine.getContext());
     }
 
     @Override
