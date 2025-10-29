@@ -63,8 +63,30 @@ public class FunckyScript extends CompiledScript {
         return imports;
     }
 
+    public FunckyImport getImport(final String prefix) {
+        return imports.stream()
+                .filter(inport -> inport.prefix().equals(prefix))
+                .findFirst()
+                .orElse(null);
+    }
+
     public List<FunckyDefinition> getDefinitions() {
         return definitions;
+    }
+
+    public FunckyDefinition getDefinition(final String name) {
+        return definitions.stream()
+                .filter(definition -> definition.name().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public FunckyScript canonicalize() {
+        return new FunckyScript(engine, getFile(), imports.stream()
+                .map(FunckyImport::canonicalize)
+                .collect(Collectors.toList()), definitions.stream()
+                .map(FunckyDefinition::canonicalize)
+                .collect(Collectors.toList()));
     }
 
     public String toJava() {

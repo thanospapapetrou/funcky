@@ -54,7 +54,7 @@ public class Linker {
         try {
             return namespace.isAbsolute() ? namespace : (base.equals(getStdin())
                     ? engine.getFactory().getBaseDir().toURI()
-                    : base).resolve(namespace);
+                    : base).resolve(namespace).normalize();
         } catch (final IOException e) {
             throw new SneakyCompilationException(new FunckyCompilationException(e));
         }
@@ -91,6 +91,11 @@ public class Linker {
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) {
+        final Class<? extends FunckyLibrary> library = getLibrary(script.getFile());
+        if (library != null) {
+            script.getDefinitions().addAll(loadLibrary(library).getDefinitions());
+        }
+        engine.getManager().setScript(script);
         validateImports(script);
         final Map<String, FunckyType> definitionTypes = validateDefinitions(script);
         if (main) {
@@ -100,6 +105,7 @@ public class Linker {
         definitionTypes.entrySet().stream()
                 .map(definitionType -> String.format(DEFINITION, definitionType.getKey(), definitionType.getValue()))
                 .forEach(LOGGER::fine);
+        engine.getManager().setScript(script.canonicalize());
         return script;
     }
 
@@ -118,16 +124,11 @@ public class Linker {
             if (otherImport.isPresent()) {
                 throw new SneakyCompilationException(new PrefixAlreadyBoundException(inport, otherImport.get()));
             }
-            engine.getManager().setImport(inport, canonicalize(inport.file(), inport.namespace()));
         }
     }
 
     private Map<String, FunckyType> validateDefinitions(final FunckyScript script) {
         final Map<String, FunckyType> definitionTypes = new LinkedHashMap<>();
-        final Class<? extends FunckyLibrary> library = getLibrary(script.getFile());
-        if (library != null) {
-            script.getDefinitions().addAll(loadLibrary(library).getDefinitions());
-        }
         for (final FunckyDefinition definition : script.getDefinitions()) {
             final Optional<FunckyDefinition> otherDefinition = script.getDefinitions().stream()
                     .filter(def -> def.line() < definition.line())
@@ -137,9 +138,7 @@ public class Linker {
                 throw new SneakyCompilationException(
                         new NameAlreadyDefinedException(definition, otherDefinition.get()));
             }
-            engine.getManager().setDefinitionExpression(definition);
         }
-        engine.getManager().setScript(script);
         for (final FunckyDefinition definition : script.getDefinitions()) {
             definitionTypes.put(definition.name(), definition.expression().getType());
         }

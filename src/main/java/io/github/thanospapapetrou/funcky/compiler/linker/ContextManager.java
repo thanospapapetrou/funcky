@@ -7,17 +7,12 @@ import java.net.URI;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
 public class ContextManager {
-    private static final String DEFINITION_EXPRESSION = "%1$s$definition$%2$s$expression";
     private static final String DEFINITION_TYPE = "%1$s$definition$%2$s$type";
-    private static final String IMPORT = "%1$s$import$%2$s";
 
     private final ScriptContext context;
 
@@ -48,26 +43,6 @@ public class ContextManager {
 
     public void setScript(final FunckyScript script) {
         context.setAttribute(script.getFile().toString(), script, ScriptContext.ENGINE_SCOPE);
-    }
-
-    public URI getImport(final FunckyReference reference) {
-        return (URI) context.getAttribute(String.format(IMPORT, reference.getFile(), reference.getPrefix()),
-                ScriptContext.ENGINE_SCOPE);
-    }
-
-    public void setImport(final FunckyImport inport, final URI namespace) {
-        context.setAttribute(String.format(IMPORT, inport.file(), inport.prefix()), namespace,
-                ScriptContext.ENGINE_SCOPE);
-    }
-
-    public FunckyExpression getDefinitionExpression(final FunckyReference reference) {
-        return (FunckyExpression) context.getAttribute(String.format(DEFINITION_EXPRESSION, reference.getNamespace(),
-                reference.getName()), ScriptContext.ENGINE_SCOPE);
-    }
-
-    public void setDefinitionExpression(final FunckyDefinition definition) {
-        context.setAttribute(String.format(DEFINITION_EXPRESSION, definition.file(), definition.name()),
-                definition.expression(), ScriptContext.ENGINE_SCOPE);
     }
 
     public FunckyType getDefinitionType(final FunckyReference reference) {

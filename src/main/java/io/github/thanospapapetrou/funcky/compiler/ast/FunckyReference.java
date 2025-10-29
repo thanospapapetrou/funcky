@@ -123,11 +123,11 @@ public final class FunckyReference extends FunckyExpression {
             if (prefix == null) {
                 return file;
             } else {
-                final URI namespace = engine.getManager().getImport(this);
-                if (namespace == null) {
+                final FunckyImport inport = engine.getManager().getScript(file).getImport(prefix);
+                if (inport == null) {
                     throw new SneakyCompilationException(new UnboundPrefixException(this));
                 }
-                return namespace;
+                return inport.namespace();
             }
         } else {
             return engine.getLinker().canonicalize(file, namespace);
@@ -143,10 +143,10 @@ public final class FunckyReference extends FunckyExpression {
                 throw new SneakyCompilationException(e);
             }
         }
-        final FunckyExpression expression = engine.getManager().getDefinitionExpression(canonical);
-        if (expression == null) {
+        final FunckyDefinition definition = engine.getManager().getScript(canonical.namespace).getDefinition(name);
+        if (definition == null) {
             throw new SneakyCompilationException(new UndefinedNameException(canonical));
         }
-        return expression;
+        return definition.expression();
     }
 }

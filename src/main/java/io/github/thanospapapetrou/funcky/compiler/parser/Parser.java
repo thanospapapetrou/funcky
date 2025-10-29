@@ -118,7 +118,7 @@ public class Parser {
                         consume(input, TokenType.SPACE);
                         final URI namespace = parseUri(consume(input, TokenType.STRING));
                         consume(input, TokenType.EOL);
-                        script.getImports().add(new FunckyImport(token.file(), token.line(), token.value(),
+                        script.getImports().add(new FunckyImport(engine, token.file(), token.line(), token.value(),
                                 namespace));
                     } else {
                         consume(input, TokenType.EQUAL);
