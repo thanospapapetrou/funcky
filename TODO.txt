@@ -27,4 +27,5 @@ remove funckyjavaconverter
 rethink static methods
 
 store only scripts in context
+    remove types from context
 separate transpilation and execution for scripts vs expressions

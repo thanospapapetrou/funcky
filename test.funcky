@@ -1,0 +1,4 @@
+c: "funcky:commons"
+l: "funcky:lists"
+
+main = $$ 1 (c.if (l.empty ($ 0)) 1 0)
