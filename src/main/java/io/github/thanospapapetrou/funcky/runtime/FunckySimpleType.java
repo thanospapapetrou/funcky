@@ -40,7 +40,7 @@ public final class FunckySimpleType extends FunckyType {
     }
 
     public String toJava() {
-        return String.format(JAVA, engine.getTranspiler().getClass(engine.getLinker().getNamespace(Types.class)), Transpiler.JAVA_DELIMITER, name);
+        return String.format(JAVA, engine.getTranspiler().getClass(engine.getLinker().getNamespace(Types.class)), Transpiler.PREFIX_FUNCKY, name);
     }
 
     @Override

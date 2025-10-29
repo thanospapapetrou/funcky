@@ -12,25 +12,11 @@ import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
 public class FunckyScript extends CompiledScript {
     public static final String IT = "it";
     public static final String MAIN = "main";
-    private static final String JAVA = """
-                static class %1$s extends %2$s {
-                    %1$s(final %3$s engine) {
-                        super(engine%4$s);
-                    }
-            
-            %5$s    }
-            
-                final %1$s %1$s = new %1$s(engine);
-                
-            """;
-    private static final String JAVA_URI = ", %1$s.create(\"%2$s\")";
 
     protected final FunckyEngine engine;
     protected final URI file;
@@ -87,18 +73,6 @@ public class FunckyScript extends CompiledScript {
                 .collect(Collectors.toList()), definitions.stream()
                 .map(FunckyDefinition::canonicalize)
                 .collect(Collectors.toList()));
-    }
-
-    public String toJava() {
-        final Class<? extends FunckyLibrary> parent = engine.getLinker().getLibrary(getFile());
-        return String.format(JAVA, engine.getTranspiler().getClass(getFile()),
-                ((parent == null) ? FunckyScript.class : parent).getName(), FunckyEngine.class.getName(),
-                (parent == null) ? String.format(JAVA_URI, URI.class.getName(),
-                        EscapeHelper.escape(getFile().toString())) : "",
-                definitions.stream()
-                        .filter(definition -> definition.line() != -1)
-                        .map(FunckyDefinition::toJava)
-                        .collect(Collectors.joining()));
     }
 
     public Set<FunckyScript> getDependencies() {

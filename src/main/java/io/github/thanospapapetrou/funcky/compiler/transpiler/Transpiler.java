@@ -12,16 +12,18 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import javax.tools.DiagnosticCollector;
@@ -31,43 +33,54 @@ import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.FunckyFactory;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.TranspilationException;
+import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
+import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
+import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyList;
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
+import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
+import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType;
+import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
 public class Transpiler {
     // TODO cleanup
     // TODO types, values, to string, equals, hashcode in transpiled code
-    public static final String JAVA_DELIMITER = "$";
+    public static final String PREFIX_FUNCKY = "$";
+
     private static final String DELIMITER_EXTENSION = ".";
+    private static final String DELIMITER_PACKAGE = ".";
     private static final String ERROR_LOADING = "Error loading %1$s!%2$s$%3$s";
     private static final String EXTENSION_CLASS = "class";
     private static final String EXTENSION_JAR = "jar";
     private static final String EXTENSION_JAVA = "java";
-    private static final String JAVA = """
-            public class %1$s {
-                final %2$s engine = new %3$s().getScriptEngine();
-            
-            %4$s    public static void main(final String[] arguments) throws %5$s {
-                    var it = new %1$s();
-                    %6$s.exit(((%7$s) ((%8$s) it.%9$s.%10$smain).apply(new %11$s(it.engine, it.engine.getConverter().convert(%12$s.asList(arguments))), it.engine.getContext())).getValue().intValue());
-                }
-            
-                %1$s() throws %5$s {
-                }
-            }
-            """;
+    private static final String JAVA_APPLICATION = "new %1$s(%2$s, %3$s)";
+    private static final String JAVA_DEFINITION = "    public final %1$s %2$s%3$s = %4$s.eval(engine.getContext());%n";
+    private static final String JAVA_DEPENDENCY = "    private final %1$s %2$s = new %1$s(engine);%n";
+    private static final String JAVA_LITERAL = "new %1$s(engine, %2$s.create(\"%3$s\"), %4$d, %5$d, %6$s)";
+    private static final String JAVA_REFERENCE = "new %1$s(engine, %2$s.%3$s%4$s)";
+    private static final String JAVA_SCRIPT = "package %1$s;%n%npublic class %2$s extends %3$s {%n"
+            + "    public %2$s(final %4$s engine) {%n        super(engine%5$s);%n    }%n%6$s%7$s}";
+    private static final String JAVA_URI = ", %1$s.create(\"%2$s\")";
     private static final String MANIFEST_VERSION = "1.0";
     private static final String OPTION_OUTPUT = "-d";
     private static final String PATTERN_NON_WORD = "\\W+";
+    private static final String PREFIX_JAVA = "_";
 
     private final FunckyEngine engine;
     private final JavaCompiler compiler;
@@ -82,7 +95,7 @@ public class Transpiler {
     }
 
     public String getClass(final URI script) {
-        return JAVA_DELIMITER + String.join(JAVA_DELIMITER, script.toString().split(PATTERN_NON_WORD));
+        return PREFIX_FUNCKY + String.join(PREFIX_FUNCKY, script.toString().split(PATTERN_NON_WORD));
     }
 
     public FunckyExpression transpile(final FunckyExpression expression) {
@@ -97,9 +110,12 @@ public class Transpiler {
 
     public FunckyScript transpile(final FunckyScript script) {
         try {
-            final File java = generateJava(script);
+            final Set<File> java = new HashSet<>();
+            for (final FunckyScript dependency : script.getDependencies()) {
+                java.add(generateJava(dependency));
+            }
             compile(java);
-            return load(packadze(java), getClass(java), getClass(script.getFile()));
+            return load(packadze(java), getClass(script.getFile()));
         } catch (final IOException e) {
             throw new SneakyCompilationException(new FunckyCompilationException(e));
         } catch (final ReflectiveOperationException e) {
@@ -112,31 +128,147 @@ public class Transpiler {
     }
 
     private File generateJava(final FunckyScript script) throws IOException {
-            final File java = File.createTempFile(engine.getFactory().getNames().getFirst() + JAVA_DELIMITER,
-                    DELIMITER_EXTENSION + EXTENSION_JAVA, engine.getFactory().getTmpDir());
-            try (final FileWriter writer = new FileWriter(java, StandardCharsets.UTF_8)) {
-                System.out.println("Dependencies: " + script.getDependencies()); // TODO
-                writer.write(
-                        String.format(JAVA, getClass(java), FunckyEngine.class.getName(), FunckyFactory.class.getName(),
-                        // TODO always include types?
-                        Stream.concat(Stream.of(new Types(engine)), script.getDependencies().stream())
-                                .map(FunckyScript::toJava)
-                                .collect(Collectors.joining()),
-                        IOException.class.getName(), System.class.getSimpleName(), FunckyNumber.class.getName(),
-                                FunckyFunction.class.getName(), getClass(script.getFile()), JAVA_DELIMITER,
-                        FunckyLiteral.class.getName(), Arrays.class.getName()));
-                writer.flush();
-            }
-            return java;
+        final List<String> components = getComponents(script.getFile());
+        final File java =
+                new File(engine.getFactory().getTmpDir(),
+                        String.join(File.separator, components) + DELIMITER_EXTENSION + EXTENSION_JAVA);
+        java.getParentFile().mkdirs();
+        java.createNewFile();
+        try (final FileWriter writer = new FileWriter(java, StandardCharsets.UTF_8)) {
+            writer.write(toJava(script));
+            writer.flush();
+        }
+        return java;
     }
 
-    private void compile(final File java) throws IOException {
+    private List<String> getComponents(final URI script) {
+        return Arrays.stream(removeExtension(script).split(PATTERN_NON_WORD))
+                .filter(((Predicate<String>) String::isEmpty).negate())
+                .map(component -> Character.isJavaIdentifierStart(component.charAt(0)) ? component
+                        : PREFIX_JAVA + component)
+                .toList();
+    }
+
+    private String removeExtension(final URI script) {
+        for (final String extension : engine.getFactory().getExtensions()) {
+            if (script.toString().endsWith(DELIMITER_EXTENSION + extension)) {
+                return script.toString().substring(0,
+                        script.toString().length() - (DELIMITER_EXTENSION + extension).length());
+            }
+        }
+        return script.toString();
+    }
+
+    private String toJava(final FunckyScript script) {
+        final List<String> components = getComponents(script.getFile());
+        final String packadze = String.join(DELIMITER_PACKAGE, components.subList(0, components.size() - 1));
+        final String clazz = components.getLast();
+        final Class<? extends FunckyLibrary> library = engine.getLinker().getLibrary(script.getFile());
+        final String parent = ((library == null) ? FunckyScript.class : library).getName();
+        return String.format(JAVA_SCRIPT, packadze, clazz, parent, FunckyEngine.class.getName(),
+                (library == null) ? String.format(JAVA_URI, URI.class.getName(),
+                        EscapeHelper.escape(script.getFile().toString())) : "",
+                script.getDependencies().stream()
+                        .map(FunckyScript::getFile)
+                        .map(this::toJava)
+                        .collect(Collectors.joining()),
+                script.getDefinitions().stream()
+                        .filter(definition -> definition.line() != -1)
+                        .map(this::toJava)
+                        .collect(Collectors.joining()));
+    }
+
+    private String toJava(final URI dependency) {
+        return String.format(JAVA_DEPENDENCY, String.join(DELIMITER_PACKAGE, getComponents(dependency)),
+                String.join(PREFIX_JAVA, getComponents(dependency)));
+    }
+
+    private String toJava(final FunckyDefinition definition) {
+        return String.format(JAVA_DEFINITION, FunckyValue.class.getName(), PREFIX_FUNCKY, definition.name(),
+                toJava(definition.expression()));
+    }
+
+    private String toJava(final FunckyExpression expression) {
+        return switch (expression) {
+            case FunckyLiteral literal -> toJava(literal);
+            case FunckyReference reference -> toJava(reference);
+            case FunckyApplication application -> toJava(application);
+        };
+    }
+
+    private String toJava(final FunckyLiteral literal) {
+        return String.format(JAVA_LITERAL, FunckyLiteral.class.getName(), URI.class.getName(), literal.getFile(),
+                literal.getLine(), literal.getColumn(), toJava(literal.getValue()));
+    }
+
+    private String toJava(final FunckyReference reference) {
+        return String.format(JAVA_REFERENCE, FunckyLiteral.class.getName(), String.join(PREFIX_JAVA, // TODO getclass
+                        getComponents(reference.canonicalize().getNamespace())),
+                PREFIX_FUNCKY, reference.getName());
+    }
+
+    private String toJava(final FunckyApplication application) {
+        return String.format(JAVA_APPLICATION, FunckyApplication.class.getName(), toJava(application.getFunction()),
+                toJava(application.getArgument()));
+    }
+
+    private String toJava(final FunckyValue value) {
+        return switch (value) {
+            case FunckyType type -> toJava(type);
+            case FunckyNumber number -> toJava(number);
+            case FunckyBoolean bool -> toJava(bool);
+            case FunckyCharacter character -> toJava(character);
+            case FunckyFunction function -> toJava(function);
+            case FunckyList list -> toJava(list);
+            case FunckyRecord record -> toJava(record);
+        };
+    }
+
+    private String toJava(final FunckyType type) {
+        return switch (type) {
+            case FunckySimpleType simple -> toJava(simple);
+            case FunckyFunctionType function -> toJava(function);
+            case FunckyListType list -> toJava(list);
+            case FunckyRecordType record -> toJava(record);
+            case FunckyTypeVariable variable -> toJava(variable);
+        };
+    }
+
+    private String toJava(final FunckySimpleType simple) {
+        return null;
+    }
+
+    private String toJava(final FunckyNumber number) {
+        return null;
+    }
+
+    private String toJava(final FunckyBoolean bool) {
+        return null;
+    }
+
+    private String toJava(final FunckyCharacter character) {
+        return null;
+    }
+
+    private String toJava(final FunckyFunction function) {
+        return null;
+    }
+
+    private String toJava(final FunckyList list) {
+        return null;
+    }
+
+    private String toJava(final FunckyRecord record) {
+        return null;
+    }
+
+    private void compile(final Set<File> java) throws IOException {
         final DiagnosticCollector<JavaFileObject> collector = new DiagnosticCollector<>();
         try (final StandardJavaFileManager manager = compiler.getStandardFileManager(collector, Locale.ROOT,
                 StandardCharsets.UTF_8)) {
             final boolean compilation = compiler.getTask(null, manager, collector, List.of(OPTION_OUTPUT,
                             engine.getFactory().getTmpDir().getPath()), null,
-                    manager.getJavaFileObjectsFromFiles(List.of(java))).call();
+                    manager.getJavaFileObjectsFromFiles(java)).call();
             // TODO java.delete();
             if (!compilation) {
                 throw new SneakyCompilationException(new TranspilationException(collector.getDiagnostics()));
@@ -144,12 +276,12 @@ public class Transpiler {
         }
     }
 
-    private File packadze(final File java) throws IOException {
-        final File jar = new File(engine.getFactory().getOutputDir(), getClass(java)
+    private File packadze(final Set<File> java) throws IOException {
+        final File jar = new File(engine.getFactory().getOutputDir(), "TODO"
                 + DELIMITER_EXTENSION + EXTENSION_JAR);
-        try (final JarOutputStream output = new JarOutputStream(new FileOutputStream(jar), getManifest(java))) {
+        try (final JarOutputStream output = new JarOutputStream(new FileOutputStream(jar), getManifest())) {
             for (final File clazz : Objects.requireNonNull(engine.getFactory().getTmpDir()
-                    .listFiles((dir, name) -> name.startsWith(getClass(java))
+                    .listFiles((dir, name) -> name.startsWith("TODO")
                             && name.endsWith(DELIMITER_EXTENSION + EXTENSION_CLASS)))) {
                 output.putNextEntry(new ZipEntry(clazz.getName()));
                 Files.copy(clazz.toPath(), output);
@@ -169,28 +301,20 @@ public class Transpiler {
         return jar;
     }
 
-    private <T> T load(final File jar, final String outerClass, final String innerClass) throws IOException,
+    private <T> T load(final File jar, final String clazz) throws IOException,
             ReflectiveOperationException {
         try (final URLClassLoader loader = new URLClassLoader(new URL[]{jar.toURI().toURL()})) {
-            final Constructor<?> constructor = Arrays.stream(loader.loadClass(outerClass).getDeclaredClasses())
-                    .filter(c -> c.getSimpleName().equals(innerClass))
-                    .findAny()
-                    .orElseThrow(() -> new IllegalStateException(String.format(ERROR_LOADING, jar, outerClass,
-                            innerClass)))
+            final Constructor<?> constructor = loader.loadClass(clazz)
                     .getDeclaredConstructor(FunckyEngine.class);
-            constructor.setAccessible(true);
+            constructor.setAccessible(true); // TODO is this required?
             return (T) constructor.newInstance(engine);
         }
     }
 
-    private String getClass(final File java) {
-        return java.getName().substring(0, java.getName().length() - (DELIMITER_EXTENSION + EXTENSION_JAVA).length());
-    }
-
-    private Manifest getManifest(final File java) {
+    private Manifest getManifest() {
         final Manifest manifest = new Manifest();
         manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, MANIFEST_VERSION);
-        manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, getClass(java));
+        manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, "TODO");
         manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_TITLE, engine.getFactory().getLanguageName());
         manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_VERSION,
                 engine.getFactory().getLanguageVersion());

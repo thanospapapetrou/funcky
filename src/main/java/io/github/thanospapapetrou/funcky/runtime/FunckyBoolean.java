@@ -36,7 +36,7 @@ public final class FunckyBoolean extends FunckyValue implements Comparable<Funck
     @Override
     public String toJava() {
         return String.format(JAVA, engine.getTranspiler().getClass(engine.getLinker().getNamespace(Booleans.class)),
-                Transpiler.JAVA_DELIMITER, value);
+                Transpiler.PREFIX_FUNCKY, value);
     }
 
     @Override

@@ -84,7 +84,7 @@ public final class FunckyReference extends FunckyExpression {
     @Override
     public String toJava() {
         return String.format(JAVA, FunckyLiteral.class.getName(),
-                engine.getTranspiler().getClass(canonicalize().namespace), Transpiler.JAVA_DELIMITER, name);
+                engine.getTranspiler().getClass(canonicalize().namespace), Transpiler.PREFIX_FUNCKY, name);
     }
 
     @Override

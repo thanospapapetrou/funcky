@@ -17,7 +17,7 @@ public record FunckyDefinition(URI file, int line, String name, FunckyExpression
     }
 
     public String toJava() {
-        return String.format(JAVA, FunckyValue.class.getName(), Transpiler.JAVA_DELIMITER, name, expression.toJava());
+        return String.format(JAVA, FunckyValue.class.getName(), Transpiler.PREFIX_FUNCKY, name, expression.toJava());
     }
 
     public Set<URI> getDependencies() {

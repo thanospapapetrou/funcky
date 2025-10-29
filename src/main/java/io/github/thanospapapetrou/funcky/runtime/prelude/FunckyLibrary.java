@@ -49,14 +49,14 @@ public sealed class FunckyLibrary extends FunckyScript
     @Override
     public List<FunckyDefinition> getDefinitions() {
         return Arrays.stream(getClass().getDeclaredFields()).filter(field -> Modifier.isPublic(field.getModifiers()))
-                .filter(field -> field.getName().startsWith(Transpiler.JAVA_DELIMITER))
+                .filter(field -> field.getName().startsWith(Transpiler.PREFIX_FUNCKY))
                 .map(this::getDefinition)
                 .toList();
     }
 
     private FunckyDefinition getDefinition(final Field field) {
         try {
-            return new FunckyDefinition(getFile(), -1, field.getName().substring(Transpiler.JAVA_DELIMITER.length()),
+            return new FunckyDefinition(getFile(), -1, field.getName().substring(Transpiler.PREFIX_FUNCKY.length()),
                     new FunckyLiteral(engine, (FunckyValue) field.get(this)));
         } catch (final IllegalAccessException e) {
             throw new IllegalStateException(String.format(ERROR_RESOLVING_FIELD, field.getName()), e);
