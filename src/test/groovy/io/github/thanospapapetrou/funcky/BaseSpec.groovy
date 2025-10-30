@@ -3,10 +3,10 @@ package io.github.thanospapapetrou.funcky
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter
 import io.github.thanospapapetrou.funcky.runtime.FunckyList
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber
-
-import javax.script.ScriptContext
 import spock.lang.Shared
 import spock.lang.Specification
+
+import javax.script.ScriptContext
 
 abstract class BaseSpec extends Specification {
     protected static final Map<String, BigDecimal> BINARY_NUMBERS = [
@@ -107,15 +107,15 @@ abstract class BaseSpec extends Specification {
 
     protected Map<String, FunckyNumber> getNumbers() {
         (BINARY_NUMBERS + OCTAL_NUMBERS + DECIMAL_NUMBERS + HEXADECIMAL_NUMBERS)
-                .collectEntries { [(it.key): new FunckyNumber(engine, it.value)] }
+                .collectEntries { [(it.key): new FunckyNumber(it.value)] }
     }
 
     protected Map<String, FunckyCharacter> getCharacters() {
         (LITERAL_CHARACTERS + OCTAL_CHARACTERS + HEXADECIMAL_CHARACTERS)
-                .collectEntries { [(it.key): new FunckyCharacter(engine, it.value)] }
+                .collectEntries { [(it.key): new FunckyCharacter(it.value)] }
     }
 
     protected Map<String, FunckyList> getStrings() {
-        STRINGS.collectEntries { [(it.key): engine.converter.convert(it.value)] }
+        STRINGS.collectEntries { [(it.key): new FunckyJavaConverter().convert(it.value)] }
     }
 }

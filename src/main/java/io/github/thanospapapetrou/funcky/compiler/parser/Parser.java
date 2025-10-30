@@ -32,12 +32,11 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
-import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType;
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.FunckyRecordType.RECORD;
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;
 
 public class Parser {
@@ -236,8 +235,7 @@ public class Parser {
 
     private FunckyLiteral parseString(final String string, final Token token) {
         return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                new FunckyList(new FunckyListType(new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        CHARACTER)), string.isEmpty() ? null
+                new FunckyList(LIST(CHARACTER), string.isEmpty() ? null
                         : new FunckyLiteral(engine, token.file(), token.line(), token.column(),
                                 new FunckyCharacter(string.charAt(0))),
                         string.isEmpty() ? null : parseString(string.substring(1), token)));
@@ -271,8 +269,7 @@ public class Parser {
             types.add(component.getType());
         }
         return new FunckyLiteral(engine, leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),
-                new FunckyRecord(new FunckyRecordType(new FunckyLiteral(engine, engine.getConverter().convert(types))),
-                        components));
+                new FunckyRecord(RECORD(types.toArray(new FunckyType[0])), components));
     }
 
     private Token consume(final Queue<Token> input, final Set<TokenType> expected) {

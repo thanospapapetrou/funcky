@@ -17,6 +17,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION;
 import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.FunckyRecordType.RECORD;
 
 public class TypeInferenceContext {
     private final Set<Set<FunckyType>> context;
@@ -79,7 +80,7 @@ public class TypeInferenceContext {
                     list.getTail() != null; list = (FunckyList) list.getTail().eval()) {
                 components.add(find((FunckyType) list.getHead().eval()));
             }
-            return FunckyRecordType.RECORD(type.getEngine().getConverter().convert(components));
+            return RECORD(components.toArray(new FunckyType[0]));
         } else if (type instanceof FunckyTypeVariable) {
             final FunckyType found = findRepresentative(findSet(type));
             if (found instanceof FunckyFunctionType) {
@@ -95,7 +96,7 @@ public class TypeInferenceContext {
                         list = (FunckyList) list.getTail().eval()) {
                     components.add(find((FunckyType) list.getHead().eval()));
                 }
-                return Record(type.getEngine().getConverter().convert(components));
+                return RECORD(components.toArray(new FunckyType[0]));
             }
             return found;
         }

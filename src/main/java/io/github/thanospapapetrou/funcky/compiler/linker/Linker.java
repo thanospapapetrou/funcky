@@ -1,5 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.linker;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -17,7 +18,6 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidMainException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.PrefixAlreadyBoundException;
@@ -49,17 +49,13 @@ public class Linker {
         this.engine = engine;
     }
 
-    public URI canonicalize(final URI base, final URI namespace) {
-        try {
+    public static URI canonicalize(final URI base, final URI namespace) {
             return namespace.isAbsolute() ? namespace : (base.equals(getStdin())
-                    ? engine.getFactory().getBaseDir().toURI()
+                    ? new File("./").toURI() // TODO
                     : base).resolve(namespace).normalize();
-        } catch (final IOException e) {
-            throw new SneakyCompilationException(new FunckyCompilationException(e));
-        }
     }
 
-    public URI getStdin() {
+    public static URI getStdin() { // TODO
         try {
             return new URI(getPreludeScheme(), STDIN, null);
         } catch (final URISyntaxException e) {
@@ -67,7 +63,7 @@ public class Linker {
         }
     }
 
-    public URI getNamespace(final Class<? extends FunckyLibrary> library) {
+    public static URI getNamespace(final Class<? extends FunckyLibrary> library) { // TODO
         try {
             return new URI(getPreludeScheme(), library.getSimpleName().toLowerCase(Locale.ROOT), null);
         } catch (final URISyntaxException e) {
@@ -158,13 +154,14 @@ public class Linker {
 
     private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {
         try {
-            return library.getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
+            return library.getDeclaredConstructor().newInstance();
         } catch (final ReflectiveOperationException e) {
             throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
         }
     }
 
-    private String getPreludeScheme() {
-        return engine.getFactory().getLanguageName().toLowerCase(Locale.ROOT);
+    private static String getPreludeScheme() {
+        return "funcky"; // TODO
+        //        return engine.getFactory().getLanguageName().toLowerCase(Locale.ROOT);
     }
 }

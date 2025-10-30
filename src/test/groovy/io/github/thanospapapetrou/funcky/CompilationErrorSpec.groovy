@@ -1,19 +1,9 @@
 package io.github.thanospapapetrou.funcky
 
+import io.github.thanospapapetrou.funcky.compiler.exceptions.*
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker
-import io.github.thanospapapetrou.funcky.compiler.exceptions.IllegalApplicationException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidMainException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.NameAlreadyDefinedException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.PrefixAlreadyBoundException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedMainException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidListLiteralException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidUriException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnexpectedTokenException
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnrecognizedInputException
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType
 import io.github.thanospapapetrou.funcky.runtime.FunckyType
@@ -187,8 +177,8 @@ class CompilationErrorSpec extends BaseSpec {
         e.columnNumber == column
         where:
         expression                       || head                      | headType | tail    | tailType                                | column
-        '[1, \'a\']'                     || '1'                       | NUMBER.apply(engine)  | '"a"'   | STRING.apply(engine)       | 2
-        '["funcky:booleans".false, "a"]' || '"funcky:booleans".false' | BOOLEAN.apply(engine) | '["a"]' | LIST(STRING).apply(engine) | 2
+        '[1, \'a\']'                     || '1'                       | NUMBER  | '"a"'   | STRING       | 2
+        '["funcky:booleans".false, "a"]' || '"funcky:booleans".false' | BOOLEAN | '["a"]' | LIST(STRING) | 2
     }
 
     @Unroll('Test invalid list literal error in script (script: #script)')
@@ -207,9 +197,9 @@ class CompilationErrorSpec extends BaseSpec {
         cleanup:
         reader.close()
         where:
-        script                                                   || head                      | headType              | tail    | tailType                   | line | column
-        '/compilation_error/invalid_list_literal_error_1.funcky' || '1'                       | NUMBER.apply(engine)  | '"a"'   | STRING.apply(engine)       | 1    | 8
-        '/compilation_error/invalid_list_literal_error_2.funcky' || '"funcky:booleans".false' | BOOLEAN.apply(engine) | '["a"]' | LIST(STRING).apply(engine) | 2    | 8
+        script                                                   || head                      | headType | tail    | tailType     | line | column
+        '/compilation_error/invalid_list_literal_error_1.funcky' || '1'                       | NUMBER   | '"a"'   | STRING       | 1    | 8
+        '/compilation_error/invalid_list_literal_error_2.funcky' || '"funcky:booleans".false' | BOOLEAN  | '["a"]' | LIST(STRING) | 2    | 8
     }
 
     @Unroll('Test prefix already bound error (script: #script)')
@@ -342,9 +332,9 @@ class CompilationErrorSpec extends BaseSpec {
         e.lineNumber == 1
         e.columnNumber == column
         where:
-        expression                                       || function                 | functionType                                   | argument                  | argumentType              | column
-        '"funcky:numbers".add "funcky:booleans".false'   || '"funcky:numbers".add'   | FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine) | '"funcky:booleans".false' | BOOLEAN.apply(engine)     | 1
-        '"funcky:numbers".add 1 "funcky:booleans".false' || '"funcky:numbers".add 1' | FUNCTION(NUMBER, NUMBER).apply(engine)         | '"funcky:booleans".false' | BOOLEAN.apply(engine)     | 1
+        expression                                       || function                 | functionType                     | argument                  | argumentType | column
+        '"funcky:numbers".add "funcky:booleans".false'   || '"funcky:numbers".add'   | FUNCTION(NUMBER, NUMBER, NUMBER) | '"funcky:booleans".false' | BOOLEAN      | 1
+        '"funcky:numbers".add 1 "funcky:booleans".false' || '"funcky:numbers".add 1' | FUNCTION(NUMBER, NUMBER)         | '"funcky:booleans".false' | BOOLEAN      | 1
     }
 
     @Unroll('Test illegal application error in script (script: #script)')
@@ -363,9 +353,9 @@ class CompilationErrorSpec extends BaseSpec {
         cleanup:
         reader.close()
         where:
-        script                                                  || function               | functionType                                   | argument                  | argumentType          | line | column
-        '/compilation_error/illegal_application_error_1.funcky' || '"funcky:numbers".add' | FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine) | '"funcky:booleans".false' | BOOLEAN.apply(engine) | 1    | 7
-        '/compilation_error/illegal_application_error_2.funcky' || 'numbers.add 1'        | FUNCTION(NUMBER, NUMBER).apply(engine)         | 'booleans.false'          | BOOLEAN.apply(engine) | 4    | 7
+        script                                                  || function               | functionType                     | argument                  | argumentType | line | column
+        '/compilation_error/illegal_application_error_1.funcky' || '"funcky:numbers".add' | FUNCTION(NUMBER, NUMBER, NUMBER) | '"funcky:booleans".false' | BOOLEAN      | 1    | 7
+        '/compilation_error/illegal_application_error_2.funcky' || 'numbers.add 1'        | FUNCTION(NUMBER, NUMBER)         | 'booleans.false'          | BOOLEAN      | 4    | 7
     }
 
     @Unroll('Test undefined main error (script: #script)')
@@ -396,15 +386,15 @@ class CompilationErrorSpec extends BaseSpec {
         then:
         final InvalidMainException e = thrown()
         e.message
-        e.message.startsWith(String.format(InvalidMainException.MESSAGE, type, Linker.MAIN_TYPE.apply(engine)))
+        e.message.startsWith(String.format(InvalidMainException.MESSAGE, type, Linker.MAIN_TYPE))
         e.fileName == CompilationErrorSpec.getResource(script).toURI().toString()
         e.lineNumber == line
         e.columnNumber == 1
         cleanup:
         reader.close()
         where:
-        script                                           || type                                   | line
-        '/compilation_error/invalid_main_error_1.funcky' || BOOLEAN.apply(engine)                  | 1
-        '/compilation_error/invalid_main_error_2.funcky' || FUNCTION(NUMBER, NUMBER).apply(engine) | 3
+        script                                           || type                     | line
+        '/compilation_error/invalid_main_error_1.funcky' || BOOLEAN                  | 1
+        '/compilation_error/invalid_main_error_2.funcky' || FUNCTION(NUMBER, NUMBER) | 3
     }
 }

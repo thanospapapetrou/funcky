@@ -13,6 +13,7 @@ import javax.script.ScriptContext;
 import javax.script.SimpleScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 
 public class FunckyScript extends CompiledScript {
@@ -92,7 +93,7 @@ public class FunckyScript extends CompiledScript {
     @Override
     public FunckyNumber eval(final ScriptContext context) {
             return (FunckyNumber) new FunckyApplication(new FunckyReference(engine, getFile(), -1, -1, getFile(), MAIN),
-                    new FunckyLiteral(engine.getConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval(
+                    new FunckyLiteral(new FunckyJavaConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval(
                     context);
     }
 

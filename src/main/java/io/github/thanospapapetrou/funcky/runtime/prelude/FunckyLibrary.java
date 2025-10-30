@@ -11,6 +11,7 @@ import java.util.List;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
+import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -40,7 +41,7 @@ public sealed class FunckyLibrary extends FunckyScript
 
     @Override
     public URI getFile() {
-        return engine.getLinker().getNamespace(getClass());
+        return Linker.getNamespace(getClass());
     }
 
     @Override

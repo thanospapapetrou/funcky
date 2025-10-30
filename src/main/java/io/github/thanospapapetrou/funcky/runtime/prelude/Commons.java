@@ -5,10 +5,12 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
+import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
+import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
@@ -54,7 +56,7 @@ public non-sealed class Commons extends FunckyLibrary {
     public final HigherOrderFunction $string = new HigherOrderFunction(this, $_a, STRING) {
         @Override
         protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-            return engine.getConverter().convert(arguments.getFirst().eval(context).toString());
+            return new FunckyJavaConverter().convert(arguments.getFirst().eval(context).toString());
         }
     };
     public final HigherOrderFunction $number = new HigherOrderFunction(this, STRING, NUMBER) {

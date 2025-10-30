@@ -12,6 +12,7 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationEx
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
+import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
@@ -134,7 +135,7 @@ public final class FunckyReference extends FunckyExpression {
                 return inport.namespace();
             }
         } else {
-            return engine.getLinker().canonicalize(file, namespace);
+            return Linker.canonicalize(file, namespace);
         }
     }
 

@@ -47,7 +47,6 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     private final Linker linker;
     private final ContextManager manager;
     private final Transpiler transpiler;
-    private final FunckyJavaConverter converter;
 
     FunckyEngine(final FunckyFactory factory) {
         this.factory = factory;
@@ -61,7 +60,6 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
         } catch (final MalformedURLException e) {
             throw new RuntimeException(e); // TODO
         }
-        converter = new FunckyJavaConverter(this);
     }
 
     public Linker getLinker() {
@@ -74,10 +72,6 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
 
     public Transpiler getTranspiler() {
         return transpiler;
-    }
-
-    public FunckyJavaConverter getConverter() {
-        return converter;
     }
 
     @Override

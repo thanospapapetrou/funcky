@@ -33,3 +33,8 @@ remove visitors
 
 remove engine from values
 linker decorates ast with types etc
+value orderings should use direct instances, not strings
+use static factories instead of constructors for values
+link in specific context
+converter cleanup
+should libraries have engine?

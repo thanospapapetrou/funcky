@@ -18,39 +18,18 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
 import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
 
 public class FunckyJavaConverter {
-    private static final String ERROR_CONVERTING_TO_FUNCKY = "Error converting %1$s (%2$s) to %3$s";
-    private static final String ERROR_CONVERTING_TO_JAVA = "Error converting %1$s (%2$s) to Java";
-
-    // TODO convert types?
-
-    private final FunckyEngine engine;
-
-    public FunckyJavaConverter(final FunckyEngine engine) {
-        this.engine = engine;
-    }
+    private static final String ERROR_CONVERTING_TO_FUNCKY = "Error converting %1$s (%2$s) to Funcky";
 
     public FunckyNumber convert(final Number number) {
         return new FunckyNumber(new BigDecimal(number.toString()));
-    }
-
-    public BigDecimal convert(final FunckyNumber number) {
-        return number.getValue();
     }
 
     public FunckyBoolean convert(final boolean bool) {
         return bool ? FunckyBoolean.TRUE : FunckyBoolean.FALSE;
     }
 
-    public boolean convert(final FunckyBoolean bool) {
-        return bool.getValue();
-    }
-
     public FunckyCharacter convert(final char character) {
         return new FunckyCharacter(character);
-    }
-
-    public char convert(final FunckyCharacter character) {
-        return character.getValue();
     }
 
     public FunckyList convert(final Stream<?> stream) {
@@ -67,15 +46,14 @@ public class FunckyJavaConverter {
         final FunckyType headType = (head == null) ? new FunckyTypeVariable() : head.getType();
         final FunckyListType tailType =
                 (tail == null) ? LIST(new FunckyTypeVariable()) : tail.getType();
-        final String error = String.format(ERROR_CONVERTING_TO_FUNCKY, iterator.getClass().getName(), iterator,
-                engine.getFactory().getLanguageName());
+        final String error = String.format(ERROR_CONVERTING_TO_FUNCKY, iterator.getClass().getName(), iterator);
         final FunckyListType listType =
                 (FunckyListType) LIST(headType).unify(tailType);
             if (listType == null) {
                 throw new IllegalArgumentException(error);
             }
-        return new FunckyList(listType, (head == null) ? null : new FunckyLiteral(engine, head),
-                (tail == null) ? null : new FunckyLiteral(engine, tail));
+        return new FunckyList(listType, (head == null) ? null : new FunckyLiteral(head),
+                (tail == null) ? null : new FunckyLiteral(tail));
     }
 
     public FunckyList convert(final String string) {
@@ -83,14 +61,6 @@ public class FunckyJavaConverter {
                 string.isEmpty() ? null : new FunckyLiteral(convert(string.charAt(0))),
                 string.isEmpty() ? null : new FunckyLiteral(convert(string.substring(1))));
     }
-
-    public Stream<?> convert(final FunckyList list) {
-        // TODO
-        return null;
-    }
-
-    // TODO convert records
-    // TODO convert functions?
 
     private FunckyValue convert(final Object object) {
         if (object instanceof FunckyValue) {
@@ -111,21 +81,6 @@ public class FunckyJavaConverter {
             return convert((String) object);
         }
         throw new IllegalArgumentException(
-                String.format(ERROR_CONVERTING_TO_FUNCKY, object.getClass().getName(), object,
-                        engine.getFactory().getLanguageName()));
-    }
-
-    private Object convert(final FunckyValue value) {
-        if (value instanceof FunckyNumber) {
-            return convert((FunckyNumber) value);
-        } else if (value instanceof FunckyBoolean) {
-            return convert((FunckyBoolean) value);
-        } else if (value instanceof FunckyCharacter) {
-            return convert((FunckyCharacter) value);
-        } else if (value instanceof FunckyList) {
-            return convert((FunckyList) value);
-        }
-        // TODO continue with other types
-        throw new IllegalArgumentException(String.format(ERROR_CONVERTING_TO_JAVA, value.getType(), value));
+                String.format(ERROR_CONVERTING_TO_FUNCKY, object.getClass().getName(), object));
     }
 }
