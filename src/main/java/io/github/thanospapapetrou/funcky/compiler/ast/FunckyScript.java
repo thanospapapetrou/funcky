@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
+import javax.script.SimpleScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
@@ -31,6 +32,10 @@ public class FunckyScript extends CompiledScript {
         this(expression.getEngine(), expression.getEngine().getLinker().getStdin());
         definitions.add(new FunckyDefinition(expression.getEngine().getLinker().getStdin(), 1, FunckyScript.IT,
                 expression));
+    }
+
+    protected FunckyScript() {
+        this(null, null);
     }
 
     private FunckyScript(final FunckyEngine engine, final URI file, final List<FunckyImport> imports,
@@ -87,14 +92,13 @@ public class FunckyScript extends CompiledScript {
     @Override
     public FunckyNumber eval(final ScriptContext context) {
             return (FunckyNumber) new FunckyApplication(new FunckyReference(engine, getFile(), -1, -1, getFile(), MAIN),
-                    new FunckyLiteral(engine,
-                            engine.getConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval(
+                    new FunckyLiteral(engine.getConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval(
                     context);
     }
 
     @Override
     public FunckyNumber eval() {
-        return eval(engine.getContext());
+        return eval((engine == null) ? new SimpleScriptContext() : engine.getContext());
     }
 
     @Override

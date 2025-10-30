@@ -2,16 +2,14 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.math.BigDecimal;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
-public final class FunckyNumber extends FunckyValue implements Comparable<FunckyNumber> {
-    private static final String JAVA = "new %1$s(engine, new %2$s(\"%3$f\"))"; // TODO improve argument ordering here and in other JAVAs
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
 
+public final class FunckyNumber extends FunckyValue implements Comparable<FunckyNumber> {
     private final BigDecimal value;
 
-    public FunckyNumber(final FunckyEngine engine, final BigDecimal value) {
-        super(engine);
+    public FunckyNumber(final BigDecimal value) {
         this.value = value;
     }
 
@@ -21,17 +19,12 @@ public final class FunckyNumber extends FunckyValue implements Comparable<Funcky
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.NUMBER.apply(engine);
+        return NUMBER;
     }
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
-    }
-
-    @Override
-    public String toJava() {
-        return String.format(JAVA, FunckyNumber.class.getName(), BigDecimal.class.getName(), value);
+        return new FunckyLiteral(this);
     }
 
     @Override

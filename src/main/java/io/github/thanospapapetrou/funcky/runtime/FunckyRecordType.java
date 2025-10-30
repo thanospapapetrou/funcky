@@ -6,9 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
@@ -18,21 +16,17 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.TYPE;
 
 public final class FunckyRecordType extends FunckyType {
-    public static final Function<FunckyEngine, FunckyRecordType> UNIT = RECORD();
-
-    private static final String JAVA = "((%1$s) %2$s.eval(engine.getContext()))";
+    public static final FunckyRecordType UNIT = RECORD();
 
     private final FunckyExpression components;
 
-    public static Function<FunckyEngine, FunckyRecordType> RECORD(final Function<FunckyEngine, ? extends FunckyType>... components) {
-        return engine -> new FunckyRecordType(engine, new FunckyLiteral(engine, new FunckyList(engine,
-                LIST(TYPE).apply(engine), (components.length > 0) ? new FunckyLiteral(engine,
-                components[0].apply(engine)) : null, (components.length > 0) ? RECORD(Arrays.copyOfRange(components,
-                1, components.length)).apply(engine).components : null)));
+    public static FunckyRecordType RECORD(FunckyType... components) {
+        return new FunckyRecordType(new FunckyLiteral(new FunckyList(LIST(TYPE), (components.length > 0)
+                ? new FunckyLiteral(components[0]) : null, (components.length > 0)
+                ? RECORD(Arrays.copyOfRange(components, 1, components.length)).components : null)));
     }
 
-    public FunckyRecordType(final FunckyEngine engine, final FunckyExpression components) {
-        super(engine);
+    public FunckyRecordType(final FunckyExpression components) {
         this.components = components;
     }
 
@@ -42,38 +36,33 @@ public final class FunckyRecordType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new Types(engine).$Record.toExpression(), components);
-    }
-
-    @Override
-    public String toJava() {
-        return String.format(JAVA, FunckyRecordType.class.getName(), toExpression().toJava());
+        return new FunckyApplication(new Types().$Record.toExpression(), components);
     }
 
     @Override
     public int compareTo(final FunckyType type) {
             final int classComparison = super.compareTo(type);
-        return (classComparison == 0) ? ((FunckyList) components.eval(engine.getContext())).compareTo(
-                (FunckyList) ((FunckyRecordType) type).components.eval(engine.getContext())) : classComparison;
+        return (classComparison == 0) ? ((FunckyList) components.eval()).compareTo(
+                (FunckyList) ((FunckyRecordType) type).components.eval()) : classComparison;
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckyRecordType) && components.eval(engine.getContext())
-                .equals(((FunckyRecordType) object).components.eval(engine.getContext()));
+        return (object instanceof FunckyRecordType) && components.eval()
+                .equals(((FunckyRecordType) object).components.eval());
     }
 
     @Override
     public int hashCode() {
-        return components.eval(engine.getContext()).hashCode();
+        return components.eval().hashCode();
     }
 
     @Override
     protected Set<FunckyTypeVariable> getTypeVariables() {
         final Set<FunckyTypeVariable> typeVariables = new HashSet<>();
-        for (FunckyList list = (FunckyList) components.eval(engine.getContext()); list.getTail() != null;
-                list = (FunckyList) list.getTail().eval(engine.getContext())) {
-            typeVariables.addAll(((FunckyType) list.getHead().eval(engine.getContext())).getTypeVariables());
+        for (FunckyList list = (FunckyList) components.eval(); list.getTail() != null;
+                list = (FunckyList) list.getTail().eval()) {
+            typeVariables.addAll(((FunckyType) list.getHead().eval()).getTypeVariables());
         }
         return typeVariables;
     }
@@ -81,10 +70,10 @@ public final class FunckyRecordType extends FunckyType {
     @Override
     protected FunckyRecordType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
         final List<FunckyType> types = new ArrayList<>();
-        for (FunckyList list = (FunckyList) components.eval(engine.getContext()); list.getTail() != null;
-                list = (FunckyList) list.getTail().eval(engine.getContext())) {
-            types.add(((FunckyType) list.getHead().eval(engine.getContext())).bind(bindings));
+        for (FunckyList list = (FunckyList) components.eval(); list.getTail() != null;
+                list = (FunckyList) list.getTail().eval()) {
+            types.add(((FunckyType) list.getHead().eval()).bind(bindings));
         }
-        return new FunckyRecordType(engine, new FunckyLiteral(engine, engine.getConverter().convert(types)));
+        return RECORD(engine.getConverter().convert(types));
     }
 }

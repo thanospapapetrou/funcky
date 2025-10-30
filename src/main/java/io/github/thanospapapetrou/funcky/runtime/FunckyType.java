@@ -8,8 +8,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.linker.TypeInferenceContext;
+
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.TYPE;
 
 public sealed abstract class FunckyType extends FunckyValue implements Comparable<FunckyType>
         permits FunckySimpleType, FunckyFunctionType, FunckyListType, FunckyRecordType, FunckyTypeVariable {
@@ -28,13 +29,9 @@ public sealed abstract class FunckyType extends FunckyValue implements Comparabl
                 .orElse(-1);
     }
 
-    protected FunckyType(final FunckyEngine engine) {
-        super(engine);
-    }
-
     public FunckyType free() {
         return bind(getTypeVariables().stream()
-                .collect(Collectors.toMap(Function.identity(), typeVariable -> new FunckyTypeVariable(engine))));
+                .collect(Collectors.toMap(Function.identity(), typeVariable -> new FunckyTypeVariable())));
     }
 
     public FunckyType unify(final FunckyType type) {
@@ -52,7 +49,7 @@ public sealed abstract class FunckyType extends FunckyValue implements Comparabl
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.TYPE.apply(engine);
+        return TYPE;
     }
 
     @Override

@@ -13,8 +13,8 @@ public final class InvalidListLiteralException extends FunckyCompilationExceptio
 
     public InvalidListLiteralException(final FunckyEngine engine, final FunckyExpression head,
             final FunckyLiteral tail) {
-        super(String.format(MESSAGE, head, (head == null) ? new FunckyTypeVariable(engine) : head.getType(), tail,
-                        (tail == null) ? LIST(FunckyTypeVariable::new).apply(engine) : tail.getType()),
+        super(String.format(MESSAGE, head, (head == null) ? new FunckyTypeVariable() : head.getType(), tail,
+                        (tail == null) ? LIST(new FunckyTypeVariable()) : tail.getType()),
                 (head == null) ? null : head.getFile(), (head == null) ? -1 : head.getLine(),
                 (head == null) ? -1 : head.getColumn());
     }

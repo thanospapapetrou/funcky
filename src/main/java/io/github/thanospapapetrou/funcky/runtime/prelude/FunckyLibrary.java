@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
@@ -37,9 +36,7 @@ public sealed class FunckyLibrary extends FunckyScript
                 .orElseThrow(() -> new SneakyRuntimeException(message));
     }
 
-    protected FunckyLibrary(final FunckyEngine engine) {
-        super(engine, null);
-    }
+    // TODO set namespace at construction time and do not resolve afterwards
 
     @Override
     public URI getFile() {

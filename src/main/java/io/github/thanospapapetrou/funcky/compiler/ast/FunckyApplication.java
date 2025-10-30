@@ -16,6 +16,8 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
+import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION;
+
 public final class FunckyApplication extends FunckyExpression {
     private static final String FORMAT_APPLICATION = "%1$s %2$s";
     private static final String FORMAT_NESTED_APPLICATION = "%1$s (%2$s)";
@@ -79,8 +81,8 @@ public final class FunckyApplication extends FunckyExpression {
     protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions) {
         final FunckyType functionType = function.getType(assumptions);
         final FunckyType argumentType = argument.getType(assumptions);
-            final FunckyFunctionType type = (FunckyFunctionType) functionType.unify(
-                    new FunckyFunctionType(engine, new FunckyLiteral(engine, argumentType), new FunckyLiteral(engine, new FunckyTypeVariable(engine))));
+        final FunckyFunctionType type = (FunckyFunctionType) functionType
+                .unify(FUNCTION(argumentType, new FunckyTypeVariable()));
             if (type != null) {
                 return ((FunckyType) type.getRange().eval(engine.getContext()));
             } else {

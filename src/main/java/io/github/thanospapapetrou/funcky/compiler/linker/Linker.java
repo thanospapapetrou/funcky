@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
@@ -34,7 +33,7 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
 
 public class Linker {
-    public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
+    public static final FunckyFunctionType MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
 
     private static final String DEFINITION = "  %1$s%n    %2$s";
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
@@ -152,7 +151,7 @@ public class Linker {
         if (main.isEmpty()) {
             throw new SneakyCompilationException(new UndefinedMainException(script));
         }
-        if (main.get().expression().getType().unify(MAIN_TYPE.apply(engine)) == null) {
+        if (main.get().expression().getType().unify(MAIN_TYPE) == null) {
             throw new SneakyCompilationException(new InvalidMainException(main.get()));
         }
     }

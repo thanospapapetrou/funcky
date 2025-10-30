@@ -1,16 +1,13 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
+
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;
 
 public final class FunckyCharacter extends FunckyValue implements Comparable<FunckyCharacter> {
-    private static final String JAVA = "new %1$s(engine, '%2$s')";
-
     private final char value;
 
-    public FunckyCharacter(final FunckyEngine engine, final char value) {
-        super(engine);
+    public FunckyCharacter(final char value) {
         this.value = value;
     }
 
@@ -20,17 +17,12 @@ public final class FunckyCharacter extends FunckyValue implements Comparable<Fun
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.CHARACTER.apply(engine);
+        return CHARACTER;
     }
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
-    }
-
-    @Override
-    public String toJava() {
-        return String.format(JAVA, FunckyCharacter.class.getName(), EscapeHelper.escape(Character.toString(value)));
+        return new FunckyLiteral(this);
     }
 
     @Override

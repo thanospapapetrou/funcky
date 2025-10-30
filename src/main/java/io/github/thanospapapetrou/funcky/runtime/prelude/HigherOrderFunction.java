@@ -5,14 +5,11 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 import javax.script.ScriptContext;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
@@ -32,14 +29,13 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     private final FunckyExpression expression;
     private final List<FunckyExpression> arguments;
 
-    HigherOrderFunction(final FunckyEngine engine, final FunckyLibrary library,
-            final Function<FunckyEngine, ? extends FunckyType>... types) {
-        this(engine, FUNCTION(types).apply(engine), types.length - 1, library, null, List.of());
+    HigherOrderFunction(final FunckyLibrary library, final FunckyType... types) {
+        this(FUNCTION(types), types.length - 1, library, null, List.of());
     }
 
-    private HigherOrderFunction(final FunckyEngine engine, final FunckyFunctionType type, final int order,
-            final FunckyLibrary library, final FunckyExpression expression, final List<FunckyExpression> arguments) {
-        super(engine, type);
+    private HigherOrderFunction(final FunckyFunctionType type, final int order, final FunckyLibrary library,
+            final FunckyExpression expression, final List<FunckyExpression> arguments) {
+        super(type);
         this.order = order;
         this.library = library;
         this.expression = expression;
@@ -50,11 +46,11 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     public FunckyValue apply(final FunckyExpression argument, final ScriptContext context) {
             final HigherOrderFunction that = this;
             final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(
-                    new FunckyFunctionType(engine, new FunckyLiteral(engine, argument.getType()), new FunckyLiteral(engine, new FunckyTypeVariable(engine))))).getRange()
-                    .eval(engine.getContext());
+                    FUNCTION(argument.getType(),
+                            new FunckyTypeVariable()))).getRange().eval();
             final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
             arguments.add(argument);
-        return (order > 1) ? new HigherOrderFunction(engine, (FunckyFunctionType) range, order - 1,
+        return (order > 1) ? new HigherOrderFunction((FunckyFunctionType) range, order - 1,
                     null, new FunckyApplication(that.toExpression(), argument), arguments) {
                 @Override
                 protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
@@ -67,12 +63,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
 
     @Override
     public FunckyExpression toExpression() {
-        return (expression == null) ? new FunckyReference(engine, library.getFile(), getName()) : expression;
-    }
-
-    @Override
-    public String toJava() {
-        return toExpression().toJava();
+        return (expression == null) ? new FunckyReference(library.getFile(), getName()) : expression;
     }
 
     private String getName() {

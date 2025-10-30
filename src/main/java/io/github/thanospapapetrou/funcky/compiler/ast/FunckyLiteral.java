@@ -15,6 +15,9 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
+import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;
+
 public final class FunckyLiteral extends FunckyExpression {
     private static final String FORMAT_CHARACTER = "'%1$s'";
     private static final String FORMAT_STRING = "\"%1$s\"";
@@ -31,6 +34,10 @@ public final class FunckyLiteral extends FunckyExpression {
 
     public FunckyLiteral(final FunckyEngine engine, final FunckyValue value) {
         this(engine, null, -1, -1, value);
+    } // TODO remove
+
+    public FunckyLiteral(final FunckyValue value) {
+        this(null, null, -1, -1, value);
     }
 
     public FunckyValue getValue() {
@@ -46,7 +53,7 @@ public final class FunckyLiteral extends FunckyExpression {
     public String toJava() {
         return String.format(JAVA, FunckyLiteral.class.getName(), (file == null) ? String.valueOf((Object) null)
                         : String.format(JAVA_URI, URI.class.getName(), EscapeHelper.escape(file.toString())), line,
-                column, value.toJava());
+                column, value);
     }
 
     @Override
@@ -61,10 +68,10 @@ public final class FunckyLiteral extends FunckyExpression {
 
     @Override
     public String toString() {
-        if (value.getType().equals(FunckySimpleType.CHARACTER.apply(engine))) {
+        if (value.getType().equals(CHARACTER)) {
             return String.format(FORMAT_CHARACTER, EscapeHelper.escape(value.toString()));
         }
-        if (value.getType().equals(FunckyListType.STRING.apply(engine))) {
+        if (value.getType().equals(STRING)) {
             return String.format(FORMAT_STRING, EscapeHelper.escape(value.toString()));
         }
         if (value.getType() instanceof FunckyListType) {

@@ -2,9 +2,7 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
@@ -13,19 +11,15 @@ import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;
 
 public final class FunckyListType extends FunckyType {
-    public static final Function<FunckyEngine, FunckyListType> STRING = LIST(CHARACTER);
-
-    private static final String JAVA = "((%1$s) %2$s.eval(engine.getContext()))";
+    public static final FunckyListType STRING = LIST(CHARACTER);
 
     private final FunckyExpression element;
 
-    public static Function<FunckyEngine, FunckyListType> LIST(
-            final Function<FunckyEngine, ? extends FunckyType> element) {
-        return engine -> new FunckyListType(engine, new FunckyLiteral(engine, element.apply(engine)));
+    public static FunckyListType LIST(FunckyType element) {
+        return new FunckyListType(new FunckyLiteral(element));
     }
 
-    public FunckyListType(final FunckyEngine engine, final FunckyExpression element) {
-        super(engine);
+    public FunckyListType(final FunckyExpression element) {
         this.element = element;
     }
 
@@ -35,39 +29,34 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new Types(engine).$List.toExpression(), element);
-    }
-
-    @Override
-    public String toJava() {
-        return String.format(JAVA, FunckyListType.class.getName(), toExpression().toJava());
+        return new FunckyApplication(new Types().$List.toExpression(), element);
     }
 
     @Override
     public int compareTo(final FunckyType type) {
             final int classComparison = super.compareTo(type);
-        return (classComparison == 0) ? ((FunckyType) element.eval(engine.getContext())).compareTo(
-                (FunckyType) ((FunckyListType) type).element.eval(engine.getContext())) : classComparison;
+        return (classComparison == 0) ? ((FunckyType) element.eval()).compareTo(
+                (FunckyType) ((FunckyListType) type).element.eval()) : classComparison;
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckyListType) && element.eval(engine.getContext())
-                .equals(((FunckyListType) object).element.eval(engine.getContext()));
+        return (object instanceof FunckyListType) && element.eval()
+                .equals(((FunckyListType) object).element.eval());
     }
 
     @Override
     public int hashCode() {
-        return element.eval(engine.getContext()).hashCode();
+        return element.eval().hashCode();
     }
 
     @Override
     protected Set<FunckyTypeVariable> getTypeVariables() {
-        return ((FunckyType) element.eval(engine.getContext())).getTypeVariables();
+        return ((FunckyType) element.eval()).getTypeVariables();
     }
 
     @Override
     protected FunckyListType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return new FunckyListType(engine, new FunckyLiteral(engine, ((FunckyType) element.eval(engine.getContext())).bind(bindings)));
+        return LIST(((FunckyType) element.eval()).bind(bindings));
     }
 }

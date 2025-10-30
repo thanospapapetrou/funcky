@@ -2,25 +2,20 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
 public final class FunckyRecord extends FunckyValue implements Comparable<FunckyRecord> {
     private static final String DELIMITER = ", ";
-    private static final String JAVA = "new %1$s(engine, %2$s, %3$s.of(%4$s))";
-    private static final String JAVA_DELIMITER = ", ";
     private static final String PREFIX = "{";
     private static final String SUFFIX = "}";
 
     private final FunckyRecordType type;
     private final List<FunckyExpression> components;
 
-    public FunckyRecord(final FunckyEngine engine, final FunckyRecordType type,
+    public FunckyRecord(final FunckyRecordType type,
             final List<FunckyExpression> components) {
-        super(engine);
         this.type = type;
         this.components = components;
     }
@@ -36,22 +31,14 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
-    }
-
-    @Override
-    public String toJava() {
-        return String.format(JAVA, FunckyRecord.class.getName(), type.toJava(), List.class.getName(),
-                components.stream()
-                        .map(FunckyExpression::toJava)
-                        .collect(Collectors.joining(JAVA_DELIMITER)));
+        return new FunckyLiteral(this);
     }
 
     @Override
     public int compareTo(final FunckyRecord record) {
             for (int i = 0; i < components.size(); i++) {
                 final int componentComparison =
-                        ((Comparable<FunckyValue>) components.get(i).eval(engine.getContext())).compareTo(record.components.get(i).eval(engine.getContext()));
+                        ((Comparable<FunckyValue>) components.get(i).eval()).compareTo(record.components.get(i).eval());
                 if (componentComparison != 0) {
                     return componentComparison;
                 }
@@ -68,7 +55,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     public int hashCode() {
             int hashCode = 0;
             for (final FunckyExpression component : components) {
-                hashCode += component.eval(engine.getContext()).hashCode();
+                hashCode += component.eval().hashCode();
             }
             return hashCode;
     }
@@ -77,7 +64,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     public String toString() {
             final StringBuilder string = new StringBuilder(PREFIX);
             for (final FunckyExpression component : components) {
-                string.append(component.eval(engine.getContext()).toString()).append(DELIMITER);
+                string.append(component.eval().toString()).append(DELIMITER);
             }
             if (string.length() > PREFIX.length()) {
                 string.setLength(string.length() - DELIMITER.length());
@@ -85,10 +72,10 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
             return string.append(SUFFIX).toString();
     }
 
-    private List<FunckyValue> eval() {
+    private List<FunckyValue> eval() { // TODO do not eval all values at once
         final List<FunckyValue> values = new ArrayList<>();
         for (final FunckyExpression component : components) {
-            values.add(component.eval(engine.getContext()));
+            values.add(component.eval());
         }
         return values;
     }

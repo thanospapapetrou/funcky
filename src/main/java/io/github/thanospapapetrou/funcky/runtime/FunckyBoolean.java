@@ -1,21 +1,17 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
-import java.util.function.Function;
-
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 
+import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN;
+
 public final class FunckyBoolean extends FunckyValue implements Comparable<FunckyBoolean> {
-    public static final Function<FunckyEngine, FunckyBoolean> FALSE = engine -> new FunckyBoolean(engine, false);
-    public static final Function<FunckyEngine, FunckyBoolean> TRUE = engine -> new FunckyBoolean(engine, true);
-    private static final String JAVA = "%1$s.%2$s%3$b";
+    public static final FunckyBoolean FALSE = new FunckyBoolean(false);
+    public static final FunckyBoolean TRUE = new FunckyBoolean(true);
 
     private final boolean value;
 
-    private FunckyBoolean(final FunckyEngine engine, final boolean value) {
-        super(engine);
+    private FunckyBoolean(final boolean value) {
         this.value = value;
     }
 
@@ -25,18 +21,12 @@ public final class FunckyBoolean extends FunckyValue implements Comparable<Funck
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.BOOLEAN.apply(engine);
+        return BOOLEAN;
     }
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(engine, new Booleans(engine).getFile(), Boolean.toString(value));
-    }
-
-    @Override
-    public String toJava() {
-        return String.format(JAVA, engine.getTranspiler().getClass(engine.getLinker().getNamespace(Booleans.class)),
-                Transpiler.PREFIX_FUNCKY, value);
+        return new FunckyReference(new Booleans().getFile(), Boolean.toString(value));
     }
 
     @Override
