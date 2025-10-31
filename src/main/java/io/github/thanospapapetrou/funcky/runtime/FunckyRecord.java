@@ -35,10 +35,11 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public int compareTo(final FunckyRecord record) {
             for (int i = 0; i < components.size(); i++) {
-                final int componentComparison =
-                        ((Comparable<FunckyValue>) components.get(i).eval()).compareTo(record.components.get(i).eval());
+                final int componentComparison = ((Comparable<FunckyValue>) components.get(i).eval())
+                        .compareTo(record.components.get(i).eval());
                 if (componentComparison != 0) {
                     return componentComparison;
                 }

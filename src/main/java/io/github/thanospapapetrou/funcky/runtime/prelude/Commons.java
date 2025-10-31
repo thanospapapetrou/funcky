@@ -10,7 +10,6 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
@@ -33,9 +32,10 @@ public non-sealed class Commons extends FunckyLibrary {
     };
     public final HigherOrderFunction $compare = new HigherOrderFunction(this, $_a, $_a, NUMBER) {
         @Override
+        @SuppressWarnings("unchecked")
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-            return new FunckyNumber(new BigDecimal(Integer.compare(
-                    ((Comparable<FunckyValue>) arguments.get(0).eval(context))
+            return new FunckyNumber(new BigDecimal(Integer
+                    .compare(((Comparable<FunckyValue>) arguments.get(0).eval(context))
                             .compareTo(arguments.get(1).eval(context)), 0)));
                 }
     };

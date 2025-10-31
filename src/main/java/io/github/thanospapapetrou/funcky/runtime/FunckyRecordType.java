@@ -41,7 +41,7 @@ public final class FunckyRecordType extends FunckyType {
 
     @Override
     public int compareTo(final FunckyType type) {
-            final int classComparison = super.compareTo(type);
+        final int classComparison = super.compareTo(type);
         return (classComparison == 0) ? ((FunckyList) components.eval()).compareTo(
                 (FunckyList) ((FunckyRecordType) type).components.eval()) : classComparison;
     }

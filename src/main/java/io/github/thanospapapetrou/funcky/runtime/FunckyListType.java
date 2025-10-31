@@ -34,15 +34,15 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     public int compareTo(final FunckyType type) {
-            final int classComparison = super.compareTo(type);
-        return (classComparison == 0) ? ((FunckyType) element.eval()).compareTo(
-                (FunckyType) ((FunckyListType) type).element.eval()) : classComparison;
+        final int classComparison = super.compareTo(type);
+        return (classComparison == 0)
+                ? ((FunckyType) element.eval()).compareTo((FunckyType) ((FunckyListType) type).element.eval())
+                : classComparison;
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckyListType) && element.eval()
-                .equals(((FunckyListType) object).element.eval());
+        return (object instanceof FunckyListType) && element.eval().equals(((FunckyListType) object).element.eval());
     }
 
     @Override

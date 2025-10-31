@@ -57,13 +57,12 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public int compareTo(final FunckyList list) {
         final int headComparison = (head == null) ? ((list.head == null) ? 0 : -1) : ((list.head == null) ? 1
                 : ((Comparable<FunckyValue>) head.eval()).compareTo(list.head.eval()));
         return (headComparison == 0) ? ((tail == null) ? ((list.tail == null) ? 0 : -1) : ((list.tail == null) ? 1
-                : ((Comparable<FunckyValue>) tail.eval()).compareTo(
-                        list.tail.eval())))
-                    : headComparison;
+                : ((Comparable<FunckyValue>) tail.eval()).compareTo(list.tail.eval()))) : headComparison;
     }
 
     @Override

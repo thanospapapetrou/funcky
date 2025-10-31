@@ -15,8 +15,7 @@ public final class FunckyFunctionType extends FunckyType {
     private final FunckyExpression range;
 
     public static FunckyFunctionType FUNCTION(final FunckyType... types) {
-        return new FunckyFunctionType(new FunckyLiteral(types[0]),
-                new FunckyLiteral((types.length == 2) ? types[1]
+        return new FunckyFunctionType(new FunckyLiteral(types[0]), new FunckyLiteral((types.length == 2) ? types[1]
                         : FUNCTION(Arrays.copyOfRange(types, 1, types.length))));
     }
 
@@ -44,7 +43,7 @@ public final class FunckyFunctionType extends FunckyType {
             final int classComparison = super.compareTo(type);
             if (classComparison == 0) {
                 final int domainComparison = ((FunckyType) domain.eval())
-                        .compareTo((FunckyType) ((FunckyFunctionType) type).domain.eval());
+                                .compareTo((FunckyType) ((FunckyFunctionType) type).domain.eval());
                 return (domainComparison == 0)
                         ? ((FunckyType) range.eval()).compareTo((FunckyType) ((FunckyFunctionType) type).range.eval())
                         : domainComparison;

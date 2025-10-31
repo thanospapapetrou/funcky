@@ -14,14 +14,18 @@ public final class FunckySimpleType extends FunckyType {
     public static final FunckySimpleType BOOLEAN = new FunckySimpleType("Boolean");
     public static final FunckySimpleType CHARACTER = new FunckySimpleType("Character");
 
-    private static final String JAVA = "%1$s.%2$s%3$s";
-    private static final List<String> ORDERING = List.of("Type", "Number", "Boolean", "Character");
+    private static final List<FunckySimpleType> ORDERING = List.of(
+            TYPE,
+            NUMBER,
+            BOOLEAN,
+            CHARACTER
+    );
 
     private final String name;
 
     private static int getOrder(final FunckySimpleType type) {
         return IntStream.range(0, ORDERING.size())
-                .filter(i -> ORDERING.get(i).equals(type.name))
+                .filter(i -> ORDERING.get(i).name.equals(type.name))
                 .findFirst()
                 .orElse(-1);
     }
