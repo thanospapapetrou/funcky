@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
@@ -144,4 +145,8 @@ public non-sealed class Types extends FunckyLibrary {
             return result;
         }
     };
+
+    public Types(final FunckyEngine engine) {
+        super(engine);
+    }
 }

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
@@ -33,48 +34,59 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
 
 public class Linker {
-    public static final FunckyFunctionType MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
+    public static final FunckyFunctionType MAIN_TYPE;
+    public static final URI STDIN;
 
     private static final String DEFINITION = "  %1$s%n    %2$s";
     private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
-    private static final String ERROR_RESOLVING_NAMESPACE = "Error resolving namespace for library `%1$s`";
-    private static final String ERROR_RESOLVING_STDIN = "Error resolving stdin";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
+    private static final Map<Class<? extends FunckyLibrary>, URI> PRELUDE = new HashMap<>();
     private static final String PRELUDE_SCRIPT = "/prelude/%1$s.%2$s";
-    private static final String STDIN = "stdin";
 
     private final FunckyEngine engine;
+    private final URI base;
 
-    public Linker(final FunckyEngine engine) {
-        this.engine = engine;
-    }
-
-    public static URI canonicalize(final URI base, final URI namespace) {
-            return namespace.isAbsolute() ? namespace : (base.equals(getStdin())
-                    ? new File("./").toURI() // TODO
-                    : base).resolve(namespace).normalize();
-    }
-
-    public static URI getStdin() { // TODO
+    static {
         try {
-            return new URI(getPreludeScheme(), STDIN, null);
+            for (final Class<?> library : FunckyLibrary.class.getPermittedSubclasses()) {
+                PRELUDE.put((Class<? extends FunckyLibrary>) library,
+                        new URI(FunckyFactory.getParameters(FunckyEngine.LANGUAGE).getFirst()
+                        .toLowerCase(Locale.ROOT), library.getSimpleName().toLowerCase(Locale.ROOT),
+                        null));
+            }
+            MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER); // this has to be initialized after PRELUDE
+            STDIN = new URI(FunckyFactory.getParameters(FunckyEngine.LANGUAGE).getFirst().toLowerCase(Locale.ROOT),
+                    "stdin", null);
         } catch (final URISyntaxException e) {
-            throw new IllegalStateException(ERROR_RESOLVING_STDIN, e);
+            throw new ExceptionInInitializerError(e);
         }
     }
 
-    public static URI getNamespace(final Class<? extends FunckyLibrary> library) { // TODO
-        try {
-            return new URI(getPreludeScheme(), library.getSimpleName().toLowerCase(Locale.ROOT), null);
-        } catch (final URISyntaxException e) {
-            throw new IllegalStateException(String.format(ERROR_RESOLVING_NAMESPACE, library.getName()), e);
-        }
+    public static URI getNamespace(final Class<? extends FunckyScript> library) {
+        return PRELUDE.get(library);
     }
 
-    public Class<? extends FunckyLibrary> getLibrary(final URI file) {
-        return (Class<? extends FunckyLibrary>) Arrays.stream(FunckyLibrary.class.getPermittedSubclasses())
-                .filter(library -> getNamespace((Class<? extends FunckyLibrary>) library).equals(file)).findFirst()
+    public static Class<? extends FunckyLibrary> getLibrary(final URI file) {
+        return PRELUDE.entrySet().stream()
+                .filter(library -> library.getValue().equals(file))
+                .map(Map.Entry::getKey)
+                .findFirst()
                 .orElse(null);
+    }
+
+    public Linker(final FunckyEngine engine) throws IOException {
+        this(engine, new File(engine.getFactory().getParameter(FunckyEngine.PARAMETER_BASE_DIR)).getCanonicalFile()
+                .toURI());
+    }
+
+    private Linker(final FunckyEngine engine, final URI base) {
+        this.engine = engine;
+        this.base = base;
+    }
+
+    public URI canonicalize(final URI base, final URI namespace) {
+        return namespace.isAbsolute() ? namespace
+                : (base.equals(STDIN) ? this.base : base).resolve(namespace).normalize();
     }
 
     public FunckyExpression link(final FunckyExpression expression) {
@@ -154,14 +166,9 @@ public class Linker {
 
     private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {
         try {
-            return library.getDeclaredConstructor().newInstance();
+            return library.getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
         } catch (final ReflectiveOperationException e) {
             throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
         }
-    }
-
-    private static String getPreludeScheme() {
-        return "funcky"; // TODO
-        //        return engine.getFactory().getLanguageName().toLowerCase(Locale.ROOT);
     }
 }

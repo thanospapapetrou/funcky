@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
@@ -47,4 +48,8 @@ public non-sealed class Lists extends FunckyLibrary {
                     .unify(LIST(arguments.get(1).getType())), arguments.get(1), arguments.get(0));
         }
     };
+
+    public Lists(final FunckyEngine engine) {
+        super(engine);
+    }
 }

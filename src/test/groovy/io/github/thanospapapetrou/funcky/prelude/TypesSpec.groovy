@@ -45,7 +45,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                             || result
-        '"funcky:types".Function'                                                                              || new Types().$Function
+        '"funcky:types".Function'                                                                              || new Types(engine).$Function
         '"funcky:types".type "funcky:types".Function'                                                          || FUNCTION(TYPE, TYPE, TYPE)
         '"funcky:types".type ("funcky:types".Function "funcky:types".Type)'                                    || FUNCTION(TYPE, TYPE)
         '"funcky:commons".string ("funcky:types".Function ("funcky:commons".error "foo"))'                     || new FunckyJavaConverter().convert('"funcky:types".Function ("funcky:commons".error "foo")')
@@ -59,7 +59,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                  || result
-        '"funcky:types".domain'                                                                     || new Types().$domain
+        '"funcky:types".domain'                                                                     || new Types(engine).$domain
         '"funcky:types".type "funcky:types".domain'                                                 || FUNCTION(TYPE, TYPE)
         '"funcky:types".domain ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || TYPE
     }
@@ -79,7 +79,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                 || result
-        '"funcky:types".range'                                                                     || new Types().$range
+        '"funcky:types".range'                                                                     || new Types(engine).$range
         '"funcky:types".type "funcky:types".range'                                                 || FUNCTION(TYPE, TYPE)
         '"funcky:types".range ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || NUMBER
     }
@@ -99,7 +99,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                     || result
-        '"funcky:types".List'                                                          || new Types().$List
+        '"funcky:types".List'                                                          || new Types(engine).$List
         '"funcky:types".type "funcky:types".List'                                      || FUNCTION(TYPE, TYPE)
         '"funcky:types".List "funcky:types".Type'                                      || LIST(TYPE)
         '"funcky:commons".string ("funcky:types".List ("funcky:commons".error "foo"))' || new FunckyJavaConverter().convert('"funcky:types".List ("funcky:commons".error "foo")')
@@ -111,7 +111,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                         || result
-        '"funcky:types".element'                                           || new Types().$element
+        '"funcky:types".element'                                           || new Types(engine).$element
         '"funcky:types".type "funcky:types".element'                       || FUNCTION(TYPE, TYPE)
         '"funcky:types".element ("funcky:types".List "funcky:types".Type)' || TYPE
     }
@@ -142,7 +142,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                    || result
-        '"funcky:types".Record'                       || new Types().$Record
+        '"funcky:types".Record'                       || new Types(engine).$Record
         '"funcky:types".type "funcky:types".Record'   || FUNCTION(LIST(TYPE), TYPE)
         '"funcky:types".Record []'                    || UNIT
         '"funcky:types".Record ["funcky:types".Type]' || RECORD(TYPE)
@@ -154,7 +154,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                || result
-        '"funcky:types".components'                                               || new Types().$components
+        '"funcky:types".components'                                               || new Types(engine).$components
         '"funcky:types".type "funcky:types".components'                           || FUNCTION(TYPE, LIST(TYPE))
         '"funcky:types".components ("funcky:types".Record [])'                    || new FunckyJavaConverter().convert([])
         '"funcky:types".components ("funcky:types".Record ["funcky:types".Type])' || new FunckyJavaConverter().convert([TYPE])
@@ -185,7 +185,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                      || result
-        '"funcky:types".type'                                                                           || new Types().$type
+        '"funcky:types".type'                                                                           || new Types(engine).$type
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".type "funcky:types".type))' || TRUE
         '"funcky:types".type "funcky:types".Type'                                                       || TYPE
         '"funcky:types".type 1'                                                                         || NUMBER
@@ -207,7 +207,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                        || result
-        '"funcky:types".typeVariable'                                                                     || new Types().$typeVariable
+        '"funcky:types".typeVariable'                                                                     || new Types(engine).$typeVariable
         '"funcky:types".type "funcky:types".typeVariable'                                                 || FUNCTION(TYPE, BOOLEAN)
         '"funcky:types".typeVariable "funcky:types".Type'                                                 || FALSE
         '"funcky:types".typeVariable "funcky:types".Number'                                               || FALSE
@@ -228,7 +228,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                        || result
-        '"funcky:types".functionType'                                                                     || new Types().$functionType
+        '"funcky:types".functionType'                                                                     || new Types(engine).$functionType
         '"funcky:types".type "funcky:types".functionType'                                                 || FUNCTION(TYPE, BOOLEAN)
         '"funcky:types".functionType "funcky:types".Type'                                                 || FALSE
         '"funcky:types".functionType "funcky:types".Number'                                               || FALSE
@@ -249,7 +249,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                    || result
-        '"funcky:types".listType'                                                                     || new Types().$listType
+        '"funcky:types".listType'                                                                     || new Types(engine).$listType
         '"funcky:types".type "funcky:types".listType'                                                 || FUNCTION(TYPE, BOOLEAN)
         '"funcky:types".listType "funcky:types".Type'                                                 || FALSE
         '"funcky:types".listType "funcky:types".Number'                                               || FALSE
@@ -270,7 +270,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                      || result
-        '"funcky:types".recordType'                                                                     || new Types().$recordType
+        '"funcky:types".recordType'                                                                     || new Types(engine).$recordType
         '"funcky:types".type "funcky:types".recordType'                                                 || FUNCTION(TYPE, BOOLEAN)
         '"funcky:types".recordType "funcky:types".Type'                                                 || FALSE
         '"funcky:types".recordType "funcky:types".Number'                                               || FALSE
@@ -291,7 +291,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                                                                                                       || result
-        '"funcky:types".free'                                                                                                                                                                            || new Types().$free
+        '"funcky:types".free'                                                                                                                                                                            || new Types(engine).$free
         '"funcky:types".type "funcky:types".free'                                                                                                                                                        || FUNCTION(TYPE, TYPE)
         '"funcky:types".free "funcky:types".Type'                                                                                                                                                        || TYPE
         '"funcky:types".free "funcky:types".Number'                                                                                                                                                      || NUMBER
@@ -323,7 +323,7 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                                                                                         || result
-        '"funcky:types".unify'                                                                                                                                                             || new Types().$unify
+        '"funcky:types".unify'                                                                                                                                                             || new Types(engine).$unify
         '"funcky:types".type "funcky:types".unify'                                                                                                                                         || FUNCTION(TYPE, TYPE, TYPE)
         '"funcky:types".type ("funcky:types".unify "funcky:types".Type)'                                                                                                                   || FUNCTION(TYPE, TYPE)
         '"funcky:commons".string ("funcky:types".unify ("funcky:commons".error "foo"))'                                                                                                    || new FunckyJavaConverter().convert('"funcky:types".unify ("funcky:commons".error "foo")')

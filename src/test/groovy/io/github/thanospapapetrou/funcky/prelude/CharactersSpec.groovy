@@ -19,7 +19,7 @@ class CharactersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                          || result
-        '"funcky:characters".uppercase'                     || new Characters().$uppercase
+        '"funcky:characters".uppercase'                     || new Characters(engine).$uppercase
         '"funcky:types".type "funcky:characters".uppercase' || FUNCTION(CHARACTER, CHARACTER)
         '"funcky:characters".uppercase \'A\''               || new FunckyCharacter('A' as char)
         '"funcky:characters".uppercase \'a\''               || new FunckyCharacter('A' as char)
@@ -32,7 +32,7 @@ class CharactersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                          || result
-        '"funcky:characters".lowercase'                     || new Characters().$lowercase
+        '"funcky:characters".lowercase'                     || new Characters(engine).$lowercase
         '"funcky:types".type "funcky:characters".lowercase' || FUNCTION(CHARACTER, CHARACTER)
         '"funcky:characters".lowercase \'A\''               || new FunckyCharacter('a' as char)
         '"funcky:characters".lowercase \'a\''               || new FunckyCharacter('a' as char)
@@ -45,7 +45,7 @@ class CharactersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                       || result
-        '"funcky:characters".number'                     || new Characters().$number
+        '"funcky:characters".number'                     || new Characters(engine).$number
         '"funcky:types".type "funcky:characters".number' || FUNCTION(CHARACTER, NUMBER)
         '"funcky:characters".number \'A\''               || new FunckyNumber(65.0G)
         '"funcky:characters".number \'a\''               || new FunckyNumber(97.0G)
@@ -74,7 +74,7 @@ class CharactersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                          || result
-        '"funcky:characters".character'                     || new Characters().$character
+        '"funcky:characters".character'                     || new Characters(engine).$character
         '"funcky:types".type "funcky:characters".character' || FUNCTION(NUMBER, CHARACTER)
         '"funcky:characters".character 65'                  || new FunckyCharacter('A' as char)
         '"funcky:characters".character 97'                  || new FunckyCharacter('a' as char)

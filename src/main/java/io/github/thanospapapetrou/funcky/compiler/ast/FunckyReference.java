@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
@@ -135,7 +136,7 @@ public final class FunckyReference extends FunckyExpression {
                 return inport.namespace();
             }
         } else {
-            return Linker.canonicalize(file, namespace);
+            return (engine == null) ? null : engine.getLinker().canonicalize(file, namespace);
         }
     }
 

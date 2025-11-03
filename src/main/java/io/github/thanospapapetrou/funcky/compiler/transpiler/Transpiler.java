@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -42,6 +41,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.TranspilationException;
+import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
@@ -84,14 +84,20 @@ public class Transpiler {
 
     private final FunckyEngine engine;
     private final JavaCompiler compiler;
+    private final File tmp;
+    private final File output;
 
-    public Transpiler(final FunckyEngine engine) throws MalformedURLException {
-        this(engine, ToolProvider.getSystemJavaCompiler());
+    public Transpiler(final FunckyEngine engine) throws IOException {
+        this(engine, ToolProvider.getSystemJavaCompiler(),
+                new File(engine.getFactory().getParameter(FunckyEngine.PARAMETER_TMP_DIR)).getCanonicalFile(),
+                new File(engine.getFactory().getParameter(FunckyEngine.PARAMETER_OUTPUT_DIR)).getCanonicalFile());
     }
 
-    private Transpiler(final FunckyEngine engine, final JavaCompiler compiler) {
+    private Transpiler(final FunckyEngine engine, final JavaCompiler compiler, final File tmp, final File output) {
         this.engine = engine;
         this.compiler = compiler;
+        this.tmp = tmp;
+        this.output = output;
     }
 
     public String getClass(final URI script) {
@@ -130,7 +136,7 @@ public class Transpiler {
     private File generateJava(final FunckyScript script) throws IOException {
         final List<String> components = getComponents(script.getFile());
         final File java =
-                new File(engine.getFactory().getTmpDir(),
+                new File(tmp,
                         String.join(File.separator, components) + DELIMITER_EXTENSION + EXTENSION_JAVA);
         java.getParentFile().mkdirs();
         java.createNewFile();
@@ -163,7 +169,7 @@ public class Transpiler {
         final List<String> components = getComponents(script.getFile());
         final String packadze = String.join(DELIMITER_PACKAGE, components.subList(0, components.size() - 1));
         final String clazz = components.getLast();
-        final Class<? extends FunckyLibrary> library = engine.getLinker().getLibrary(script.getFile());
+        final Class<? extends FunckyLibrary> library = Linker.getLibrary(script.getFile());
         final String parent = ((library == null) ? FunckyScript.class : library).getName();
         return String.format(JAVA_SCRIPT, packadze, clazz, parent, FunckyEngine.class.getName(),
                 (library == null) ? String.format(JAVA_URI, URI.class.getName(),
@@ -267,7 +273,7 @@ public class Transpiler {
         try (final StandardJavaFileManager manager = compiler.getStandardFileManager(collector, Locale.ROOT,
                 StandardCharsets.UTF_8)) {
             final boolean compilation = compiler.getTask(null, manager, collector, List.of(OPTION_OUTPUT,
-                            engine.getFactory().getTmpDir().getPath()), null,
+                            tmp.getPath()), null,
                     manager.getJavaFileObjectsFromFiles(java)).call();
             // TODO java.delete();
             if (!compilation) {
@@ -277,10 +283,10 @@ public class Transpiler {
     }
 
     private File packadze(final Set<File> java) throws IOException {
-        final File jar = new File(engine.getFactory().getOutputDir(), "TODO"
+        final File jar = new File(output, "TODO"
                 + DELIMITER_EXTENSION + EXTENSION_JAR);
         try (final JarOutputStream output = new JarOutputStream(new FileOutputStream(jar), getManifest())) {
-            for (final File clazz : Objects.requireNonNull(engine.getFactory().getTmpDir()
+            for (final File clazz : Objects.requireNonNull(tmp
                     .listFiles((dir, name) -> name.startsWith("TODO")
                             && name.endsWith(DELIMITER_EXTENSION + EXTENSION_CLASS)))) {
                 output.putNextEntry(new ZipEntry(clazz.getName()));

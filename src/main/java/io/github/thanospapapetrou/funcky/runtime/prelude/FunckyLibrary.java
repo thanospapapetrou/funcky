@@ -3,15 +3,14 @@ package io.github.thanospapapetrou.funcky.runtime.prelude;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -37,11 +36,8 @@ public sealed class FunckyLibrary extends FunckyScript
                 .orElseThrow(() -> new SneakyRuntimeException(message));
     }
 
-    // TODO set namespace at construction time and do not resolve afterwards
-
-    @Override
-    public URI getFile() {
-        return Linker.getNamespace(getClass());
+    protected FunckyLibrary(final FunckyEngine engine) {
+        super(engine, null);
     }
 
     @Override

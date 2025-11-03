@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
@@ -29,4 +30,8 @@ public non-sealed class Combinators extends FunckyLibrary {
             return arguments.getFirst().eval(context);
         }
     };
+
+    public Combinators(final FunckyEngine engine) {
+        super(engine);
+    }
 }

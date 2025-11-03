@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
@@ -82,4 +83,8 @@ public non-sealed class Commons extends FunckyLibrary {
             return apply(arguments.getFirst(), context);
         }
     };
+
+    public Commons(final FunckyEngine engine) {
+        super(engine);
+    }
 }

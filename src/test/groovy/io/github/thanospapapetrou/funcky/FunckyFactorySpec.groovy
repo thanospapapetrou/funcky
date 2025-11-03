@@ -17,6 +17,8 @@ class FunckyFactorySpec extends Specification {
     private static final String MULTITHREADED = 'MULTITHREADED'
     private static final List<String> NAMES = ['Funcky', 'funcky']
     private static final String OBJECT = 'object'
+    private static final String SYSTEM_TMP_DIR = System.getProperty('java.io.tmpdir')
+    private static final String SYSTEM_USER_DIR = System.getProperty('user.dir')
     private static final String[] STATEMENTS = ['statement', 'other statement']
 
     private FunckyFactory factory
@@ -42,6 +44,10 @@ class FunckyFactorySpec extends Specification {
         factory.getParameter(FunckyEngine.PARAMETER_MIME_TYPES) == MIME_TYPES[0]
         factory.getParameter(FunckyEngine.PARAMETER_EXTENSIONS) == EXTENSIONS[0]
         factory.getParameter(FunckyEngine.PARAMETER_THREADING) == MULTITHREADED
+        factory.getParameter(FunckyEngine.PARAMETER_TRANSPILING) == (false as String)
+        factory.getParameter(FunckyEngine.PARAMETER_BASE_DIR) == SYSTEM_USER_DIR
+        factory.getParameter(FunckyEngine.PARAMETER_OUTPUT_DIR) == SYSTEM_USER_DIR
+        factory.getParameter(FunckyEngine.PARAMETER_TMP_DIR) == SYSTEM_TMP_DIR
         factory.getParameter(INVALID_PARAMETER) == null
     }
 

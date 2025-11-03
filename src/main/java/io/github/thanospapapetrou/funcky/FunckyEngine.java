@@ -3,7 +3,6 @@ package io.github.thanospapapetrou.funcky;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.stream.Collectors;
@@ -50,14 +49,14 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
 
     FunckyEngine(final FunckyFactory factory) {
         this.factory = factory;
-        tokenizer = new Tokenizer(this);
+        tokenizer = new Tokenizer();
         parser = new Parser(this);
-        preprocessor = new Preprocessor(this);
-        linker = new Linker(this);
-        manager = new ContextManager(this.getContext());
+        preprocessor = new Preprocessor();
         try {
+            linker = new Linker(this);
+            manager = new ContextManager(this.getContext());
             transpiler = new Transpiler(this);
-        } catch (final MalformedURLException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(e); // TODO
         }
     }
@@ -119,7 +118,8 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
             final FunckyExpression expr = linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
                     .filter(token -> !token.type().equals(TokenType.COMMENT))
                             .collect(Collectors.toCollection(ArrayDeque::new)))));
-            return factory.isTranspiling() ? transpiler.transpile(expr) : expr;
+            return Boolean.parseBoolean(factory.getParameter(PARAMETER_TRANSPILING)) ? transpiler.transpile(expr)
+                    : expr;
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }
@@ -166,7 +166,8 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
             final FunckyScript scr = linker.link(preprocessor.preprocess(parser.parse(
                     tokenizer.tokenize(script, file).stream().filter(token -> !token.type().equals(TokenType.COMMENT))
                             .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
-            return (factory.isTranspiling() && main) ? transpiler.transpile(scr) : scr;
+            return (Boolean.parseBoolean(factory.getParameter(PARAMETER_TRANSPILING)) && main)
+                    ? transpiler.transpile(scr) : scr;
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }

@@ -59,7 +59,8 @@ public abstract class HigherOrderFunction extends FunckyFunction {
             } : apply(context, arguments);
     }
 
-    protected abstract FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments);
+    protected abstract FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments); //
+    // TODO change argument order
 
     @Override
     public FunckyExpression toExpression() {

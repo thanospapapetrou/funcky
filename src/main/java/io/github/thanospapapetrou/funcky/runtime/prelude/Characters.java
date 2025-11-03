@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
@@ -48,4 +49,8 @@ public non-sealed class Characters extends FunckyLibrary {
             return new FunckyCharacter((char) codePointInt);
         }
     };
+
+    public Characters(final FunckyEngine engine) {
+        super(engine);
+    }
 }

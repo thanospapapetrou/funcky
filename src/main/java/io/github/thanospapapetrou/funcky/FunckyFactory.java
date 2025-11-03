@@ -1,6 +1,5 @@
 package io.github.thanospapapetrou.funcky;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -23,67 +22,43 @@ public class FunckyFactory implements ScriptEngineFactory {
     private static final String DELIMITER_PARAMETER = ",";
     private static final String DELIMITER_STATEMENT = "\n";
     private static final Logger LOGGER = Logger.getLogger(FunckyFactory.class.getName());
-    private static final String PARAMETERS = "/funcky.properties";
-    private static final String SYSTEM_USER_DIR = "user.dir";
-    private static final String SYSTEM_TMP_DIR = "java.io.tmpdir";
+    private static final Properties PARAMETERS = new Properties();
+
+    static {
+        try (final InputStream parameters = FunckyFactory.class.getResourceAsStream("/funcky.properties")) {
+            PARAMETERS.load(parameters);
+            PARAMETERS.setProperty(FunckyEngine.PARAMETER_BASE_DIR, System.getProperty("user.dir"));
+            PARAMETERS.setProperty(FunckyEngine.PARAMETER_OUTPUT_DIR, System.getProperty("user.dir"));
+            PARAMETERS.setProperty(FunckyEngine.PARAMETER_TMP_DIR, System.getProperty("java.io.tmpdir"));
+        } catch (final IOException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private final Properties parameters;
 
-    public FunckyFactory() throws IOException {
-        this(new Properties(System.getProperties()));
-        try (final InputStream parameters = FunckyFactory.class.getResourceAsStream(PARAMETERS)) {
-            this.parameters.load(parameters);
-        }
+    public static List<String> getParameters(final String key) {
+        final String parameters = PARAMETERS.getProperty(key);
+        return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
+    }
+
+    public FunckyFactory() {
+        this(System.getProperties());
         LOGGER.config(String.format(CONFIG_LANGUAGE_NAME_VERSION, getLanguageName(), getLanguageVersion()));
         LOGGER.config(String.format(CONFIG_ENGINE_NAME_VERSION, getEngineName(), getEngineVersion()));
         LOGGER.config(String.format(CONFIG_NAMES, getNames()));
         LOGGER.config(String.format(CONFIG_MIME_TYPES, getMimeTypes()));
         LOGGER.config(String.format(CONFIG_EXTENSIONS, getExtensions()));
         LOGGER.config(String.format(CONFIG_THREADING, getParameter(FunckyEngine.PARAMETER_THREADING)));
-        LOGGER.config(String.format(CONFIG_TRANSPILING, isTranspiling()));
-        LOGGER.config(String.format(CONFIG_BASE_DIR, getBaseDir()));
-        LOGGER.config(String.format(CONFIG_OUTPUT_DIR, getOutputDir()));
-        LOGGER.config(String.format(CONFIG_TMP_DIR, getTmpDir()));
+        LOGGER.config(String.format(CONFIG_TRANSPILING, getParameter(FunckyEngine.PARAMETER_TRANSPILING)));
+        LOGGER.config(String.format(CONFIG_BASE_DIR, getParameter(FunckyEngine.PARAMETER_BASE_DIR)));
+        LOGGER.config(String.format(CONFIG_OUTPUT_DIR, getParameter(FunckyEngine.PARAMETER_OUTPUT_DIR)));
+        LOGGER.config(String.format(CONFIG_TMP_DIR, getParameter(FunckyEngine.PARAMETER_TMP_DIR)));
         LOGGER.config("");
     }
 
     private FunckyFactory(final Properties parameters) {
         this.parameters = parameters;
-    }
-
-    public boolean isTranspiling() {
-        return Boolean.parseBoolean(parameters.getProperty(FunckyEngine.PARAMETER_TRANSPILING, Boolean.toString(false)));
-    }
-
-    public void setTranspiling(final boolean transpiling) {
-        parameters.setProperty(FunckyEngine.PARAMETER_TRANSPILING, Boolean.toString(transpiling));
-    }
-
-    public File getBaseDir() throws IOException {
-        return new File(parameters.getProperty(FunckyEngine.PARAMETER_BASE_DIR, System.getProperty(SYSTEM_USER_DIR)))
-                .getCanonicalFile();
-    }
-
-    public void setBaseDir(final File base) throws IOException {
-        parameters.setProperty(FunckyEngine.PARAMETER_BASE_DIR, base.getCanonicalPath());
-    }
-
-    public File getOutputDir() throws IOException {
-        return new File(parameters.getProperty(FunckyEngine.PARAMETER_OUTPUT_DIR, System.getProperty(SYSTEM_USER_DIR)))
-                .getCanonicalFile();
-    }
-
-    public void setOutputDir(final File output) throws IOException {
-        parameters.setProperty(FunckyEngine.PARAMETER_OUTPUT_DIR, output.getCanonicalPath());
-    }
-
-    public File getTmpDir() throws IOException {
-        return new File(parameters.getProperty(FunckyEngine.PARAMETER_TMP_DIR, System.getProperty(SYSTEM_TMP_DIR)))
-                .getCanonicalFile();
-    }
-
-    public void setTmpDir(final File tmp) throws IOException {
-        parameters.setProperty(FunckyEngine.PARAMETER_TMP_DIR, tmp.getCanonicalPath());
     }
 
     @Override
@@ -124,7 +99,20 @@ public class FunckyFactory implements ScriptEngineFactory {
     @Override
     public String getParameter(final String key) {
         final List<String> parameters = getParameters(key);
-        return parameters.isEmpty() ? null : parameters.getFirst();
+        final String parameter = parameters.isEmpty() ? null : parameters.get(0);
+        switch (key) {
+            case FunckyEngine.LANGUAGE:
+            case FunckyEngine.LANGUAGE_VERSION:
+            case FunckyEngine.ENGINE:
+            case FunckyEngine.ENGINE_VERSION:
+            case FunckyEngine.NAME:
+            case FunckyEngine.PARAMETER_MIME_TYPES:
+            case FunckyEngine.PARAMETER_EXTENSIONS:
+            case FunckyEngine.PARAMETER_THREADING:
+                return parameter;
+            default:
+                return this.parameters.getProperty(key, parameter);
+        }
     }
 
     @Override
@@ -147,10 +135,5 @@ public class FunckyFactory implements ScriptEngineFactory {
     @Override
     public FunckyEngine getScriptEngine() {
         return new FunckyEngine(this);
-    }
-
-    private List<String> getParameters(final String key) {
-        final String parameters = this.parameters.getProperty(key);
-        return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
     }
 }

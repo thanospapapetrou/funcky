@@ -14,6 +14,7 @@ import javax.script.SimpleScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
+import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 
 public class FunckyScript extends CompiledScript {
@@ -30,13 +31,8 @@ public class FunckyScript extends CompiledScript {
     }
 
     public FunckyScript(final FunckyExpression expression) {
-        this(expression.getEngine(), expression.getEngine().getLinker().getStdin());
-        definitions.add(new FunckyDefinition(expression.getEngine().getLinker().getStdin(), 1, FunckyScript.IT,
-                expression));
-    }
-
-    protected FunckyScript() {
-        this(null, null);
+        this(expression.getEngine(), Linker.STDIN);
+        definitions.add(new FunckyDefinition(Linker.STDIN, 1, FunckyScript.IT, expression));
     }
 
     private FunckyScript(final FunckyEngine engine, final URI file, final List<FunckyImport> imports,
@@ -48,7 +44,7 @@ public class FunckyScript extends CompiledScript {
     }
 
     public URI getFile() {
-        return file;
+        return (file == null) ? Linker.getNamespace(getClass()) : file;
     }
 
     public List<FunckyImport> getImports() {
@@ -104,11 +100,11 @@ public class FunckyScript extends CompiledScript {
 
     @Override
     public String toString() {
-        return file.toString();
+        return getFile().toString();
     }
 
     private Set<FunckyScript> getDependencies(final Set<URI> visited) {
-        if (visited.contains(this.getFile())) {
+        if (visited.contains(getFile())) {
             return Set.of();
         }
         final Set<FunckyScript> dependencies = new HashSet<>();
@@ -117,7 +113,7 @@ public class FunckyScript extends CompiledScript {
                 .flatMap(Set::stream)
                 .map(engine.getManager()::getScript)
                 .forEach(dependencies::add);
-        visited.add(this.getFile());
+        visited.add(getFile());
         for (final FunckyScript dependency : Set.copyOf(dependencies)) {
             dependencies.addAll(dependency.getDependencies(visited));
         }

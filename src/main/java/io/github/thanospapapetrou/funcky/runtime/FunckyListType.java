@@ -6,12 +6,16 @@ import java.util.Set;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;
 
 public final class FunckyListType extends FunckyType {
     public static final FunckyListType STRING = LIST(CHARACTER);
+
+    private static final FunckyReference LIST = new FunckyReference(Linker.getNamespace(Types.class), "List");
 
     private final FunckyExpression element;
 
@@ -29,7 +33,7 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new Types().$List.toExpression(), element);
+        return new FunckyApplication(LIST, element);
     }
 
     @Override

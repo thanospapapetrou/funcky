@@ -26,6 +26,7 @@ public record Token(TokenType type, String value, URI file, int line, int column
         return (value == null) ? type.toString() : String.format(FORMAT, type, value);
     }
 
+    @SuppressWarnings("all")
     private Matcher matcher() {
         final Matcher matcher = type.getPattern().matcher(value);
         matcher.matches();

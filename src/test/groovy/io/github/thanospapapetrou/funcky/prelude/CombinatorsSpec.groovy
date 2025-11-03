@@ -24,7 +24,7 @@ class CombinatorsSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                                                                                                                                                                      || result
-        '"funcky:combinators".s'                                                                                                                                                                                                                                        || new Combinators().$s
+        '"funcky:combinators".s'                                                                                                                                                                                                                                        || new Combinators(engine).$s
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".domain ("funcky:types".type "funcky:combinators".s)))'                                                                                                                                      || TRUE
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".range ("funcky:types".domain ("funcky:types".type "funcky:combinators".s))))'                                                                                                               || TRUE
         '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".range ("funcky:types".domain ("funcky:types".type "funcky:combinators".s))))'                                                                                                                || TRUE
@@ -65,7 +65,7 @@ class CombinatorsSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                                                                                                || result
-        '"funcky:combinators".k'                                                                                                                                                                  || new Combinators().$k
+        '"funcky:combinators".k'                                                                                                                                                                  || new Combinators(engine).$k
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".type "funcky:combinators".k))'                                                                                        || TRUE
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".range ("funcky:types".type "funcky:combinators".k)))'                                                                 || TRUE
         '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".range ("funcky:types".type "funcky:combinators".k)))'                                                                  || TRUE
