@@ -295,8 +295,8 @@ class CompilationErrorSpec extends BaseSpec {
         e.lineNumber == 1
         e.columnNumber == column
         where:
-        expression                 || name  | namespace               | column
-        '"funcky:numbers".foo'     || 'foo' | 'funcky:numbers'        | 1
+        expression                 || name  | namespace        | column
+        '"funcky:numbers".foo'     || 'foo' | 'funcky:numbers' | 1
         '"funcky:numbers".add foo' || 'foo' | Linker.STDIN     | 22
     }
 

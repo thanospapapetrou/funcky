@@ -92,9 +92,10 @@ public class Linker {
 
     public FunckyExpression link(final FunckyExpression expression) {
         if (expression != null) {
+            engine.getManager().setScript(new FunckyScript(expression)); // TODO decide which to keep
             final FunckyExpression exp = canonicalize(expression, new ArrayList<>());
             LOGGER.fine(exp.getType().toString()); // TODO get Type
-            engine.getManager().setScript(new FunckyScript(exp));
+            engine.getManager().setScript(new FunckyScript(exp)); // TODO decide which to keep
             return exp;
         }
         return null;
@@ -160,10 +161,10 @@ public class Linker {
                 canonicalize(application.getArgument(), imports));
     }
 
-    private URI canonicalize(final URI base,
-            final URI namespace) { // TODO is this required? definitely base is not required
-        return namespace.isAbsolute() ? namespace
-                : (base.equals(STDIN) ? this.base : base).resolve(namespace).normalize();
+    private URI canonicalize(final URI base, final URI namespace) { // TODO is this required? definitely base is not
+        // required
+        return (namespace.isAbsolute() ? namespace : (base.equals(STDIN) ? this.base : base).resolve(namespace))
+                .normalize();
     }
 
     private List<FunckyImport> canonicalizeImports(final List<FunckyImport> imports) {
