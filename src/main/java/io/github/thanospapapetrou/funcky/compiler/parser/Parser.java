@@ -249,7 +249,7 @@ public class Parser {
                 (head == null) ? new FunckyTypeVariable() : head.getType())
                 .unify((tail == null) ? LIST(new FunckyTypeVariable()) : tail.getType());
             if (listType == null) {
-                throw new SneakyCompilationException(new InvalidListLiteralException(engine, head, tail));
+                throw new SneakyCompilationException(new InvalidListLiteralException(head, tail));
             }
             return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(),
                     leftSquareBracket.column(), new FunckyList(listType, head, tail));
