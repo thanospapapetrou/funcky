@@ -3,9 +3,7 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -52,13 +50,6 @@ public class FunckyScript extends CompiledScript {
 
     public List<FunckyDefinition> getDefinitions() {
         return definitions;
-    }
-
-    public FunckyDefinition getDefinition(final String name) { // TODO remove
-        return definitions.stream()
-                .filter(definition -> definition.name().equals(name))
-                .findFirst()
-                .orElse(null);
     }
 
     @Override

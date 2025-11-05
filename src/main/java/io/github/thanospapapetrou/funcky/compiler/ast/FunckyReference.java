@@ -1,6 +1,7 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
+import java.util.Optional;
 
 import javax.script.ScriptContext;
 
@@ -68,11 +69,13 @@ public final class FunckyReference extends FunckyExpression {
                 throw new SneakyCompilationException(e);
             }
         }
-        final FunckyDefinition definition = engine.getManager().getScript(namespace).getDefinition(name);
-        if (definition == null) {
+        final Optional<FunckyDefinition> definition = engine.getManager().getScript(namespace).getDefinitions().stream()
+                .filter(def -> def.name().equals(name))
+                .findFirst();
+        if (definition.isEmpty()) {
             throw new SneakyCompilationException(new UndefinedNameException(this));
         }
-        return definition;
+        return definition.get();
     }
 
     @Override
