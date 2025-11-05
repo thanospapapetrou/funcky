@@ -209,7 +209,7 @@ public class Transpiler {
 
     private String toJava(final FunckyReference reference) {
         return String.format(JAVA_REFERENCE, FunckyLiteral.class.getName(), String.join(PREFIX_JAVA, // TODO getclass
-                        getComponents(reference.canonicalize().getNamespace())),
+                        getComponents(reference.getNamespace())),
                 PREFIX_FUNCKY, reference.getName());
     }
 

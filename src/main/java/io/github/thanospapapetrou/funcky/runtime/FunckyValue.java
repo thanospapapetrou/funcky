@@ -10,6 +10,6 @@ public sealed abstract class FunckyValue
 
     @Override
     public String toString() {
-        return toExpression().canonicalize().toString();
+        return toExpression().toString();
     }
 }

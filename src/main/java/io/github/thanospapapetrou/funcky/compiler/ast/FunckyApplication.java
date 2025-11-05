@@ -41,11 +41,6 @@ public final class FunckyApplication extends FunckyExpression {
     }
 
     @Override
-    public FunckyApplication canonicalize() {
-        return new FunckyApplication(function.canonicalize(), argument.canonicalize());
-    }
-
-    @Override
     public String toJava() {
         return String.format(JAVA, FunckyApplication.class.getName(), function.toJava(), argument.toJava());
     }
@@ -70,11 +65,9 @@ public final class FunckyApplication extends FunckyExpression {
 
     @Override
     public String toString() {
-        return String.format(((argument instanceof FunckyApplication)
-                || ((argument instanceof FunckyLiteral)
+        return String.format(((argument instanceof FunckyApplication) || ((argument instanceof FunckyLiteral)
                 && (((FunckyLiteral) argument).getValue().toExpression() instanceof FunckyApplication)))
-                ? FORMAT_NESTED_APPLICATION
-                : FORMAT_APPLICATION, function, argument);
+                ? FORMAT_NESTED_APPLICATION : FORMAT_APPLICATION, function, argument);
     }
 
     @Override

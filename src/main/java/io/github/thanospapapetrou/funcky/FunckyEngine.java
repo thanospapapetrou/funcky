@@ -115,9 +115,10 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     @Override
     public FunckyExpression compile(final String expression) throws FunckyCompilationException {
         try {
-            final FunckyExpression expr = linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
-                    .filter(token -> !token.type().equals(TokenType.COMMENT))
-                            .collect(Collectors.toCollection(ArrayDeque::new)))));
+            final FunckyExpression expr = linker.link(preprocessor.preprocess(parser.parse(tokenizer
+                    .tokenize(expression).stream()
+                    .filter(token -> token.type() != TokenType.COMMENT)
+                    .collect(Collectors.toCollection(ArrayDeque::new)))));
             return Boolean.parseBoolean(factory.getParameter(PARAMETER_TRANSPILING)) ? transpiler.transpile(expr)
                     : expr;
         } catch (final SneakyCompilationException e) {
@@ -163,9 +164,10 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     private FunckyScript compile(final Reader script, final URI file, final boolean main)
             throws FunckyCompilationException {
         try {
-            final FunckyScript scr = linker.link(preprocessor.preprocess(parser.parse(
-                    tokenizer.tokenize(script, file).stream().filter(token -> !token.type().equals(TokenType.COMMENT))
-                            .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
+            final FunckyScript scr = linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(script,
+                            file).stream()
+                    .filter(token -> token.type() != TokenType.COMMENT)
+                    .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
             return (Boolean.parseBoolean(factory.getParameter(PARAMETER_TRANSPILING)) && main)
                     ? transpiler.transpile(scr) : scr;
         } catch (final SneakyCompilationException e) {

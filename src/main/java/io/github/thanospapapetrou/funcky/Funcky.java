@@ -3,8 +3,6 @@ package io.github.thanospapapetrou.funcky;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.logging.ConsoleHandler;
@@ -81,14 +79,14 @@ public class Funcky {
     }
 
     private void runScript(final String script, final String... arguments) {
-        try (final InputStreamReader reader = new InputStreamReader(
-                engine.getLinker().canonicalize(Linker.STDIN, new URI(script)).toURL().openStream())) {
-            engine.getManager().setFile(script);
+        engine.getManager().setFile(script);
+        try (final InputStreamReader reader = new InputStreamReader(engine.getManager().getFile().toURL()
+                .openStream())) {
             engine.getManager().setArguments(arguments);
             System.exit(engine.eval(reader, engine.getContext()).getValue().intValue());
         } catch (final FunckyCompilationException | FunckyRuntimeException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
-        } catch (final IOException | URISyntaxException e) {
+        } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, String.format(ERROR_READING, script), e);
         }
     }

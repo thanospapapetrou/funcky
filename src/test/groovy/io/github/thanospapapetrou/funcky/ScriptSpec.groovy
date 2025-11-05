@@ -18,6 +18,7 @@ class ScriptSpec extends BaseSpec {
         '/count_arguments.funcky'   | ['foo']   || 1.0G
         '/count_arguments_1.funcky' | []        || 0.0G
         '/count_arguments_1.funcky' | ['foo']   || 1.0G
+        // TODO https://raw.githubusercontent.com/thanospapapetrou/funcky/refs/heads/main/src/test/resources/average.funcky
     }
 
     @Unroll('Test evaluate script as expression (expression: #expression)')

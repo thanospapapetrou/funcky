@@ -8,12 +8,9 @@ import java.util.Set;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
@@ -75,27 +72,21 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public FunckyType getType() {
-        final FunckyReference canonical = canonicalize();
-        if (engine.getManager().getDefinitionType(canonical) == null) {
-            engine.getManager().setDefinitionType(canonical, super.getType());
+        if (engine.getManager().getDefinitionType(this) == null) {
+            engine.getManager().setDefinitionType(this, super.getType());
         }
-        return engine.getManager().getDefinitionType(canonical);
-    }
-
-    @Override
-    public FunckyReference canonicalize() {
-        return new FunckyReference(engine, file, line, column, resolveNamespace(), name);
+        return engine.getManager().getDefinitionType(this);
     }
 
     @Override
     public String toJava() {
         return String.format(JAVA, FunckyLiteral.class.getName(),
-                engine.getTranspiler().getClass(canonicalize().namespace), Transpiler.PREFIX_FUNCKY, name);
+                engine.getTranspiler().getClass(namespace), Transpiler.PREFIX_FUNCKY, name);
     }
 
     @Override
     public Set<URI> getDependencies() {
-        return Set.of(canonicalize().getNamespace());
+        return Set.of(namespace);
     }
 
     @Override
@@ -124,34 +115,17 @@ public final class FunckyReference extends FunckyExpression {
         return resolveExpression().getType(newAssumptions);
     }
 
-    private URI resolveNamespace() {
-        if (namespace == null) {
-            if (prefix == null) {
-                return file;
-            } else {
-                final FunckyImport inport = engine.getManager().getScript(file).getImport(prefix);
-                if (inport == null) {
-                    throw new SneakyCompilationException(new UnboundPrefixException(this));
-                }
-                return inport.namespace();
-            }
-        } else {
-            return (engine == null) ? null : engine.getLinker().canonicalize(file, namespace);
-        }
-    }
-
     private FunckyExpression resolveExpression() {
-        final FunckyReference canonical = canonicalize();
-        if (engine.getManager().getScript(canonical.getNamespace()) == null) {
+        if (engine.getManager().getScript(namespace) == null) {
             try {
-                engine.compile(canonical.getNamespace());
+                engine.compile(namespace);
             } catch (final FunckyCompilationException e) {
                 throw new SneakyCompilationException(e);
             }
         }
-        final FunckyDefinition definition = engine.getManager().getScript(canonical.namespace).getDefinition(name);
+        final FunckyDefinition definition = engine.getManager().getScript(namespace).getDefinition(name);
         if (definition == null) {
-            throw new SneakyCompilationException(new UndefinedNameException(canonical));
+            throw new SneakyCompilationException(new UndefinedNameException(this));
         }
         return definition.expression();
     }

@@ -45,11 +45,6 @@ public final class FunckyLiteral extends FunckyExpression {
     }
 
     @Override
-    public FunckyLiteral canonicalize() {
-        return this;
-    }
-
-    @Override
     public String toJava() {
         return String.format(JAVA, FunckyLiteral.class.getName(), (file == null) ? String.valueOf((Object) null)
                         : String.format(JAVA_URI, URI.class.getName(), EscapeHelper.escape(file.toString())), line,
