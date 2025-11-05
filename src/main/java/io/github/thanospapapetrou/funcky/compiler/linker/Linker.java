@@ -229,7 +229,7 @@ public class Linker {
 
     private FunckyType getType(final FunckyLiteral literal,
             final Map<FunckyReference, FunckyTypeVariable> assumptions) {
-        return literal.getValue().getType();
+        return literal.eval().getType();
     }
 
     private FunckyType getType(final FunckyReference reference,

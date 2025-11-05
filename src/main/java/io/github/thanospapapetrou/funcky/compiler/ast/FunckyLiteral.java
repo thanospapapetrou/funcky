@@ -25,16 +25,8 @@ public final class FunckyLiteral extends FunckyExpression {
         this.value = value;
     }
 
-    public FunckyLiteral(final FunckyEngine engine, final FunckyValue value) {
-        this(engine, null, -1, -1, value);
-    } // TODO remove
-
     public FunckyLiteral(final FunckyValue value) {
         this(null, null, -1, -1, value);
-    }
-
-    public FunckyValue getValue() { // TODO remove, replace with eval
-        return value;
     }
 
     @Override

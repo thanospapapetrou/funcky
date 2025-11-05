@@ -36,10 +36,6 @@ public final class FunckyReference extends FunckyExpression {
         this(engine, file, line, column, null, null, name);
     }
 
-    public FunckyReference(final FunckyEngine engine, final URI namespace, final String name) {
-        this(engine, null, -1, -1, namespace, null, name);
-    }// TODO remove
-
     public FunckyReference(final URI namespace, final String name) {
         this(null, null, -1, -1, namespace, null, name);
     }

@@ -207,7 +207,7 @@ public class Transpiler {
 
     private String toJava(final FunckyLiteral literal) {
         return String.format(JAVA_LITERAL, FunckyLiteral.class.getName(), URI.class.getName(), literal.getFile(),
-                literal.getLine(), literal.getColumn(), toJava(literal.getValue()));
+                literal.getLine(), literal.getColumn(), toJava(literal.eval()));
     }
 
     private String toJava(final FunckyReference reference) {

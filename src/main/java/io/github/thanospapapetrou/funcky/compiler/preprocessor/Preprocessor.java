@@ -3,7 +3,6 @@ package io.github.thanospapapetrou.funcky.compiler.preprocessor;
 import java.util.AbstractMap;
 import java.util.Map;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
@@ -15,7 +14,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
 
 public class Preprocessor {
-    private static final String COMBINATOR_I = "i"; // TODO remplace with references
+    private static final String COMBINATOR_I = "i";
     private static final String COMBINATOR_K = "k";
     private static final String COMBINATOR_S = "s";
     private static final String REFERENCE_ARGUMENT = "$";
@@ -74,8 +73,8 @@ public class Preprocessor {
                 .getFunction()).getPrefix() == null)
                 && (((FunckyReference) ((FunckyApplication) ((FunckyApplication) expression).getFunction())
                 .getFunction()).getName().equals(REFERENCE_FUNCTION))) {
-            final int arguments = ((FunckyNumber) ((FunckyLiteral) ((FunckyApplication) ((FunckyApplication) expression)
-                    .getFunction()).getArgument()).getValue()).getValue().intValue();
+            final int arguments = ((FunckyNumber) ((FunckyApplication) ((FunckyApplication) expression)
+                    .getFunction()).getArgument().eval()).getValue().intValue();
             final FunckyExpression body = ((FunckyApplication) expression).getArgument();
             return new AbstractMap.SimpleEntry<>(arguments, body);
         }
@@ -90,8 +89,8 @@ public class Preprocessor {
                 && ((FunckyReference) ((FunckyApplication) expression).getFunction()).getName().equals(
                 REFERENCE_ARGUMENT)
                 && (((FunckyApplication) expression).getArgument() instanceof FunckyLiteral)
-                && (((FunckyLiteral) ((FunckyApplication) expression).getArgument()).getValue() instanceof FunckyNumber)
-                && (((FunckyNumber) ((FunckyLiteral) ((FunckyApplication) expression).getArgument()).getValue())
+                && (((FunckyApplication) expression).getArgument().eval() instanceof FunckyNumber)
+                && (((FunckyNumber) ((FunckyApplication) expression).getArgument().eval())
                 .getValue().intValue() == argument);
     }
 
@@ -109,8 +108,7 @@ public class Preprocessor {
     private FunckyApplication k(final FunckyExpression expression) {
         return new FunckyApplication(new FunckyReference(expression.getEngine(), expression.getFile(),
                 expression.getLine(), expression.getColumn(), Linker.getNamespace(Combinators.class),
-                COMBINATOR_K),
-                expression);
+                COMBINATOR_K), expression);
     }
 
     private FunckyApplication s(final int argument, final FunckyExpression expression) {

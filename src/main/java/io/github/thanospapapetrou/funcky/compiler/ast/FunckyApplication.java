@@ -40,7 +40,7 @@ public final class FunckyApplication extends FunckyExpression {
     @Override
     public String toString() {
         return String.format(((argument instanceof FunckyApplication) || ((argument instanceof FunckyLiteral)
-                && (((FunckyLiteral) argument).getValue().toExpression() instanceof FunckyApplication)))
+                && (argument.eval().toExpression() instanceof FunckyApplication)))
                 ? FORMAT_NESTED_APPLICATION : FORMAT_APPLICATION, function, argument);
     }
 }
