@@ -106,6 +106,7 @@ public class Linker {
             script.getDefinitions().addAll(loadLibrary(library).getDefinitions());
         }
         final FunckyScript scr = canonicalize(script);
+        engine.getManager().setScript(scr); // TODO pick one to keep
         final Map<String, FunckyType> definitionTypes = validateDefinitions(scr);
         if (main) {
             validateMain(scr);
@@ -114,7 +115,7 @@ public class Linker {
         definitionTypes.entrySet().stream()
                 .map(definitionType -> String.format(DEFINITION, definitionType.getKey(), definitionType.getValue()))
                 .forEach(LOGGER::fine);
-        engine.getManager().setScript(scr);
+        engine.getManager().setScript(scr); // TODO pick one to keep
         return scr;
     }
 

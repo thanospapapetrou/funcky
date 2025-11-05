@@ -9,6 +9,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyListType
 import io.github.thanospapapetrou.funcky.runtime.FunckyType
 import spock.lang.Unroll
 
+import static io.github.thanospapapetrou.funcky.runtime.FunckyBoolean.FALSE
 import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION
 import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST
 import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING
@@ -353,9 +354,9 @@ class CompilationErrorSpec extends BaseSpec {
         cleanup:
         reader.close()
         where:
-        script                                                  || function               | functionType                     | argument                  | argumentType | line | column
-        '/compilation_error/illegal_application_error_1.funcky' || '"funcky:numbers".add' | FUNCTION(NUMBER, NUMBER, NUMBER) | '"funcky:booleans".false' | BOOLEAN      | 1    | 7
-        '/compilation_error/illegal_application_error_2.funcky' || 'numbers.add 1'        | FUNCTION(NUMBER, NUMBER)         | 'booleans.false'          | BOOLEAN      | 4    | 7
+        script                                                  || function                 | functionType                     | argument | argumentType | line | column
+        '/compilation_error/illegal_application_error_1.funcky' || '"funcky:numbers".add'   | FUNCTION(NUMBER, NUMBER, NUMBER) | FALSE    | BOOLEAN      | 1    | 7
+        '/compilation_error/illegal_application_error_2.funcky' || '"funcky:numbers".add 1' | FUNCTION(NUMBER, NUMBER)         | FALSE    | BOOLEAN      | 4    | 7
     }
 
     @Unroll('Test undefined main error (script: #script)')
