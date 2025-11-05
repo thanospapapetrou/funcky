@@ -2,7 +2,6 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.Set;
 
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -10,7 +9,6 @@ import javax.script.SimpleScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public abstract sealed class FunckyExpression extends CompiledScript
@@ -40,12 +38,8 @@ public abstract sealed class FunckyExpression extends CompiledScript
     }
 
     public FunckyType getType() {
-        return getType(Map.of());
+        return engine.getLinker().getType(this, Map.of());
     }
-
-    public abstract String toJava();
-
-    public abstract Set<URI> getDependencies();
 
     @Override
     public FunckyEngine getEngine() {
@@ -59,6 +53,4 @@ public abstract sealed class FunckyExpression extends CompiledScript
 
     @Override
     public abstract FunckyValue eval(final ScriptContext context);
-
-    protected abstract FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions);
 }

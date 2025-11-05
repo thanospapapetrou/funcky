@@ -117,9 +117,10 @@ public class Transpiler {
     public FunckyScript transpile(final FunckyScript script) {
         try {
             final Set<File> java = new HashSet<>();
-            for (final FunckyScript dependency : script.getDependencies()) {
-                java.add(generateJava(dependency));
-            }
+            // TODO
+//            for (final FunckyScript dependency : script.getDependencies()) {
+//                java.add(generateJava(dependency));
+//            }
             compile(java);
             return load(packadze(java), getClass(script.getFile()));
         } catch (final IOException e) {
@@ -174,10 +175,12 @@ public class Transpiler {
         return String.format(JAVA_SCRIPT, packadze, clazz, parent, FunckyEngine.class.getName(),
                 (library == null) ? String.format(JAVA_URI, URI.class.getName(),
                         EscapeHelper.escape(script.getFile().toString())) : "",
-                script.getDependencies().stream()
-                        .map(FunckyScript::getFile)
-                        .map(this::toJava)
-                        .collect(Collectors.joining()),
+                // TODO
+                null,
+//                script.getDependencies().stream()
+//                        .map(FunckyScript::getFile)
+//                        .map(this::toJava)
+//                        .collect(Collectors.joining()),
                 script.getDefinitions().stream()
                         .filter(definition -> definition.line() != -1)
                         .map(this::toJava)

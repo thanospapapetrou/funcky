@@ -1,9 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import javax.script.ScriptContext;
 
@@ -12,16 +9,13 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationEx
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
-import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
 public final class FunckyReference extends FunckyExpression {
     private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
     private static final String FORMAT_PREFIX = "%1$s.%2$s";
-    private static final String JAVA = "new %1$s(engine, %2$s.%3$s%4$s)";
 
     private final URI namespace;
     private final String prefix;
@@ -70,52 +64,7 @@ public final class FunckyReference extends FunckyExpression {
         return name;
     }
 
-    @Override
-    public FunckyType getType() {
-        if (engine.getManager().getDefinitionType(this) == null) {
-            engine.getManager().setDefinitionType(this, super.getType());
-        }
-        return engine.getManager().getDefinitionType(this);
-    }
-
-    @Override
-    public String toJava() {
-        return String.format(JAVA, FunckyLiteral.class.getName(),
-                engine.getTranspiler().getClass(namespace), Transpiler.PREFIX_FUNCKY, name);
-    }
-
-    @Override
-    public Set<URI> getDependencies() {
-        return Set.of(namespace);
-    }
-
-    @Override
-    public FunckyValue eval(final ScriptContext context) {
-        try {
-            return resolveExpression().eval(context);
-        } catch (final SneakyRuntimeException e) {
-            e.getCause().getStack().add(this);
-            throw e;
-        }
-    }
-
-    @Override
-    public String toString() {
-        return (namespace == null) ? ((prefix == null) ? name : String.format(FORMAT_PREFIX, prefix, name))
-                : String.format(FORMAT_NAMESPACE, EscapeHelper.escape(namespace.toString()), name);
-    }
-
-    @Override
-    protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions) {
-        if (assumptions.containsKey(this)) {
-            return assumptions.get(this);
-        }
-        final Map<FunckyReference, FunckyTypeVariable> newAssumptions = new HashMap<>(assumptions);
-        newAssumptions.put(this, new FunckyTypeVariable());
-        return resolveExpression().getType(newAssumptions);
-    }
-
-    private FunckyExpression resolveExpression() {
+    public FunckyDefinition resolve() {
         if (engine.getManager().getScript(namespace) == null) {
             try {
                 engine.compile(namespace);
@@ -127,6 +76,30 @@ public final class FunckyReference extends FunckyExpression {
         if (definition == null) {
             throw new SneakyCompilationException(new UndefinedNameException(this));
         }
-        return definition.expression();
+        return definition;
+    }
+
+    @Override
+    public FunckyType getType() { // TODO remove
+        if (engine.getManager().getDefinitionType(this) == null) {
+            engine.getManager().setDefinitionType(this, super.getType());
+        }
+        return engine.getManager().getDefinitionType(this);
+    }
+
+    @Override
+    public FunckyValue eval(final ScriptContext context) {
+        try {
+            return resolve().expression().eval(context);
+        } catch (final SneakyRuntimeException e) {
+            e.getCause().getStack().add(this);
+            throw e;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return (namespace == null) ? ((prefix == null) ? name : String.format(FORMAT_PREFIX, prefix, name))
+                : String.format(FORMAT_NAMESPACE, EscapeHelper.escape(namespace.toString()), name);
     }
 }

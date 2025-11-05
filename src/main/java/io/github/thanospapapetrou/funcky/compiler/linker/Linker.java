@@ -24,6 +24,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
+import io.github.thanospapapetrou.funcky.compiler.exceptions.IllegalApplicationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidMainException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.PrefixAlreadyBoundException;
@@ -32,6 +33,7 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixExcept
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedMainException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION;
@@ -126,6 +128,14 @@ public class Linker {
                         engine.getFactory().getExtensions().getFirst())) : file.toURL()).openStream();
     }
 
+    private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {
+        try {
+            return library.getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
+        } catch (final ReflectiveOperationException e) {
+            throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
+        }
+    }
+
     private FunckyScript canonicalize(final FunckyScript script) {
         final FunckyScript canonical = new FunckyScript(engine, script.getFile());
         canonical.getImports().addAll(canonicalizeImports(script.getImports()));
@@ -208,6 +218,44 @@ public class Linker {
         return inport.get().namespace();
     }
 
+    // TODO private
+    public FunckyType getType(final FunckyExpression expression, Map<FunckyReference, FunckyTypeVariable> assumptions) {
+        return switch (expression) {
+            case FunckyLiteral literal -> getType(literal, assumptions);
+            case FunckyReference reference -> getType(reference, assumptions);
+            case FunckyApplication application -> getType(application, assumptions);
+        };
+    }
+
+    private FunckyType getType(final FunckyLiteral literal,
+            final Map<FunckyReference, FunckyTypeVariable> assumptions) {
+        return literal.getValue().getType();
+    }
+
+    private FunckyType getType(final FunckyReference reference,
+            final Map<FunckyReference, FunckyTypeVariable> assumptions) {
+        if (assumptions.containsKey(reference)) {
+            return assumptions.get(reference);
+        }
+        final Map<FunckyReference, FunckyTypeVariable> newAssumptions = new HashMap<>(assumptions);
+        newAssumptions.put(reference, new FunckyTypeVariable());
+        return getType(reference.resolve().expression(), newAssumptions);
+    }
+
+    private FunckyType getType(final FunckyApplication application,
+            final Map<FunckyReference, FunckyTypeVariable> assumptions) {
+        final FunckyType functionType = getType(application.getFunction(), assumptions);
+        final FunckyType argumentType = getType(application.getArgument(), assumptions);
+        final FunckyFunctionType type = (FunckyFunctionType) functionType
+                .unify(FUNCTION(argumentType, new FunckyTypeVariable()));
+        if (type != null) {
+            return ((FunckyType) type.getRange().eval(engine.getContext()));
+        } else {
+            throw new SneakyCompilationException(new IllegalApplicationException(application, functionType,
+                    argumentType));
+        }
+    }
+
     // TODO remove
         private Map<String, FunckyType> validateDefinitions(final FunckyScript script) {
             final Map<String, FunckyType> definitionTypes = new LinkedHashMap<>();
@@ -226,14 +274,6 @@ public class Linker {
         }
         if (main.get().expression().getType().unify(MAIN_TYPE) == null) {
             throw new SneakyCompilationException(new InvalidMainException(main.get()));
-        }
-    }
-
-    private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {
-        try {
-            return library.getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
-        } catch (final ReflectiveOperationException e) {
-            throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
         }
     }
 }

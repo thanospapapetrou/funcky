@@ -54,15 +54,11 @@ public class FunckyScript extends CompiledScript {
         return definitions;
     }
 
-    public FunckyDefinition getDefinition(final String name) {
+    public FunckyDefinition getDefinition(final String name) { // TODO remove
         return definitions.stream()
                 .filter(definition -> definition.name().equals(name))
                 .findFirst()
                 .orElse(null);
-    }
-
-    public Set<FunckyScript> getDependencies() {
-        return getDependencies(new HashSet<>());
     }
 
     @Override
@@ -85,23 +81,5 @@ public class FunckyScript extends CompiledScript {
     @Override
     public String toString() {
         return getFile().toString();
-    }
-
-    private Set<FunckyScript> getDependencies(final Set<URI> visited) {
-        if (visited.contains(getFile())) {
-            return Set.of();
-        }
-        final Set<FunckyScript> dependencies = new HashSet<>();
-        definitions.stream()
-                .map(FunckyDefinition::getDependencies)
-                .flatMap(Set::stream)
-                .map(engine.getManager()::getScript)
-                .forEach(dependencies::add);
-        visited.add(getFile());
-        for (final FunckyScript dependency : Set.copyOf(dependencies)) {
-            dependencies.addAll(dependency.getDependencies(visited));
-        }
-        dependencies.add(this);
-        return dependencies;
     }
 }
