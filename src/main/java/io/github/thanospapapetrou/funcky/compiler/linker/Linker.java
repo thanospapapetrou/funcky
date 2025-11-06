@@ -7,7 +7,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -94,32 +93,21 @@ public class Linker {
 
     public FunckyExpression link(final FunckyExpression expression) {
         if (expression != null) {
-            engine.getManager().setScript(new FunckyScript(expression)); // TODO decide which to keep
-            final FunckyExpression exp = canonicalize(expression, new ArrayList<>());
-            LOGGER.fine(exp.getType().toString()); // TODO get Type
-            engine.getManager().setScript(new FunckyScript(exp)); // TODO decide which to keep
-            return exp;
+            final FunckyExpression typed = link(new FunckyScript(expression), false).getDefinitions().getFirst()
+                    .expression();
+            LOGGER.fine(typed.getType().toString());
+            return typed;
         }
         return null;
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) {
-        final Class<? extends FunckyLibrary> library = getLibrary(script.getFile());
-        if (library != null) {
-            script.getDefinitions().addAll(loadLibrary(library).getDefinitions());
-        }
-        final FunckyScript scr = canonicalize(script);
-        engine.getManager().setScript(scr); // TODO pick one to keep
-        final Map<String, FunckyType> definitionTypes = validateDefinitions(scr);
-        if (main) {
-            validateMain(scr);
-        }
-        LOGGER.fine(script.getFile().toString());
-        definitionTypes.entrySet().stream()
-                .map(definitionType -> String.format(DEFINITION, definitionType.getKey(), definitionType.getValue()))
+        final FunckyScript typed = inferTypes(canonicalize(script), main);
+        LOGGER.fine(typed.toString());
+        typed.getDefinitions().stream()
+                .map(definition -> String.format(DEFINITION, definition.name(), definition.expression().getType()))
                 .forEach(LOGGER::fine);
-        engine.getManager().setScript(scr); // TODO pick one to keep
-        return scr;
+        return typed;
     }
 
     public InputStream getScript(final URI file) throws IOException {
@@ -137,9 +125,14 @@ public class Linker {
     }
 
     private FunckyScript canonicalize(final FunckyScript script) {
+        final Class<? extends FunckyLibrary> library = getLibrary(script.getFile());
+        if (library != null) {
+            script.getDefinitions().addAll(loadLibrary(library).getDefinitions());
+        }
         final FunckyScript canonical = new FunckyScript(engine, script.getFile());
         canonical.getImports().addAll(canonicalizeImports(script.getImports()));
         canonical.getDefinitions().addAll(canonicalizeDefinitions(script.getDefinitions(), canonical.getImports()));
+        engine.getManager().setScript(canonical); // TODO is this needed?
         return canonical;
     }
 
@@ -218,52 +211,69 @@ public class Linker {
         return inport.get().namespace();
     }
 
-    // TODO private
-    public FunckyType getType(final FunckyExpression expression, Map<FunckyReference, FunckyTypeVariable> assumptions) {
+    private FunckyScript inferTypes(final FunckyScript script, final boolean main) {
+        final FunckyScript typed = new FunckyScript(engine, script.getFile());
+        typed.getImports().addAll(script.getImports());
+        typed.getDefinitions().addAll(script.getDefinitions().stream()
+                .map(this::inferTypes)
+                .toList());
+        if (main) {
+            validateMain(typed);
+        }
+        engine.getManager().setScript(typed);
+        return typed;
+    }
+
+    private FunckyDefinition inferTypes(final FunckyDefinition definition) {
+        return new FunckyDefinition(definition.file(), definition.line(), definition.name(),
+                inferTypes(definition.expression(), Map.of()));
+    }
+
+    private FunckyExpression inferTypes(final FunckyExpression expression,
+            Map<FunckyReference, FunckyTypeVariable> assumptions) {
         return switch (expression) {
-            case FunckyLiteral literal -> getType(literal, assumptions);
-            case FunckyReference reference -> getType(reference, assumptions);
-            case FunckyApplication application -> getType(application, assumptions);
+            case FunckyLiteral literal -> inferTypes(literal, assumptions);
+            case FunckyReference reference -> inferTypes(reference, assumptions);
+            case FunckyApplication application -> inferTypes(application, assumptions);
         };
     }
 
-    private FunckyType getType(final FunckyLiteral literal,
+    private FunckyLiteral inferTypes(final FunckyLiteral literal,
             final Map<FunckyReference, FunckyTypeVariable> assumptions) {
-        return literal.eval().getType();
+        return literal; // TODO handle lists and records, which might need types
     }
 
-    private FunckyType getType(final FunckyReference reference,
+    private FunckyReference inferTypes(final FunckyReference reference,
             final Map<FunckyReference, FunckyTypeVariable> assumptions) {
+        final FunckyType type = reference.resolve().expression().getType();
+        if (type != null) {
+            return new FunckyReference(engine, reference.getFile(), reference.getLine(), reference.getColumn(),
+                    reference.getNamespace(), reference.getPrefix(), reference.getName(), type);
+        }
         if (assumptions.containsKey(reference)) {
-            return assumptions.get(reference);
+            return new FunckyReference(engine, reference.getFile(), reference.getLine(), reference.getColumn(),
+                    reference.getNamespace(), reference.getPrefix(), reference.getName(), assumptions.get(reference));
         }
         final Map<FunckyReference, FunckyTypeVariable> newAssumptions = new HashMap<>(assumptions);
         newAssumptions.put(reference, new FunckyTypeVariable());
-        return getType(reference.resolve().expression(), newAssumptions);
+        return new FunckyReference(engine, reference.getFile(), reference.getLine(), reference.getColumn(),
+                reference.getNamespace(), reference.getPrefix(), reference.getName(),
+                inferTypes(reference.resolve().expression(), newAssumptions).getType());
     }
 
-    private FunckyType getType(final FunckyApplication application,
+    private FunckyApplication inferTypes(final FunckyApplication application,
             final Map<FunckyReference, FunckyTypeVariable> assumptions) {
-        final FunckyType functionType = getType(application.getFunction(), assumptions);
-        final FunckyType argumentType = getType(application.getArgument(), assumptions);
-        final FunckyFunctionType type = (FunckyFunctionType) functionType
-                .unify(FUNCTION(argumentType, new FunckyTypeVariable()));
+        final FunckyExpression function = inferTypes(application.getFunction(), assumptions);
+        final FunckyExpression argument = inferTypes(application.getArgument(), assumptions);
+        final FunckyFunctionType type = (FunckyFunctionType) function.getType()
+                .unify(FUNCTION(argument.getType(), new FunckyTypeVariable()));
         if (type != null) {
-            return ((FunckyType) type.getRange().eval(engine.getContext()));
+            return new FunckyApplication(function, argument, (FunckyType) type.getRange().eval(engine.getContext()));
         } else {
-            throw new SneakyCompilationException(new IllegalApplicationException(application, functionType,
-                    argumentType));
+            throw new SneakyCompilationException(new IllegalApplicationException(application, function.getType(),
+                    argument.getType()));
         }
     }
-
-    // TODO remove
-        private Map<String, FunckyType> validateDefinitions(final FunckyScript script) {
-            final Map<String, FunckyType> definitionTypes = new LinkedHashMap<>();
-            for (final FunckyDefinition definition : script.getDefinitions()) {
-                definitionTypes.put(definition.name(), definition.expression().getType());
-            }
-            return definitionTypes;
-        }
 
     private void validateMain(final FunckyScript script) {
         final Optional<FunckyDefinition> main = script.getDefinitions().stream()

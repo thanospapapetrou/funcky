@@ -14,6 +14,8 @@ import io.github.thanospapapetrou.funcky.FunckyJavaConverter;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 
+import static io.github.thanospapapetrou.funcky.compiler.linker.Linker.MAIN_TYPE;
+
 public class FunckyScript extends CompiledScript {
     public static final String IT = "it";
     public static final String MAIN = "main";
@@ -59,7 +61,7 @@ public class FunckyScript extends CompiledScript {
 
     @Override
     public FunckyNumber eval(final ScriptContext context) {
-            return (FunckyNumber) new FunckyApplication(new FunckyReference(engine, getFile(), -1, -1, getFile(), MAIN),
+            return (FunckyNumber) new FunckyApplication(new FunckyReference(engine, getFile(), -1, -1, getFile(), MAIN, MAIN_TYPE),
                     new FunckyLiteral(new FunckyJavaConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval(
                     context);
     }

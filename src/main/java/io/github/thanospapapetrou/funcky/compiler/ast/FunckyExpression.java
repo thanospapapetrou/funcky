@@ -1,7 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
-import java.util.Map;
 
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -17,12 +16,15 @@ public abstract sealed class FunckyExpression extends CompiledScript
     protected final URI file;
     protected final int line;
     protected final int column;
+    protected final FunckyType type;
 
-    protected FunckyExpression(final FunckyEngine engine, final URI file, final int line, final int column) {
+    protected FunckyExpression(final FunckyEngine engine, final URI file, final int line, final int column,
+            final FunckyType type) {
         this.engine = engine;
         this.file = file;
         this.line = line;
         this.column = column;
+        this.type = type;
     }
 
     public URI getFile() {
@@ -38,7 +40,7 @@ public abstract sealed class FunckyExpression extends CompiledScript
     }
 
     public FunckyType getType() {
-        return engine.getLinker().getType(this, Map.of());
+        return type;
     }
 
     @Override

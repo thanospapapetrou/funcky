@@ -21,7 +21,7 @@ public final class FunckyLiteral extends FunckyExpression {
 
     public FunckyLiteral(final FunckyEngine engine, final URI file, final int line, final int column,
             final FunckyValue value) {
-        super(engine, file, line, column);
+        super(engine, file, line, column, value.getType());
         this.value = value;
     }
 

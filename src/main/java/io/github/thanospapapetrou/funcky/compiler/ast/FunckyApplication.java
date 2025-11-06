@@ -3,6 +3,7 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
+import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
@@ -14,7 +15,11 @@ public final class FunckyApplication extends FunckyExpression {
     private final FunckyExpression argument;
 
     public FunckyApplication(final FunckyExpression function, final FunckyExpression argument) {
-        super(function.engine, function.file, function.line, function.column);
+        this(function, argument, null);
+    }
+
+    public FunckyApplication(final FunckyExpression function, final FunckyExpression argument, final FunckyType type) {
+        super(function.engine, function.file, function.line, function.column, type);
         this.function = function;
         this.argument = argument;
     }

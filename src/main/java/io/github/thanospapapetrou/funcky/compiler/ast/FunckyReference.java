@@ -24,26 +24,26 @@ public final class FunckyReference extends FunckyExpression {
 
     public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
             final URI namespace, final String name) {
-        this(engine, file, line, column, namespace, null, name);
+        this(engine, file, line, column, namespace, null, name, null);
     }
 
     public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
             final String prefix, final String name) {
-        this(engine, file, line, column, null, prefix, name);
+        this(engine, file, line, column, null, prefix, name, null);
     }
 
     public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
             final String name) {
-        this(engine, file, line, column, null, null, name);
+        this(engine, file, line, column, null, null, name, null);
     }
 
     public FunckyReference(final URI namespace, final String name) {
-        this(null, null, -1, -1, namespace, null, name);
+        this(null, null, -1, -1, namespace, null, name, null);
     }
 
-    private FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
-            final URI namespace, final String prefix, final String name) {
-        super(engine, file, line, column);
+    public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
+            final URI namespace, final String prefix, final String name, final FunckyType type) {
+        super(engine, file, line, column, type);
         this.namespace = namespace;
         this.prefix = prefix;
         this.name = name;
