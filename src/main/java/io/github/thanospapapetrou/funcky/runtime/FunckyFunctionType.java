@@ -9,11 +9,10 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckyFunctionType extends FunckyType {
-    private static final FunckyReference FUNCTION = new FunckyReference(Linker.getNamespace(Types.class), "Function");
+    private static final FunckyReference FUNCTION = new FunckyReference(Types.class, "Function");
 
     private final FunckyExpression domain;
     private final FunckyExpression range;

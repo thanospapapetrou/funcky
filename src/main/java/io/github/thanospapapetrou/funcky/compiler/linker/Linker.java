@@ -30,9 +30,16 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.PrefixAlreadyBoundE
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedMainException;
+import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
+import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
+import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.FunckyList;
+import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
+import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION;
@@ -156,7 +163,9 @@ public class Linker {
 
     private FunckyReference canonicalize(final FunckyReference reference, final List<FunckyImport> imports) {
         return new FunckyReference(engine, reference.getFile(), reference.getLine(), reference.getColumn(), (reference.getNamespace() == null)
-                ? ((reference.getPrefix() == null) ? reference.getFile() : resolve(reference, imports)): canonicalize(reference.getFile(), reference.getNamespace()), reference.getName());
+                ? ((reference.getPrefix() == null) ? reference.getFile() : resolve(reference, imports)) :
+                canonicalize(reference.getFile(), reference.getNamespace()), reference.getPrefix(),
+                reference.getName(), reference.getType());
     }
 
     private FunckyApplication canonicalize(final FunckyApplication application, final List<FunckyImport> imports) {
@@ -240,7 +249,8 @@ public class Linker {
 
     private FunckyLiteral inferTypes(final FunckyLiteral literal,
             final Map<FunckyReference, FunckyTypeVariable> assumptions) {
-        return literal; // TODO handle lists and records, which might need types
+        return new FunckyLiteral(engine, literal.getFile(), literal.getLine(), literal.getColumn(),
+                inferTypes(literal.eval()));
     }
 
     private FunckyReference inferTypes(final FunckyReference reference,
@@ -273,6 +283,18 @@ public class Linker {
             throw new SneakyCompilationException(new IllegalApplicationException(application, function.getType(),
                     argument.getType()));
         }
+    }
+
+    private FunckyValue inferTypes(final FunckyValue value) {
+        return switch (value) {
+            case FunckyType type -> type;
+            case FunckyNumber number -> number;
+            case FunckyBoolean bool -> bool;
+            case FunckyCharacter character -> character;
+            case FunckyFunction function -> function;
+            case FunckyList list -> null;
+            case FunckyRecord record -> null;
+        };
     }
 
     private void validateMain(final FunckyScript script) {

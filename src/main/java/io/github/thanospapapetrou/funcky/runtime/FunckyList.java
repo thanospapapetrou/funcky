@@ -17,7 +17,7 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
     private final FunckyExpression tail;
 
     private static String toString(final FunckyExpression expression) {
-        return expression.eval(expression.getEngine().getContext()).toString();
+        return expression.eval().toString();
     }
 
     public FunckyList(final FunckyListType type, final FunckyExpression head,

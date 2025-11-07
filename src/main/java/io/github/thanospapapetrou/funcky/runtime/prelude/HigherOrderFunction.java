@@ -64,7 +64,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
 
     @Override
     public FunckyExpression toExpression() {
-        return (expression == null) ? new FunckyReference(library.getFile(), getName()) : expression;
+        return (expression == null) ? new FunckyReference(library.getClass(), getName()) : expression;
     }
 
     private String getName() {

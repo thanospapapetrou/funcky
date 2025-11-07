@@ -1,7 +1,6 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN;
@@ -27,7 +26,7 @@ public final class FunckyBoolean extends FunckyValue implements Comparable<Funck
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(Linker.getNamespace(Booleans.class), Boolean.toString(value));
+        return new FunckyReference(Booleans.class, Boolean.toString(value));
     }
 
     @Override

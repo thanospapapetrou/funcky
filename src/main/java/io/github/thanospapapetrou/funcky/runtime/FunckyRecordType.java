@@ -11,7 +11,6 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
@@ -20,7 +19,7 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.TYPE;
 public final class FunckyRecordType extends FunckyType {
     public static final FunckyRecordType UNIT = RECORD();
 
-    private static final FunckyReference RECORD = new FunckyReference(Linker.getNamespace(Types.class), "Record");
+    private static final FunckyReference RECORD = new FunckyReference(Types.class, "Record");
 
     private final FunckyExpression components;
 

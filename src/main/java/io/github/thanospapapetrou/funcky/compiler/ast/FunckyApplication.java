@@ -15,7 +15,7 @@ public final class FunckyApplication extends FunckyExpression {
     private final FunckyExpression argument;
 
     public FunckyApplication(final FunckyExpression function, final FunckyExpression argument) {
-        this(function, argument, null);
+        this(function, argument, null); // TODO provide types where required
     }
 
     public FunckyApplication(final FunckyExpression function, final FunckyExpression argument, final FunckyType type) {

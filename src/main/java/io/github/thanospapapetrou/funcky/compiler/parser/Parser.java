@@ -36,8 +36,8 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
 import static io.github.thanospapapetrou.funcky.runtime.FunckyRecordType.RECORD;
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;
 
 public class Parser {
     private static final String DEFINITION = "%1$sDefinition `%2$s` %3$s %4$d 1";
@@ -173,18 +173,20 @@ public class Parser {
                 if (peek(input, union(Set.of(TokenType.PERIOD, TokenType.SPACE), follow)).type() == TokenType.PERIOD) {
                     consume(input, TokenType.PERIOD);
                     return new FunckyReference(engine, token.file(), token.line(), token.column(), parseUri(token),
-                            consume(input, TokenType.SYMBOL).value());
+                            null,
+                            consume(input, TokenType.SYMBOL).value(), null);
                 }
                 return parseString(token.stringValue(), token);
             case SYMBOL:
                 if (peek(input, union(Set.of(TokenType.PERIOD, TokenType.SPACE), follow)).type() == TokenType.PERIOD) {
                     consume(input, TokenType.PERIOD);
-                    return new FunckyReference(engine, token.file(), token.line(), token.column(), token.value(),
-                            consume(input, TokenType.SYMBOL).value());
+                    return new FunckyReference(engine, token.file(), token.line(), token.column(), null, token.value(),
+                            consume(input, TokenType.SYMBOL).value(), null);
                 }
                 return token.value().equals(TYPE_VARIABLE)
                         ? new FunckyLiteral(engine, token.file(), token.line(), token.column(), new FunckyTypeVariable())
-                        : new FunckyReference(engine, token.file(), token.line(), token.column(), token.value());
+                        : new FunckyReference(engine, token.file(), token.line(), token.column(), null, null,
+                                token.value(), null);
             case LEFT_PARENTHESIS:
                 final FunckyExpression expression = parseComplexExpression(input, Set.of(TokenType.RIGHT_PARENTHESIS));
                 consume(input, TokenType.RIGHT_PARENTHESIS);
@@ -227,7 +229,7 @@ public class Parser {
 
     private FunckyLiteral parseString(final String string, final Token token) {
         return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                new FunckyList(LIST(CHARACTER), string.isEmpty() ? null
+                new FunckyList(STRING, string.isEmpty() ? null
                         : new FunckyLiteral(engine, token.file(), token.line(), token.column(),
                                 new FunckyCharacter(string.charAt(0))),
                         string.isEmpty() ? null : parseString(string.substring(1), token)));

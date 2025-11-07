@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckySimpleType extends FunckyType {
@@ -37,7 +36,7 @@ public final class FunckySimpleType extends FunckyType {
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(Linker.getNamespace(Types.class), name);
+        return new FunckyReference(Types.class, name);
     }
 
     @Override

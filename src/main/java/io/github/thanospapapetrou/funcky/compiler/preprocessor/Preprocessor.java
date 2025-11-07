@@ -102,19 +102,19 @@ public class Preprocessor {
 
     private FunckyReference i(final FunckyExpression expression) {
         return new FunckyReference(expression.getEngine(), expression.getFile(), expression.getLine(),
-                expression.getColumn(), Linker.getNamespace(Combinators.class), COMBINATOR_I);
+                expression.getColumn(), Linker.getNamespace(Combinators.class), null, COMBINATOR_I, null);
     }
 
     private FunckyApplication k(final FunckyExpression expression) {
         return new FunckyApplication(new FunckyReference(expression.getEngine(), expression.getFile(),
-                expression.getLine(), expression.getColumn(), Linker.getNamespace(Combinators.class),
-                COMBINATOR_K), expression);
+                expression.getLine(), expression.getColumn(), Linker.getNamespace(Combinators.class), null,
+                COMBINATOR_K, null), expression);
     }
 
     private FunckyApplication s(final int argument, final FunckyExpression expression) {
         return new FunckyApplication(new FunckyApplication(new FunckyReference(expression.getEngine(),
                 expression.getFile(), expression.getLine(), expression.getColumn(),
-                Linker.getNamespace(Combinators.class), COMBINATOR_S),
+                Linker.getNamespace(Combinators.class), null, COMBINATOR_S, null),
                 transform(argument, ((FunckyApplication) expression).getFunction())),
                 transform(argument, ((FunckyApplication) expression).getArgument()));
     }

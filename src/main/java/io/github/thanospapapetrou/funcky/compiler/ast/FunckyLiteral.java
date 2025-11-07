@@ -25,8 +25,14 @@ public final class FunckyLiteral extends FunckyExpression {
         this.value = value;
     }
 
+    public FunckyLiteral(final FunckyEngine engine, final FunckyValue value) {
+        super(engine, null, -1, -1, value.getType());
+        this.value = value;
+    }
+
+    //  TODO check if required without engine
     public FunckyLiteral(final FunckyValue value) {
-        this(null, null, -1, -1, value);
+        this(null, value);
     }
 
     @Override

@@ -41,3 +41,4 @@ should libraries have engine?
 change varargs with lists where possible
 change if with pattern matching switch
 cleanup preprocessor
+verify that after linker everything is typed
