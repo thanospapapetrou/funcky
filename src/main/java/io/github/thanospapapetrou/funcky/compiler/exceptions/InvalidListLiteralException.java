@@ -1,7 +1,7 @@
 package io.github.thanospapapetrou.funcky.compiler.exceptions;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;

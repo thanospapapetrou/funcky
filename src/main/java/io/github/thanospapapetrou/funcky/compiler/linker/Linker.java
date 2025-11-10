@@ -16,13 +16,6 @@ import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyFactory;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.IllegalApplicationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidMainException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.NameAlreadyDefinedException;

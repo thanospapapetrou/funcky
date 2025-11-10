@@ -1,6 +1,6 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN;

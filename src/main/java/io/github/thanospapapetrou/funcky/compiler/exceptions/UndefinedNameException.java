@@ -1,6 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.exceptions;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyReference;
 
 public final class UndefinedNameException extends FunckyCompilationException {
     private static final String MESSAGE = "Name `%1$s` is not defined in namespace `%2$s`";

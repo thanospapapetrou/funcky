@@ -1,6 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.exceptions;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 
 public final class InvalidMainException extends FunckyCompilationException {

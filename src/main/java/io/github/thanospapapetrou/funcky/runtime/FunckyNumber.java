@@ -2,7 +2,7 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.math.BigDecimal;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyLiteral;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
 

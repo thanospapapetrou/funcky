@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;

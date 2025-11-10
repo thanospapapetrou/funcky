@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.compiler.ast;
+package io.github.thanospapapetrou.funcky.compiler.linker;
 
 import java.net.URI;
 import java.util.Optional;
@@ -9,7 +9,6 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;

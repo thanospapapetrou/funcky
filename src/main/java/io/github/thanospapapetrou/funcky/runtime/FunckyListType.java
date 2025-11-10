@@ -3,10 +3,10 @@ package io.github.thanospapapetrou.funcky.runtime;
 import java.util.Map;
 import java.util.Set;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyApplication;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;

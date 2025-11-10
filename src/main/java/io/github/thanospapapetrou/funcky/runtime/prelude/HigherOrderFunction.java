@@ -8,9 +8,9 @@ import java.util.List;
 
 import javax.script.ScriptContext;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyApplication;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;

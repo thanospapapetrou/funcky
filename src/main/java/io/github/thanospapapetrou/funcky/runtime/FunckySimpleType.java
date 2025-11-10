@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckySimpleType extends FunckyType {

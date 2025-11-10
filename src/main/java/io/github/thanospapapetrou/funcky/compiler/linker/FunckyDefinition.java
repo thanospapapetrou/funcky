@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.compiler.ast;
+package io.github.thanospapapetrou.funcky.compiler.linker;
 
 import java.net.URI;
 

@@ -1,6 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.exceptions;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyApplication;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
 public final class IllegalApplicationException extends FunckyCompilationException {

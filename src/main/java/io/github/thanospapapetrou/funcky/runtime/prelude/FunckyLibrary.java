@@ -8,9 +8,9 @@ import java.util.EnumSet;
 import java.util.List;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyDefinition;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.transpiler.Transpiler;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;

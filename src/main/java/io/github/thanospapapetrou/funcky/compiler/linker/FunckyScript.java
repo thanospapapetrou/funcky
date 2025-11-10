@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.compiler.ast;
+package io.github.thanospapapetrou.funcky.compiler.linker;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -9,7 +9,6 @@ import javax.script.ScriptContext;
 import javax.script.SimpleScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 
 public class FunckyScript extends CompiledScript {

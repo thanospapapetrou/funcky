@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 
 import javax.script.ScriptException;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyApplication;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyDefinition;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyReference;
 
 public class FunckyRuntimeException extends ScriptException {
     private static final String APPLICATION = "%n    in `%1$s` in %2$s at line %3$d at column %4$d";

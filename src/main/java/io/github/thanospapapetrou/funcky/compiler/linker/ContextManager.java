@@ -8,8 +8,6 @@ import java.net.URISyntaxException;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 
 public class ContextManager {

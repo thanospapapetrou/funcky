@@ -1,6 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.exceptions;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyReference;
 
 public final class UnboundPrefixException extends FunckyCompilationException {
     private static final String MESSAGE = "Prefix `%1$s` is not bound";

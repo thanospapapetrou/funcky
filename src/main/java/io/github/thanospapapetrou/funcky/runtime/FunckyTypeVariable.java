@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyLiteral;
 
 public final class FunckyTypeVariable extends FunckyType {
     private static final AtomicInteger HASH = new AtomicInteger();

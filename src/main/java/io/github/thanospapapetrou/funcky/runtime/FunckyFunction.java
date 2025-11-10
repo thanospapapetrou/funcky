@@ -4,7 +4,7 @@ import java.util.function.BiFunction;
 
 import javax.script.ScriptContext;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyExpression;
 
 public non-sealed abstract class FunckyFunction extends FunckyValue
         implements BiFunction<FunckyExpression, ScriptContext, FunckyValue>, Comparable<FunckyFunction> {
