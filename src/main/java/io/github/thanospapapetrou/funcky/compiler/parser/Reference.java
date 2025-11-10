@@ -10,7 +10,7 @@ public final class Reference extends Expression {
     private final String prefix;
     private final String name;
 
-    Reference(final URI file, final int line, final int column, final URI namespace, final String name) {
+    public Reference(final URI file, final int line, final int column, final URI namespace, final String name) {
         this(file, line, column, namespace, null, name);
     }
 

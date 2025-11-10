@@ -7,7 +7,7 @@ public final class Application extends Expression {
     private final Expression function;
     private final Expression argument;
 
-    Application(final Expression function, final Expression argument) {
+    public Application(final Expression function, final Expression argument) {
         super(function.file, function.line, function.column);
         this.function = function;
         this.argument = argument;
