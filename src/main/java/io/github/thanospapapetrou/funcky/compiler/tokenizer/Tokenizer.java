@@ -16,8 +16,8 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.UnrecognizedInputEx
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 
 public class Tokenizer {
+    private static final String FORMAT_TOKEN = "%1$s %2$s %3$d %4$d";
     private static final Logger LOGGER = Logger.getLogger(Tokenizer.class.getName());
-    private static final String TOKEN = "%1$s %2$s %3$d %4$d";
 
     public List<Token> tokenize(final String expression) {
         final List<Token> tokens = new ArrayList<>();
@@ -72,6 +72,6 @@ public class Tokenizer {
 
     private void addToken(final List<Token> tokens, final Token token) {
         tokens.add(token);
-        LOGGER.finest(String.format(TOKEN, token, token.file(), token.line(), token.column()));
+        LOGGER.finest(String.format(FORMAT_TOKEN, token, token.file(), token.line(), token.column()));
     }
 }

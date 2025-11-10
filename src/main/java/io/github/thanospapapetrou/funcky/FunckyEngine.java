@@ -50,7 +50,7 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     FunckyEngine(final FunckyFactory factory) {
         this.factory = factory;
         tokenizer = new Tokenizer();
-        parser = new Parser(this);
+        parser = new Parser();
         preprocessor = new Preprocessor();
         try {
             linker = new Linker(this);
@@ -115,12 +115,17 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     @Override
     public FunckyExpression compile(final String expression) throws FunckyCompilationException {
         try {
-            final FunckyExpression expr = linker.link(preprocessor.preprocess(parser.parse(tokenizer
-                    .tokenize(expression).stream()
+            // TODO
+            parser.parse(tokenizer.tokenize(expression).stream()
                     .filter(token -> token.type() != TokenType.COMMENT)
-                    .collect(Collectors.toCollection(ArrayDeque::new)))));
-            return Boolean.parseBoolean(factory.getParameter(PARAMETER_TRANSPILING)) ? transpiler.transpile(expr)
-                    : expr;
+                    .collect(Collectors.toCollection(ArrayDeque::new)));
+//            final FunckyExpression expr = linker.link(preprocessor.preprocess(parser.parse(tokenizer
+//                    .tokenize(expression).stream()
+//                    .filter(token -> token.type() != TokenType.COMMENT)
+//                    .collect(Collectors.toCollection(ArrayDeque::new)))));
+//            return Boolean.parseBoolean(factory.getParameter(PARAMETER_TRANSPILING)) ? transpiler.transpile(expr)
+//                    : expr;
+            return null;
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }
@@ -164,12 +169,17 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     private FunckyScript compile(final Reader script, final URI file, final boolean main)
             throws FunckyCompilationException {
         try {
-            final FunckyScript scr = linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(script,
-                            file).stream()
+            // TODO
+            parser.parse(tokenizer.tokenize(script, file).stream()
                     .filter(token -> token.type() != TokenType.COMMENT)
-                    .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
-            return (Boolean.parseBoolean(factory.getParameter(PARAMETER_TRANSPILING)) && main)
-                    ? transpiler.transpile(scr) : scr;
+                    .collect(Collectors.toCollection(ArrayDeque::new)), file);
+//            final FunckyScript scr = linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(script,
+//                            file).stream()
+//                    .filter(token -> token.type() != TokenType.COMMENT)
+//                    .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
+//            return (Boolean.parseBoolean(factory.getParameter(PARAMETER_TRANSPILING)) && main)
+//                    ? transpiler.transpile(scr) : scr;
+            return null;
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }

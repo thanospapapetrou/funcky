@@ -13,35 +13,13 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidListLiteralException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidUriException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnexpectedTokenException;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
-import io.github.thanospapapetrou.funcky.runtime.FunckyList;
-import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
-import io.github.thanospapapetrou.funcky.runtime.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
-
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
-import static io.github.thanospapapetrou.funcky.runtime.FunckyRecordType.RECORD;
 
 public class Parser {
-    private static final String DEFINITION = "%1$sDefinition `%2$s` %3$s %4$d 1";
-    private static final String EXPRESSION = "%1$s%2$s `%3$s` %4$s %5$d %6$d";
     private static final Set<TokenType> FIRST = Set.of(
             TokenType.BINARY_NUMBER,
             TokenType.OCTAL_NUMBER,
@@ -56,14 +34,13 @@ public class Parser {
             TokenType.LEFT_SQUARE_BRACKET,
             TokenType.LEFT_CURLY_BRACKET
     );
-    private static final String IMPORT = "%1$sImport `%2$s` %3$s %4$d 1";
+    private static final String FORMAT_IMPORT = "%1$s `%2$s` %3$s %4$d 1";
+    private static final String FORMAT_DEFINITION = "%1$s `%2$s` %3$s %4$d 1";
+    private static final String FORMAT_EXPRESSION = "%1$s `%2$s` %3$s %4$d %5$d";
+    private static final String FORMAT_SCRIPT = "Script %1$s 1 1";
     private static final String INDENTATION = "  ";
     private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
-    private static final String SCRIPT = "Script %1$s 1 1";
-    private static final String TYPE_VARIABLE = "$_";
     private static final String UNEXPECTED_TOKEN = "Unexpected token `%1$s`";
-
-    private final FunckyEngine engine;
 
     private static Set<TokenType> union(final Set<TokenType> a, final Set<TokenType> b) {
         final Set<TokenType> result = new HashSet<>();
@@ -72,44 +49,50 @@ public class Parser {
         return result;
     }
 
-    private static void log(final FunckyExpression expression, final int indentation) {
+    private static void log(final Expression expression, final int indentation) {
         if (expression != null) {
-            LOGGER.finer(String.format(EXPRESSION, INDENTATION.repeat(indentation),
+            LOGGER.finer(INDENTATION.repeat(indentation) + String.format(FORMAT_EXPRESSION,
                     expression.getClass().getSimpleName(), expression, expression.getFile(), expression.getLine(),
                     expression.getColumn()));
-            if (expression instanceof FunckyApplication) {
-                log(((FunckyApplication) expression).getFunction(), indentation + 1);
-                log(((FunckyApplication) expression).getArgument(), indentation + 1);
+            if (expression instanceof Literal literal) {
+                if (literal.getList() != null) {
+                    literal.getList()
+                            .forEach(element -> log(element, indentation + 1));
+                } else if (literal.getRecord() != null) {
+                    literal.getRecord()
+                            .forEach(component -> log(component, indentation + 1));
+                }
+            } else if (expression instanceof Application application) {
+                log(application.getFunction(), indentation + 1);
+                log(application.getArgument(), indentation + 1);
             }
         }
     }
 
-    private static void log(final FunckyScript script) {
-        LOGGER.finer(String.format(SCRIPT, script.getFile()));
-        for (final FunckyImport imp : script.getImports()) {
-            LOGGER.finer(String.format(IMPORT, INDENTATION, imp, imp.file(), imp.line()));
-        }
-        for (final FunckyDefinition definition : script.getDefinitions()) {
-            LOGGER.finer(String.format(DEFINITION, INDENTATION, definition, definition.file(), definition.line()));
+    private static void log(final Script script) {
+        LOGGER.finer(String.format(FORMAT_SCRIPT, script));
+        script.imports().stream()
+                .map(inport -> INDENTATION + String.format(FORMAT_IMPORT, Import.class.getSimpleName(), inport,
+                        inport.file(), inport.line()))
+                .forEach(LOGGER::finer);
+        for (final Definition definition : script.definitions()) {
+            LOGGER.finer(INDENTATION + String.format(FORMAT_DEFINITION, Definition.class.getSimpleName(), definition,
+                    definition.file(), definition.line()));
             log(definition.expression(), 2);
         }
     }
 
-    public Parser(final FunckyEngine engine) {
-        this.engine = engine;
-    }
-
-    public FunckyExpression parse(final Queue<Token> input) {
-        final FunckyExpression expression = (peek(input, union(FIRST, Set.of(TokenType.EOL))).type() == TokenType.EOL)
-                ? null : parseComplexExpression(input, Set.of(TokenType.EOL));
+    public Expression parse(final Queue<Token> input) {
+        final Expression expression = (peek(input, union(FIRST, Set.of(TokenType.EOL))).type() == TokenType.EOL) ? null
+                : parseComplexExpression(input, Set.of(TokenType.EOL));
         consume(input, TokenType.EOL);
         consume(input, TokenType.EOF);
         log(expression, 0);
         return expression;
     }
 
-    public FunckyScript parse(final Queue<Token> input, final URI file) {
-        final FunckyScript script = new FunckyScript(engine, file);
+    public Script parse(final Queue<Token> input, final URI file) {
+        final Script script = new Script(file);
         while (true) {
             final Token token = consume(input, Set.of(TokenType.SYMBOL, TokenType.EOL, TokenType.EOF));
             switch (token.type()) {
@@ -118,14 +101,13 @@ public class Parser {
                         consume(input, TokenType.SPACE);
                         final URI namespace = parseUri(consume(input, TokenType.STRING));
                         consume(input, TokenType.EOL);
-                        script.getImports().add(new FunckyImport(token.file(), token.line(), token.value(), namespace));
+                        script.imports().add(new Import(token.file(), token.line(), token.value(), namespace));
                     } else {
                         consume(input, TokenType.EQUAL);
                         consume(input, TokenType.SPACE);
-                        final FunckyExpression expression = parseComplexExpression(input, Set.of(TokenType.EOL));
+                        final Expression expression = parseComplexExpression(input, Set.of(TokenType.EOL));
                         consume(input, TokenType.EOL);
-                        script.getDefinitions().add(new FunckyDefinition(token.file(), token.line(), token.value(),
-                                expression));
+                        script.definitions().add(new Definition(token.file(), token.line(), token.value(), expression));
                     }
                     break;
                 case EOL:
@@ -137,73 +119,65 @@ public class Parser {
         }
     }
 
-    private FunckyExpression parseComplexExpression(final Queue<Token> input, final Set<TokenType> follow) {
-        FunckyExpression expression = parseSimpleExpression(input, follow);
+    private Expression parseComplexExpression(final Queue<Token> input, final Set<TokenType> follow) {
+        Expression expression = parseSimpleExpression(input, follow);
         while (true) {
             if (peek(input, union(Set.of(TokenType.SPACE), follow)).type() == TokenType.SPACE) {
                 consume(input, TokenType.SPACE);
-                expression = new FunckyApplication(expression, parseSimpleExpression(input, follow));
+                expression = new Application(expression, parseSimpleExpression(input, follow));
             } else {
                 return expression;
             }
         }
     }
 
-    private FunckyExpression parseSimpleExpression(final Queue<Token> input, final Set<TokenType> follow) {
+    private Expression parseSimpleExpression(final Queue<Token> input, final Set<TokenType> follow) {
         final Token token = consume(input, FIRST);
         switch (token.type()) {
             case BINARY_NUMBER:
             case OCTAL_NUMBER:
             case HEXADECIMAL_NUMBER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        new FunckyNumber(new BigDecimal(new BigInteger(token.signedValue(),
-                                token.type().getRadix().getRadix()))));
+                return Literal.number(token.file(), token.line(), token.column(),
+                        new BigDecimal(new BigInteger(token.signedValue(), token.type().getRadix().getRadix())));
             case DECIMAL_NUMBER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        new FunckyNumber(new BigDecimal(token.value())));
+                return Literal.number(token.file(), token.line(), token.column(), new BigDecimal(token.value()));
             case CHARACTER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        new FunckyCharacter(token.stringValue().charAt(0)));
+                return Literal.character(token.file(), token.line(), token.column(), token.stringValue().charAt(0));
             case OCTAL_CHARACTER:
             case HEXADECIMAL_CHARACTER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        new FunckyCharacter((char) Integer.parseInt(token.unsignedValue(),
-                                token.type().getRadix().getRadix())));
+                return Literal.character(token.file(), token.line(), token.column(),
+                        (char) Integer.parseInt(token.unsignedValue(), token.type().getRadix().getRadix()));
             case STRING:
                 if (peek(input, union(Set.of(TokenType.PERIOD, TokenType.SPACE), follow)).type() == TokenType.PERIOD) {
                     consume(input, TokenType.PERIOD);
-                    return new FunckyReference(engine, token.file(), token.line(), token.column(), parseUri(token),
-                            null,
-                            consume(input, TokenType.SYMBOL).value(), null);
+                    return new Reference(token.file(), token.line(), token.column(), parseUri(token), consume(input,
+                            TokenType.SYMBOL).value());
                 }
-                return parseString(token.stringValue(), token);
+                return Literal.string(token.file(), token.line(), token.column(), token.stringValue());
             case SYMBOL:
                 if (peek(input, union(Set.of(TokenType.PERIOD, TokenType.SPACE), follow)).type() == TokenType.PERIOD) {
                     consume(input, TokenType.PERIOD);
-                    return new FunckyReference(engine, token.file(), token.line(), token.column(), null, token.value(),
-                            consume(input, TokenType.SYMBOL).value(), null);
+                    return new Reference(token.file(), token.line(), token.column(), token.value(), consume(input,
+                            TokenType.SYMBOL).value());
                 }
-                return token.value().equals(TYPE_VARIABLE)
-                        ? new FunckyLiteral(engine, token.file(), token.line(), token.column(), new FunckyTypeVariable())
-                        : new FunckyReference(engine, token.file(), token.line(), token.column(), null, null,
-                                token.value(), null);
+                return new Reference(token.file(), token.line(), token.column(), token.value());
             case LEFT_PARENTHESIS:
-                final FunckyExpression expression = parseComplexExpression(input, Set.of(TokenType.RIGHT_PARENTHESIS));
+                final Expression expression = parseComplexExpression(input, Set.of(TokenType.RIGHT_PARENTHESIS));
                 consume(input, TokenType.RIGHT_PARENTHESIS);
                 return expression;
             case LEFT_SQUARE_BRACKET:
                 if (peek(input, union(FIRST, Set.of(TokenType.RIGHT_SQUARE_BRACKET))).type()
                         == TokenType.RIGHT_SQUARE_BRACKET) {
                     consume(input, TokenType.RIGHT_SQUARE_BRACKET);
-                    return parseList(List.of(), token);
+                    return Literal.list(token.file(), token.line(), token.column(), List.of());
                 }
-                final List<FunckyExpression> elements = new ArrayList<>();
+                final List<Expression> list = new ArrayList<>();
                 while (true) {
-                    elements.add(parseComplexExpression(input, Set.of(TokenType.COMMA,
+                    list.add(parseComplexExpression(input, Set.of(TokenType.COMMA,
                             TokenType.RIGHT_SQUARE_BRACKET)));
                     if (consume(input, Set.of(TokenType.COMMA, TokenType.RIGHT_SQUARE_BRACKET)).type()
                             == TokenType.RIGHT_SQUARE_BRACKET) {
-                        return parseList(elements, token);
+                        return Literal.list(token.file(), token.line(), token.column(), list);
                     }
                     consume(input, TokenType.SPACE);
                 }
@@ -211,28 +185,20 @@ public class Parser {
                 if (peek(input, union(FIRST, Set.of(TokenType.RIGHT_CURLY_BRACKET))).type()
                         == TokenType.RIGHT_CURLY_BRACKET) {
                     consume(input, TokenType.RIGHT_CURLY_BRACKET);
-                    return parseRecord(List.of(), token);
+                    return Literal.record(token.file(), token.line(), token.column(), List.of());
                 }
-                final List<FunckyExpression> components = new ArrayList<>();
+                final List<Expression> record = new ArrayList<>();
                 while (true) {
-                    components.add(parseComplexExpression(input, Set.of(TokenType.COMMA,
+                    record.add(parseComplexExpression(input, Set.of(TokenType.COMMA,
                             TokenType.RIGHT_CURLY_BRACKET)));
                     if (consume(input, Set.of(TokenType.COMMA, TokenType.RIGHT_CURLY_BRACKET)).type()
                             == TokenType.RIGHT_CURLY_BRACKET) {
-                        return parseRecord(components, token);
+                        return Literal.record(token.file(), token.line(), token.column(), record);
                     }
                     consume(input, TokenType.SPACE);
                 }
         }
         throw new IllegalStateException(String.format(UNEXPECTED_TOKEN, token));
-    }
-
-    private FunckyLiteral parseString(final String string, final Token token) {
-        return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                new FunckyList(STRING, string.isEmpty() ? null
-                        : new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                                new FunckyCharacter(string.charAt(0))),
-                        string.isEmpty() ? null : parseString(string.substring(1), token)));
     }
 
     private URI parseUri(final Token string) {
@@ -241,29 +207,6 @@ public class Parser {
         } catch (final URISyntaxException e) {
             throw new SneakyCompilationException(new InvalidUriException(string));
         }
-    }
-
-    private FunckyLiteral parseList(final List<FunckyExpression> elements, final Token leftSquareBracket) {
-            final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
-            final FunckyLiteral tail = elements.isEmpty() ? null
-                    : parseList(elements.subList(1, elements.size()), leftSquareBracket);
-        final FunckyListType listType = (FunckyListType) LIST(
-                (head == null) ? new FunckyTypeVariable() : head.getType())
-                .unify((tail == null) ? LIST(new FunckyTypeVariable()) : tail.getType());
-            if (listType == null) {
-                throw new SneakyCompilationException(new InvalidListLiteralException(head, tail));
-            }
-            return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(),
-                    leftSquareBracket.column(), new FunckyList(listType, head, tail));
-    }
-
-    private FunckyLiteral parseRecord(final List<FunckyExpression> components, final Token leftCurlyBracket) {
-        final List<FunckyType> types = new ArrayList<>();
-        for (final FunckyExpression component : components) {
-            types.add(component.getType());
-        }
-        return new FunckyLiteral(engine, leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),
-                new FunckyRecord(RECORD(types.toArray(new FunckyType[0])), components));
     }
 
     private Token consume(final Queue<Token> input, final Set<TokenType> expected) {

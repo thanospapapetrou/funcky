@@ -1,17 +1,12 @@
 package io.github.thanospapapetrou.funcky.compiler.preprocessor;
 
-import java.util.AbstractMap;
 import java.util.Map;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
-import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
+import io.github.thanospapapetrou.funcky.compiler.parser.Application;
+import io.github.thanospapapetrou.funcky.compiler.parser.Definition;
+import io.github.thanospapapetrou.funcky.compiler.parser.Expression;
+import io.github.thanospapapetrou.funcky.compiler.parser.Reference;
+import io.github.thanospapapetrou.funcky.compiler.parser.Script;
 
 public class Preprocessor {
     private static final String COMBINATOR_I = "i";
@@ -20,38 +15,39 @@ public class Preprocessor {
     private static final String REFERENCE_ARGUMENT = "$";
     private static final String REFERENCE_FUNCTION = "$$";
 
-    public FunckyExpression preprocess(final FunckyExpression expression) {
-        final Map.Entry<Integer, FunckyExpression> function = isFunction(expression);
+    public Expression preprocess(final Expression expression) {
+        final Map.Entry<Integer, Expression> function = isFunction(expression);
         if (function != null) {
-            FunckyExpression transformed = function.getValue();
+            Expression transformed = function.getValue();
             for (int argument = function.getKey() - 1; argument >= 0; argument--) {
                 transformed = transform(argument, transformed);
             }
             return transformed;
-        } else if (expression instanceof FunckyApplication) {
-            return new FunckyApplication(preprocess(((FunckyApplication) expression).getFunction()),
-                    preprocess(((FunckyApplication) expression).getArgument()));
+        } else if (expression instanceof Application) { // TODO instanceof with var everywhere
+            //            return new Application(preprocess(((Application) expression).getFunction()),
+            //                    preprocess(((Application) expression).getArgument()));
+            return null;
         }
         return expression;
     }
 
-    public FunckyScript preprocess(final FunckyScript script) {
-        final FunckyScript preprocessed = new FunckyScript(script.getEngine(), script.getFile());
-        preprocessed.getImports().addAll(script.getImports());
-        script.getDefinitions().stream()
-                .map(definition -> new FunckyDefinition(definition.file(), definition.line(),
+    public Script preprocess(final Script script) {
+        final Script preprocessed = new Script(script.file());
+        preprocessed.imports().addAll(script.imports());
+        script.definitions().stream()
+                .map(definition -> new Definition(definition.file(), definition.line(),
                         definition.name(), preprocess(definition.expression())))
-                .forEach(preprocessed.getDefinitions()::add);
+                .forEach(preprocessed.definitions()::add);
         return preprocessed;
     }
 
-    private FunckyExpression transform(final int argument, final FunckyExpression expression) {
+    private Expression transform(final int argument, final Expression expression) {
         if (isArgument(argument, expression)) {
             return i(expression);
-        } else if (expression instanceof FunckyApplication) {
-            if ((!containsArgument(argument, ((FunckyApplication) expression).getFunction()))
-                    && isArgument(argument, ((FunckyApplication) expression).getArgument())) {
-                return ((FunckyApplication) expression).getFunction();
+        } else if (expression instanceof Application) {
+            if ((!containsArgument(argument, ((Application) expression).getFunction()))
+                    && isArgument(argument, ((Application) expression).getArgument())) {
+                return ((Application) expression).getFunction();
             }
             for (int otherArgument = 0; otherArgument < argument; otherArgument++) {
                 if (isArgument(otherArgument, expression)) {
@@ -63,59 +59,64 @@ public class Preprocessor {
         return k(expression);
     }
 
-    private Map.Entry<Integer, FunckyExpression> isFunction(final FunckyExpression expression) {
-        if ((expression instanceof FunckyApplication)
-                && (((FunckyApplication) expression).getFunction() instanceof FunckyApplication)
-                && (((FunckyApplication) ((FunckyApplication) expression).getFunction()).getFunction() instanceof FunckyReference)
-                && (((FunckyReference) ((FunckyApplication) ((FunckyApplication) expression).getFunction())
+    private Map.Entry<Integer, Expression> isFunction(final Expression expression) {
+        if ((expression instanceof Application)
+                && (((Application) expression).getFunction() instanceof Application)
+                && (((Application) ((Application) expression).getFunction()).getFunction() instanceof Reference)
+                && (((Reference) ((Application) ((Application) expression).getFunction())
                 .getFunction()).getNamespace() == null)
-                && (((FunckyReference) ((FunckyApplication) ((FunckyApplication) expression).getFunction())
+                && (((Reference) ((Application) ((Application) expression).getFunction())
                 .getFunction()).getPrefix() == null)
-                && (((FunckyReference) ((FunckyApplication) ((FunckyApplication) expression).getFunction())
+                && (((Reference) ((Application) ((Application) expression).getFunction())
                 .getFunction()).getName().equals(REFERENCE_FUNCTION))) {
-            final int arguments = ((FunckyNumber) ((FunckyApplication) ((FunckyApplication) expression)
-                    .getFunction()).getArgument().eval()).getValue().intValue();
-            final FunckyExpression body = ((FunckyApplication) expression).getArgument();
-            return new AbstractMap.SimpleEntry<>(arguments, body);
+            //            final int arguments = ((FunckyNumber) ((Literal) ((Application) ((Application) expression)
+            //                    .getFunction()).getArgument()).getValue()).getValue().intValue();
+            //            final Expression body = ((Application) expression).getArgument();
+            //            return new AbstractMap.SimpleEntry<>(arguments, body);
+            return null;
         }
         return null;
     }
 
-    private boolean isArgument(final int argument, final FunckyExpression expression) {
-        return (expression instanceof FunckyApplication)
-                && (((FunckyApplication) expression).getFunction() instanceof FunckyReference)
-                && (((FunckyReference) ((FunckyApplication) expression).getFunction()).getNamespace() == null)
-                && (((FunckyReference) ((FunckyApplication) expression).getFunction()).getPrefix() == null)
-                && ((FunckyReference) ((FunckyApplication) expression).getFunction()).getName().equals(
-                REFERENCE_ARGUMENT)
-                && (((FunckyApplication) expression).getArgument() instanceof FunckyLiteral)
-                && (((FunckyApplication) expression).getArgument().eval() instanceof FunckyNumber)
-                && (((FunckyNumber) ((FunckyApplication) expression).getArgument().eval())
-                .getValue().intValue() == argument);
+    private boolean isArgument(final int argument, final Expression expression) {
+        return false;
+        //        return (expression instanceof Application)
+        //                && (((Application) expression).getFunction() instanceof Reference)
+        //                && (((Reference) ((Application) expression).getFunction()).getNamespace() == null)
+        //                && (((Reference) ((Application) expression).getFunction()).getPrefix() == null)
+        //                && ((Reference) ((Application) expression).getFunction()).getName().equals(
+        //                REFERENCE_ARGUMENT)
+        //                && (((Application) expression).getArgument() instanceof Literal)
+        //                && (((Literal) ((Application) expression).getArgument()).getNumber() != null)
+        //                && (((FunckyNumber) ((Application) expression).getArgument().eval())
+        //                .getValue().intValue() == argument);
     }
 
-    private boolean containsArgument(final int argument, final FunckyExpression expression) {
-        return isArgument(argument, expression) || ((expression instanceof FunckyApplication)
-                && (containsArgument(argument, ((FunckyApplication) expression).getFunction())
-                || containsArgument(argument, ((FunckyApplication) expression).getArgument())));
+    private boolean containsArgument(final int argument, final Expression expression) {
+        return isArgument(argument, expression) || ((expression instanceof Application)
+                && (containsArgument(argument, ((Application) expression).getFunction())
+                || containsArgument(argument, ((Application) expression).getArgument())));
     }
 
-    private FunckyReference i(final FunckyExpression expression) {
-        return new FunckyReference(expression.getEngine(), expression.getFile(), expression.getLine(),
-                expression.getColumn(), Linker.getNamespace(Combinators.class), null, COMBINATOR_I, null);
+    private Reference i(final Expression expression) {
+        return null;
+        //        return new Reference(expression.getFile(), expression.getLine(),
+        //                expression.getColumn(), Linker.getNamespace(Combinators.class), null, COMBINATOR_I, null);
     }
 
-    private FunckyApplication k(final FunckyExpression expression) {
-        return new FunckyApplication(new FunckyReference(expression.getEngine(), expression.getFile(),
-                expression.getLine(), expression.getColumn(), Linker.getNamespace(Combinators.class), null,
-                COMBINATOR_K, null), expression);
+    private Application k(final Expression expression) {
+        return null;
+        //        return new Application(new Reference(expression.getFile(), expression.getLine(),
+        //                expression.getColumn(), Linker.getNamespace(Combinators.class), null, COMBINATOR_K),
+        //                expression);
     }
 
-    private FunckyApplication s(final int argument, final FunckyExpression expression) {
-        return new FunckyApplication(new FunckyApplication(new FunckyReference(expression.getEngine(),
-                expression.getFile(), expression.getLine(), expression.getColumn(),
-                Linker.getNamespace(Combinators.class), null, COMBINATOR_S, null),
-                transform(argument, ((FunckyApplication) expression).getFunction())),
-                transform(argument, ((FunckyApplication) expression).getArgument()));
+    private Application s(final int argument, final Expression expression) {
+        return null;
+        //        return new Application(new Application(
+        //                new Reference(expression.getFile(), expression.getLine(), expression.getColumn(),
+        //                        Linker.getNamespace(Combinators.class), null, COMBINATOR_S),
+        //                transform(argument, ((Application) expression).getFunction())),
+        //                transform(argument, ((Application) expression).getArgument()));
     }
 }
