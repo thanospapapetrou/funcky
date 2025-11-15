@@ -1,10 +1,10 @@
-package io.github.thanospapapetrou.funcky.compiler.linker;
+package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
 
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 
-public record FunckyImport(URI file, int line, String prefix, URI namespace) {
+public record Import(URI file, int line, String prefix, URI namespace) {
     private static final String FORMAT = "%1$s: \"%2$s\"";
 
     @Override

@@ -13,6 +13,13 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import io.github.thanospapapetrou.funcky.compiler.ast.Application;
+import io.github.thanospapapetrou.funcky.compiler.ast.Definition;
+import io.github.thanospapapetrou.funcky.compiler.ast.Expression;
+import io.github.thanospapapetrou.funcky.compiler.ast.Import;
+import io.github.thanospapapetrou.funcky.compiler.ast.Literal;
+import io.github.thanospapapetrou.funcky.compiler.ast.Reference;
+import io.github.thanospapapetrou.funcky.compiler.ast.Script;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidUriException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnexpectedTokenException;

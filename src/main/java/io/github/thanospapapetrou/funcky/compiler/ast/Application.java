@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.compiler.parser;
+package io.github.thanospapapetrou.funcky.compiler.ast;
 
 public final class Application extends Expression {
     private static final String FORMAT_APPLICATION = "%1$s %2$s";

@@ -5,12 +5,12 @@ import java.util.AbstractMap;
 import java.util.Map;
 
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
-import io.github.thanospapapetrou.funcky.compiler.parser.Application;
-import io.github.thanospapapetrou.funcky.compiler.parser.Definition;
-import io.github.thanospapapetrou.funcky.compiler.parser.Expression;
-import io.github.thanospapapetrou.funcky.compiler.parser.Literal;
-import io.github.thanospapapetrou.funcky.compiler.parser.Reference;
-import io.github.thanospapapetrou.funcky.compiler.parser.Script;
+import io.github.thanospapapetrou.funcky.compiler.ast.Application;
+import io.github.thanospapapetrou.funcky.compiler.ast.Definition;
+import io.github.thanospapapetrou.funcky.compiler.ast.Expression;
+import io.github.thanospapapetrou.funcky.compiler.ast.Literal;
+import io.github.thanospapapetrou.funcky.compiler.ast.Reference;
+import io.github.thanospapapetrou.funcky.compiler.ast.Script;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
 
 public class Preprocessor {

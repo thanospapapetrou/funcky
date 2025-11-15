@@ -17,32 +17,20 @@ public class FunckyScript extends CompiledScript {
 
     protected final FunckyEngine engine;
     protected final URI file;
-    protected final List<FunckyImport> imports;
     protected final List<FunckyDefinition> definitions;
 
     public FunckyScript(final FunckyEngine engine, final URI file) {
-        this(engine, file, new ArrayList<>(), new ArrayList<>());
+        this(engine, file, new ArrayList<>());
     }
 
-    public FunckyScript(final FunckyExpression expression) {
-        this(expression.getEngine(), Linker.STDIN);
-        definitions.add(new FunckyDefinition(Linker.STDIN, 1, FunckyScript.IT, expression));
-    }
-
-    private FunckyScript(final FunckyEngine engine, final URI file, final List<FunckyImport> imports,
-            final List<FunckyDefinition> definitions) {
+    private FunckyScript(final FunckyEngine engine, final URI file, final List<FunckyDefinition> definitions) {
         this.engine = engine;
         this.file = file;
-        this.imports = imports;
         this.definitions = definitions;
     }
 
     public URI getFile() {
         return (file == null) ? Linker.getNamespace(getClass()) : file;
-    }
-
-    public List<FunckyImport> getImports() {
-        return imports;
     }
 
     public List<FunckyDefinition> getDefinitions() {

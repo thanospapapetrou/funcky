@@ -1,6 +1,8 @@
-package io.github.thanospapapetrou.funcky.compiler.parser;
+package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
+
+import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 
 public final class Reference extends Expression {
     private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
@@ -14,11 +16,11 @@ public final class Reference extends Expression {
         this(file, line, column, namespace, null, name);
     }
 
-    Reference(final URI file, final int line, final int column, final String prefix, final String name) {
+    public Reference(final URI file, final int line, final int column, final String prefix, final String name) {
         this(file, line, column, null, prefix, name);
     }
 
-    Reference(final URI file, final int line, final int column, final String name) {
+    public Reference(final URI file, final int line, final int column, final String name) {
         this(file, line, column, null, null, name);
     }
 

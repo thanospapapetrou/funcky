@@ -1,9 +1,11 @@
-package io.github.thanospapapetrou.funcky.compiler.parser;
+package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 
 public final class Literal extends Expression {
     private static final String DELIMITER = ", ";
@@ -18,23 +20,23 @@ public final class Literal extends Expression {
     private final String string;
     private final List<Expression> record;
 
-    static Literal number(final URI file, final int line, final int column, final BigDecimal number) {
+    public static Literal number(final URI file, final int line, final int column, final BigDecimal number) {
         return new Literal(file, line, column, number, null, null, null, null);
     }
 
-    static Literal character(final URI file, final int line, final int column, final Character character) {
+    public static Literal character(final URI file, final int line, final int column, final Character character) {
         return new Literal(file, line, column, null, character, null, null, null);
     }
 
-    static Literal list(final URI file, final int line, final int column, final List<Expression> list) {
+    public static Literal list(final URI file, final int line, final int column, final List<Expression> list) {
         return new Literal(file, line, column, null, null, list, null, null);
     }
 
-    static Literal string(final URI file, final int line, final int column, final String string) {
+    public static Literal string(final URI file, final int line, final int column, final String string) {
         return new Literal(file, line, column, null, null, null, string, null);
     }
 
-    static Literal record(final URI file, final int line, final int column, final List<Expression> record) {
+    public static Literal record(final URI file, final int line, final int column, final List<Expression> record) {
         return new Literal(file, line, column, null, null, null, null, record);
     }
 
