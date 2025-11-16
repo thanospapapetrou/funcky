@@ -1,5 +1,6 @@
 package io.github.thanospapapetrou.funcky;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -14,6 +15,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
+import io.github.thanospapapetrou.funcky.compiler.Compiler;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
@@ -40,18 +42,14 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     public static final String PARAMETER_TRANSPILING = "io.github.thanospapapetrou.funcky.transpiling";
 
     private final FunckyFactory factory;
-    private final Tokenizer tokenizer;
-    private final Parser parser;
-    private final Preprocessor preprocessor;
+    private final Compiler compiler;
     private final Linker linker;
     private final ContextManager manager;
     private final Transpiler transpiler;
 
     FunckyEngine(final FunckyFactory factory) {
         this.factory = factory;
-        tokenizer = new Tokenizer();
-        parser = new Parser();
-        preprocessor = new Preprocessor();
+        this.compiler = new Compiler(new File(factory.getParameter(FunckyEngine.PARAMETER_BASE_DIR)).toURI());
         try {
             linker = new Linker(this);
             manager = new ContextManager(this.getContext());
@@ -116,9 +114,7 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     public FunckyExpression compile(final String expression) throws FunckyCompilationException {
         try {
             // TODO
-            preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
-                    .filter(token -> token.type() != TokenType.COMMENT)
-                    .collect(Collectors.toCollection(ArrayDeque::new))));
+            compiler.compile(expression);
 //            final FunckyExpression expr = linker.link(preprocessor.preprocess(parser.parse(tokenizer
 //                    .tokenize(expression).stream()
 //                    .filter(token -> token.type() != TokenType.COMMENT)
@@ -170,9 +166,7 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
             throws FunckyCompilationException {
         try {
             // TODO
-            preprocessor.preprocess(parser.parse(tokenizer.tokenize(script, file).stream()
-                    .filter(token -> token.type() != TokenType.COMMENT)
-                    .collect(Collectors.toCollection(ArrayDeque::new)), file));
+            compiler.compile(script, file);
 //            final FunckyScript scr = linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(script,
 //                            file).stream()
 //                    .filter(token -> token.type() != TokenType.COMMENT)

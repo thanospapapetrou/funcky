@@ -5,9 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -17,13 +15,10 @@ import java.util.logging.Logger;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.ast.Expression;
-import io.github.thanospapapetrou.funcky.compiler.ast.Import;
 import io.github.thanospapapetrou.funcky.compiler.ast.Script;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.IllegalApplicationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidMainException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedMainException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
@@ -133,94 +128,6 @@ public class Linker {
         } catch (final ReflectiveOperationException e) {
             throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
         }
-    }
-
-    private Script canonicalize(final Script script) {
-        //        // TODO canonical script does not need imports
-        //        final Script canonical = new Script(script.file());
-        //        canonical.imports().addAll(canonicalizeImports(script.imports()));
-        //        canonical.definitions().addAll(canonicalizeDefinitions(script.definitions(), canonical.imports()));
-        //        engine.getManager().setScript(canonical); // TODO is this needed?
-        //        return canonical;
-        return null;
-    }
-
-    private Import canonicalize(final Import inport) {
-        return new Import(inport.file(), inport.line(), inport.prefix(),
-                canonicalize(inport.file(), inport.namespace()));
-    }
-
-    //    private FunckyDefinition canonicalize(final FunckyDefinition definition, final List<FunckyImport> imports) {
-    //        return new FunckyDefinition(definition.file(), definition.line(), definition.name(),
-    //                canonicalize(definition.expression(), imports));
-    //    }
-
-    //    private FunckyExpression canonicalize(final FunckyExpression expression, final List<FunckyImport> imports) {
-    //        return switch (expression) {
-    //            case FunckyLiteral literal -> literal;
-    //            case FunckyReference reference -> canonicalize(reference, imports);
-    //            case FunckyApplication application -> canonicalize(application, imports);
-    //        };
-    //    }
-
-    //    private FunckyReference canonicalize(final FunckyReference reference, final List<FunckyImport> imports) {
-    //        return new FunckyReference(engine, reference.getFile(), reference.getLine(), reference.getColumn(), (reference.getNamespace() == null)
-    //                ? ((reference.getPrefix() == null) ? reference.getFile() : resolve(reference, imports)) :
-    //                canonicalize(reference.getFile(), reference.getNamespace()), reference.getPrefix(),
-    //                reference.getName(), reference.getType());
-    //    }
-    //
-    //    private FunckyApplication canonicalize(final FunckyApplication application, final List<FunckyImport> imports) {
-    //        return new FunckyApplication(canonicalize(application.getFunction(), imports),
-    //                canonicalize(application.getArgument(), imports));
-    //    }
-
-    private URI canonicalize(final URI base, final URI namespace) { // TODO is this required? definitely base is not
-        // required
-        return (namespace.isAbsolute() ? namespace : (base.equals(STDIN) ? this.base : base).resolve(namespace))
-                .normalize();
-    }
-
-    private List<Import> canonicalizeImports(final List<Import> imports) {
-        final List<Import> canonical = new ArrayList<>();
-        for (final Import inport : imports) {
-            final Optional<Import> otherImport = imports.stream()
-                    .filter(imp -> imp.line() < inport.line())
-                    .filter(imp -> imp.prefix().equals(inport.prefix()))
-                    .findFirst();
-            if (otherImport.isPresent()) {
-                throw new SneakyCompilationException(new PrefixAlreadyBoundException(inport, otherImport.get()));
-            }
-            canonical.add(canonicalize(inport));
-        }
-        return canonical;
-    }
-
-    //    private List<Definition> canonicalizeDefinitions(final List<FunckyDefinition> definitions, final List<FunckyImport> imports) {
-    //        final List<FunckyDefinition> canonical = new ArrayList<>();
-    //        for (final FunckyDefinition definition : definitions) {
-    //            final Optional<FunckyDefinition> otherDefinition = definitions.stream()
-    //                    .filter(def -> def.line() < definition.line())
-    //                    .filter(def -> def.name().equals(definition.name()))
-    //                    .findFirst();
-    //            if (otherDefinition.isPresent()) {
-    //                throw new SneakyCompilationException(
-    //                        new NameAlreadyDefinedException(definition, otherDefinition.get()));
-    //            }
-    //            canonical.add(canonicalize(definition, imports));
-    //        }
-    //        return canonical;
-    //        return null;
-    //    }
-
-    private URI resolve(final FunckyReference reference, final List<Import> imports) {
-        final Optional<Import> inport = imports.stream()
-                .filter(imp -> imp.prefix().equals(reference.getPrefix()))
-                .findFirst();
-        if (inport.isEmpty()) {
-            throw new SneakyCompilationException(new UnboundPrefixException(reference));
-        }
-        return inport.get().namespace();
     }
 
     private FunckyScript inferTypes(final FunckyScript script, final boolean main) {
