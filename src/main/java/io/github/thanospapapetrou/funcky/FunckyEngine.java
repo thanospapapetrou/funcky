@@ -152,9 +152,9 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     private FunckyScript compile(final Reader script, final URI file, final boolean main)
             throws FunckyCompilationException {
         try {
-            return linker.link(preprocessor.preprocess(parser.parse(
-                    tokenizer.tokenize(script, file).stream().filter(token -> token.type() != TokenType.COMMENT)
-                            .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
+            return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(script, file).stream()
+                    .filter(token -> token.type() != TokenType.COMMENT)
+                    .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }
