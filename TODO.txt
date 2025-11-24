@@ -20,11 +20,14 @@ new methods and tests for records
 monads
 java monad
 
+instanceof with pattern matching
+linear compiler and linker
+java code as java: URIs
+remove engine from values and expressions
 remove funckyjavaconverter
+transpiler
+rewrite preprocessor
 
 -Funcky> exit
 -java.net.MalformedURLException: unknown protocol: funcky
-rethink static methods
 
-ip-register-ipo-client
-missing tags 1.5.0-RC1.1

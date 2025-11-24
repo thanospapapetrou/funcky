@@ -107,7 +107,7 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     public FunckyExpression compile(final String expression) throws FunckyCompilationException {
         try {
             return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
-                    .filter(token -> !token.type().equals(TokenType.COMMENT))
+                    .filter(token -> token.type() != TokenType.COMMENT)
                     .collect(Collectors.toCollection(ArrayDeque::new)))));
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
@@ -153,7 +153,7 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
             throws FunckyCompilationException {
         try {
             return linker.link(preprocessor.preprocess(parser.parse(
-                    tokenizer.tokenize(script, file).stream().filter(token -> !token.type().equals(TokenType.COMMENT))
+                    tokenizer.tokenize(script, file).stream().filter(token -> token.type() != TokenType.COMMENT)
                             .collect(Collectors.toCollection(ArrayDeque::new)), file)), main);
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
