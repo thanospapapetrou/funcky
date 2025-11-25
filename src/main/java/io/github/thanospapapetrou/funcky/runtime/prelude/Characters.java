@@ -17,28 +17,27 @@ import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
 public final class Characters extends FunckyLibrary {
     private static final String ERROR_INVALID_UNICODE_CODE_POINT = "Invalid Unicode code point `%1$s`";
 
-    public final HigherOrderFunction $uppercase = new HigherOrderFunction(engine, this, CHARACTER, CHARACTER) {
+    public final HigherOrderFunction $uppercase = new HigherOrderFunction(this, CHARACTER, CHARACTER) {
         @Override
         protected FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-            return new FunckyCharacter(engine,
-                    Character.toUpperCase(((FunckyCharacter) arguments.getFirst().eval(context)).getValue()));
+            return new FunckyCharacter(Character.toUpperCase(((FunckyCharacter) arguments.getFirst().eval(context))
+                    .getValue()));
         }
     };
-    public final HigherOrderFunction $lowercase = new HigherOrderFunction(engine, this, CHARACTER, CHARACTER) {
+    public final HigherOrderFunction $lowercase = new HigherOrderFunction(this, CHARACTER, CHARACTER) {
         @Override
         protected FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-            return new FunckyCharacter(engine,
+            return new FunckyCharacter(
                     Character.toLowerCase(((FunckyCharacter) arguments.getFirst().eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction $number = new HigherOrderFunction(engine, this, CHARACTER, NUMBER) {
+    public final HigherOrderFunction $number = new HigherOrderFunction(this, CHARACTER, NUMBER) {
         @Override
         protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-            return new FunckyNumber(engine,
-                    new BigDecimal(((FunckyCharacter) arguments.getFirst().eval(context)).getValue()));
+            return new FunckyNumber(new BigDecimal(((FunckyCharacter) arguments.getFirst().eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction $character = new HigherOrderFunction(engine, this, NUMBER, CHARACTER) {
+    public final HigherOrderFunction $character = new HigherOrderFunction(this, NUMBER, CHARACTER) {
         @Override
         protected FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             final FunckyNumber codePointNumber = (FunckyNumber) arguments.getFirst().eval(context);
@@ -47,7 +46,7 @@ public final class Characters extends FunckyLibrary {
             if ((codePointInt < Character.MIN_VALUE) || (codePointInt >= Character.MAX_VALUE + 1)) {
                 throw new SneakyRuntimeException(String.format(ERROR_INVALID_UNICODE_CODE_POINT, codePointNumber));
             }
-            return new FunckyCharacter(engine, (char) codePointInt);
+            return new FunckyCharacter((char) codePointInt);
         }
     };
 

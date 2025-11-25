@@ -3,7 +3,8 @@ package io.github.thanospapapetrou.funcky.runtime;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
+import javax.script.ScriptContext;
+
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
@@ -15,9 +16,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     private final FunckyRecordType type;
     private final List<FunckyExpression> components;
 
-    public FunckyRecord(final FunckyEngine engine, final FunckyRecordType type,
-            final List<FunckyExpression> components) {
-        super(engine);
+    public FunckyRecord(final FunckyRecordType type, final List<FunckyExpression> components) {
         this.type = type;
         this.components = components;
     }
@@ -33,14 +32,15 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
+        return new FunckyLiteral(null, this);
     }
 
     @Override
     public int compareTo(final FunckyRecord record) {
             for (int i = 0; i < components.size(); i++) {
                 final int componentComparison =
-                        ((Comparable<FunckyValue>) components.get(i).eval(engine.getContext())).compareTo(record.components.get(i).eval(engine.getContext()));
+                        ((Comparable<FunckyValue>) components.get(i).eval((ScriptContext) null)).compareTo(
+                                record.components.get(i).eval((ScriptContext) null));
                 if (componentComparison != 0) {
                     return componentComparison;
                 }
@@ -57,7 +57,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     public int hashCode() {
             int hashCode = 0;
             for (final FunckyExpression component : components) {
-                hashCode += component.eval(engine.getContext()).hashCode();
+                hashCode += component.eval((ScriptContext) null).hashCode();
             }
             return hashCode;
     }
@@ -66,7 +66,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     public String toString() {
             final StringBuilder string = new StringBuilder(PREFIX);
             for (final FunckyExpression component : components) {
-                string.append(component.eval(engine.getContext()).toString()).append(DELIMITER);
+                string.append(component.eval((ScriptContext) null).toString()).append(DELIMITER);
             }
             if (string.length() > PREFIX.length()) {
                 string.setLength(string.length() - DELIMITER.length());
@@ -77,7 +77,7 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     private List<FunckyValue> eval() {
         final List<FunckyValue> values = new ArrayList<>();
         for (final FunckyExpression component : components) {
-            values.add(component.eval(engine.getContext()));
+            values.add(component.eval((ScriptContext) null));
         }
         return values;
     }

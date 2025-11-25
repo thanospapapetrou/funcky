@@ -2,7 +2,8 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.function.Function;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
+import javax.script.ScriptContext;
+
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
@@ -19,9 +20,7 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
         return expression.eval(expression.getEngine().getContext()).toString();
     }
 
-    public FunckyList(final FunckyEngine engine, final FunckyListType type, final FunckyExpression head,
-            final FunckyExpression tail) {
-        super(engine);
+    public FunckyList(final FunckyListType type, final FunckyExpression head, final FunckyExpression tail) {
         this.type = type;
         this.head = head;
         this.tail = tail;
@@ -37,7 +36,7 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
 
     public String toString(final Function<FunckyExpression, String> toString) {
         final StringBuilder string = new StringBuilder(PREFIX);
-        for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval(engine.getContext())) {
+        for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval((ScriptContext) null)) {
             string.append(toString.apply(list.head)).append(DELIMITER);
         }
         if (string.length() > PREFIX.length()) {
@@ -53,42 +52,42 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
+        return new FunckyLiteral(null, this);
     }
 
     @Override
     public int compareTo(final FunckyList list) {
         final int headComparison = (head == null) ? ((list.head == null) ? 0 : -1) : ((list.head == null) ? 1
-                : ((Comparable<FunckyValue>) head.eval(engine.getContext())).compareTo(
-                        list.head.eval(engine.getContext())));
+                : ((Comparable<FunckyValue>) head.eval((ScriptContext) null)).compareTo(
+                        list.head.eval((ScriptContext) null)));
         return (headComparison == 0) ? ((tail == null) ? ((list.tail == null) ? 0 : -1) : ((list.tail == null) ? 1
-                : ((Comparable<FunckyValue>) tail.eval(engine.getContext())).compareTo(
-                        list.tail.eval(engine.getContext()))))
+                : ((Comparable<FunckyValue>) tail.eval((ScriptContext) null)).compareTo(
+                        list.tail.eval((ScriptContext) null))))
                     : headComparison;
     }
 
     @Override
     public boolean equals(final Object object) {
             return (object instanceof FunckyList) && ((head == null) ? (((FunckyList) object).head == null)
-                    : ((((FunckyList) object).head != null) && head.eval(engine.getContext())
-                            .equals(((FunckyList) object).head.eval(engine.getContext()))))
+                    : ((((FunckyList) object).head != null) && head.eval((ScriptContext) null)
+                            .equals(((FunckyList) object).head.eval((ScriptContext) null))))
                     && ((tail == null) ? (((FunckyList) object).tail == null)
-                    : ((((FunckyList) object).tail != null) && tail.eval(engine.getContext())
-                            .equals(((FunckyList) object).tail.eval(engine.getContext()))));
+                    : ((((FunckyList) object).tail != null) && tail.eval((ScriptContext) null)
+                            .equals(((FunckyList) object).tail.eval((ScriptContext) null))));
     }
 
     @Override
     public int hashCode() {
-        return ((head == null) ? 0 : head.eval(engine.getContext()).hashCode()) + ((tail == null) ? 0
-                : tail.eval(engine.getContext()).hashCode());
+        return ((head == null) ? 0 : head.eval((ScriptContext) null).hashCode()) + ((tail == null) ? 0
+                : tail.eval((ScriptContext) null).hashCode());
     }
 
     @Override
     public String toString() {
-        if (type.equals(FunckyListType.STRING.apply(engine))) {
+        if (type.equals(FunckyListType.STRING)) {
                 final StringBuilder string = new StringBuilder();
-            for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval(engine.getContext())) {
-                string.append(((FunckyCharacter) list.head.eval(engine.getContext())).getValue());
+            for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval((ScriptContext) null)) {
+                string.append(((FunckyCharacter) list.head.eval((ScriptContext) null)).getValue());
                 }
                 return string.toString();
             }

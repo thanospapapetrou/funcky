@@ -1,13 +1,11 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
 public final class FunckyCharacter extends FunckyValue implements Comparable<FunckyCharacter> {
     private final char value;
 
-    public FunckyCharacter(final FunckyEngine engine, final char value) {
-        super(engine);
+    public FunckyCharacter(final char value) {
         this.value = value;
     }
 
@@ -17,12 +15,12 @@ public final class FunckyCharacter extends FunckyValue implements Comparable<Fun
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.CHARACTER.apply(engine);
+        return FunckySimpleType.CHARACTER;
     }
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
+        return new FunckyLiteral(null, this);
     }
 
     @Override

@@ -46,13 +46,11 @@ public final class FunckyLiteral extends FunckyExpression {
 
     @Override
     public String toString() {
-        if (value.getType().equals(FunckySimpleType.CHARACTER.apply(engine))) {
+        if (value.getType().equals(FunckySimpleType.CHARACTER)) {
             return String.format(FORMAT_CHARACTER, EscapeHelper.escape(value.toString()));
-        }
-        if (value.getType().equals(FunckyListType.STRING.apply(engine))) {
+        } else if (value.getType().equals(FunckyListType.STRING)) {
             return String.format(FORMAT_STRING, EscapeHelper.escape(value.toString()));
-        }
-        if (value.getType() instanceof FunckyListType) {
+        } else if (value.getType() instanceof FunckyListType) {
             return ((FunckyList) value).toString(FunckyExpression::toString);
         }
         return value.toString();

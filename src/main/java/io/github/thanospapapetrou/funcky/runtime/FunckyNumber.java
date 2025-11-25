@@ -2,14 +2,12 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.math.BigDecimal;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
 public final class FunckyNumber extends FunckyValue implements Comparable<FunckyNumber> {
     private final BigDecimal value;
 
-    public FunckyNumber(final FunckyEngine engine, final BigDecimal value) {
-        super(engine);
+    public FunckyNumber(final BigDecimal value) {
         this.value = value;
     }
 
@@ -19,12 +17,12 @@ public final class FunckyNumber extends FunckyValue implements Comparable<Funcky
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.NUMBER.apply(engine);
+        return FunckySimpleType.NUMBER;
     }
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
+        return new FunckyLiteral(null, this);
     }
 
     @Override

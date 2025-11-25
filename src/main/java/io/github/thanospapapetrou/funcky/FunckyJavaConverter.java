@@ -27,7 +27,7 @@ public class FunckyJavaConverter {
     }
 
     public FunckyNumber convert(final Number number) {
-        return new FunckyNumber(engine, new BigDecimal(number.toString()));
+        return new FunckyNumber(new BigDecimal(number.toString()));
     }
 
     public BigDecimal convert(final FunckyNumber number) {
@@ -35,7 +35,7 @@ public class FunckyJavaConverter {
     }
 
     public FunckyBoolean convert(final boolean bool) {
-        return bool ? FunckyBoolean.TRUE.apply(engine) : FunckyBoolean.FALSE.apply(engine);
+        return bool ? FunckyBoolean.TRUE : FunckyBoolean.FALSE;
     }
 
     public boolean convert(final FunckyBoolean bool) {
@@ -43,7 +43,7 @@ public class FunckyJavaConverter {
     }
 
     public FunckyCharacter convert(final char character) {
-        return new FunckyCharacter(engine, character);
+        return new FunckyCharacter(character);
     }
 
     public char convert(final FunckyCharacter character) {
@@ -61,21 +61,20 @@ public class FunckyJavaConverter {
     public FunckyList convert(final Iterator<?> iterator) {
         final FunckyValue head = iterator.hasNext() ? convert(iterator.next()) : null;
         final FunckyList tail = (head == null) ? null : convert(iterator);
-        final FunckyType headType = (head == null) ? new FunckyTypeVariable(engine) : head.getType();
-        final FunckyListType tailType =
-                (tail == null) ? new FunckyListType(engine, new FunckyLiteral(engine, new FunckyTypeVariable(engine))) : tail.getType();
+        final FunckyType headType = (head == null) ? new FunckyTypeVariable() : head.getType();
+        final FunckyListType tailType = (tail == null) ? FunckyListType.LIST(new FunckyTypeVariable()) : tail.getType();
         final String error = String.format(ERROR_CONVERTING_TO_FUNCKY, iterator.getClass().getName(), iterator,
                 engine.getFactory().getLanguageName());
-        final FunckyListType listType = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine, headType)).unify(tailType);
+        final FunckyListType listType = (FunckyListType) FunckyListType.LIST(headType).unify(tailType);
             if (listType == null) {
                 throw new IllegalArgumentException(error);
             }
-        return new FunckyList(engine, listType, (head == null) ? null : new FunckyLiteral(engine, head),
+        return new FunckyList(listType, (head == null) ? null : new FunckyLiteral(engine, head),
                 (tail == null) ? null : new FunckyLiteral(engine, tail));
     }
 
     public FunckyList convert(final String string) {
-        return new FunckyList(engine, FunckyListType.STRING.apply(engine),
+        return new FunckyList(FunckyListType.STRING,
                 string.isEmpty() ? null : new FunckyLiteral(engine, convert(string.charAt(0))),
                 string.isEmpty() ? null : new FunckyLiteral(engine, convert(string.substring(1))));
     }

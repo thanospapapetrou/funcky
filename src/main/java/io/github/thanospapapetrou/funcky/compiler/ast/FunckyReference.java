@@ -100,7 +100,7 @@ public final class FunckyReference extends FunckyExpression {
             return assumptions.get(this);
         }
         final Map<FunckyReference, FunckyTypeVariable> newAssumptions = new HashMap<>(assumptions);
-        newAssumptions.put(this, new FunckyTypeVariable(engine));
+        newAssumptions.put(this, new FunckyTypeVariable());
         return resolveExpression().getType(newAssumptions);
     }
 

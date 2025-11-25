@@ -62,8 +62,8 @@ public final class FunckyApplication extends FunckyExpression {
     protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions) {
         final FunckyType functionType = function.getType(assumptions);
         final FunckyType argumentType = argument.getType(assumptions);
-            final FunckyFunctionType type = (FunckyFunctionType) functionType.unify(
-                    new FunckyFunctionType(engine, new FunckyLiteral(engine, argumentType), new FunckyLiteral(engine, new FunckyTypeVariable(engine))));
+        final FunckyFunctionType type = (FunckyFunctionType) functionType
+                .unify(FunckyFunctionType.FUNCTION(argumentType, new FunckyTypeVariable()));
             if (type != null) {
                 return ((FunckyType) type.getRange().eval(engine.getContext()));
             } else {

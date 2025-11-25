@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
+import javax.script.ScriptContext;
+
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
@@ -16,15 +16,12 @@ public final class FunckyFunctionType extends FunckyType {
     private final FunckyExpression domain;
     private final FunckyExpression range;
 
-    public static Function<FunckyEngine, FunckyFunctionType> FUNCTION(final Function<FunckyEngine, ?
-            extends FunckyType>... types) {
-        return engine -> new FunckyFunctionType(engine, new FunckyLiteral(engine, types[0].apply(engine)),
-                new FunckyLiteral(engine, (types.length == 2) ? types[1].apply(engine) : FUNCTION(Arrays.copyOfRange(types, 1,
-                        types.length)).apply(engine)));
+    public static FunckyFunctionType FUNCTION(final FunckyType... types) {
+        return new FunckyFunctionType(new FunckyLiteral(null, types[0]), new FunckyLiteral(null,
+                (types.length == 2) ? types[1] : FUNCTION(Arrays.copyOfRange(types, 1, types.length))));
     }
 
-    public FunckyFunctionType(final FunckyEngine engine, final FunckyExpression domain, final FunckyExpression range) {
-        super(engine);
+    public FunckyFunctionType(final FunckyExpression domain, final FunckyExpression range) {
         this.domain = domain;
         this.range = range;
     }
@@ -39,7 +36,7 @@ public final class FunckyFunctionType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new FunckyApplication(new Types(engine).$Function.toExpression(),
+        return new FunckyApplication(new FunckyApplication(new Types(null).$Function.toExpression(),
                 domain), range);
     }
 
@@ -48,36 +45,38 @@ public final class FunckyFunctionType extends FunckyType {
             final int classComparison = super.compareTo(type);
             if (classComparison == 0) {
                 final int domainComparison =
-                        ((FunckyType) domain.eval(engine.getContext())).compareTo((FunckyType) ((FunckyFunctionType) type).domain.eval(engine.getContext()));
-                return (domainComparison == 0) ? ((FunckyType) range.eval(engine.getContext())).compareTo(
-                        (FunckyType) ((FunckyFunctionType) type).range.eval(engine.getContext())) : domainComparison;
+                        ((FunckyType) domain.eval((ScriptContext) null)).compareTo(
+                                (FunckyType) ((FunckyFunctionType) type).domain.eval((ScriptContext) null));
+                return (domainComparison == 0) ? ((FunckyType) range.eval((ScriptContext) null)).compareTo(
+                        (FunckyType) ((FunckyFunctionType) type).range.eval((ScriptContext) null)) : domainComparison;
             }
             return classComparison;
     }
 
     @Override
     public boolean equals(final Object object) {
-            return (object instanceof FunckyFunctionType) && domain.eval(engine.getContext())
-                    .equals(((FunckyFunctionType) object).domain.eval(engine.getContext()))
-                    && range.eval(engine.getContext()).equals(((FunckyFunctionType) object).range.eval(engine.getContext()));
+        return (object instanceof FunckyFunctionType) && domain.eval((ScriptContext) null)
+                .equals(((FunckyFunctionType) object).domain.eval((ScriptContext) null))
+                && range.eval((ScriptContext) null)
+                .equals(((FunckyFunctionType) object).range.eval((ScriptContext) null));
     }
 
     @Override
     public int hashCode() {
-            return domain.eval(engine.getContext()).hashCode() + range.eval(engine.getContext()).hashCode();
+        return domain.eval((ScriptContext) null).hashCode() + range.eval((ScriptContext) null).hashCode();
     }
 
     @Override
     protected Set<FunckyTypeVariable> getTypeVariables() {
-        final Set<FunckyTypeVariable> typeVariables = new HashSet<>(((FunckyType) domain.eval(engine.getContext())).getTypeVariables());
-        typeVariables.addAll(((FunckyType) range.eval(engine.getContext())).getTypeVariables());
+        final Set<FunckyTypeVariable> typeVariables =
+                new HashSet<>(((FunckyType) domain.eval((ScriptContext) null)).getTypeVariables());
+        typeVariables.addAll(((FunckyType) range.eval((ScriptContext) null)).getTypeVariables());
         return typeVariables;
     }
 
     @Override
     protected FunckyFunctionType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return new FunckyFunctionType(engine,
-                new FunckyLiteral(engine, ((FunckyType) domain.eval(engine.getContext())).bind(bindings)),
-                new FunckyLiteral(engine, ((FunckyType) range.eval(engine.getContext())).bind(bindings)));
+        return FUNCTION(((FunckyType) domain.eval((ScriptContext) null)).bind(bindings),
+                ((FunckyType) range.eval((ScriptContext) null)).bind(bindings));
     }
 }

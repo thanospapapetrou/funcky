@@ -157,18 +157,18 @@ public class Parser {
             case OCTAL_NUMBER:
             case HEXADECIMAL_NUMBER:
                 return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        new FunckyNumber(engine, new BigDecimal(new BigInteger(token.signedValue(),
+                        new FunckyNumber(new BigDecimal(new BigInteger(token.signedValue(),
                                 token.type().getRadix().getRadix()))));
             case DECIMAL_NUMBER:
                 return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        new FunckyNumber(engine, new BigDecimal(token.value())));
+                        new FunckyNumber(new BigDecimal(token.value())));
             case CHARACTER:
                 return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        new FunckyCharacter(engine, token.stringValue().charAt(0)));
+                        new FunckyCharacter(token.stringValue().charAt(0)));
             case OCTAL_CHARACTER:
             case HEXADECIMAL_CHARACTER:
                 return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        new FunckyCharacter(engine, (char) Integer.parseInt(token.unsignedValue(),
+                        new FunckyCharacter((char) Integer.parseInt(token.unsignedValue(),
                                 token.type().getRadix().getRadix())));
             case STRING:
                 if (peek(input, union(Set.of(TokenType.PERIOD, TokenType.SPACE), follow)).type()
@@ -188,7 +188,7 @@ public class Parser {
                 }
                 return token.value().equals(TYPE_VARIABLE)
                         ? new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        new FunckyTypeVariable(engine))
+                        new FunckyTypeVariable())
                         : new FunckyReference(engine, token.file(), token.line(), token.column(),
                                 token.value());
             case LEFT_PARENTHESIS:
@@ -232,11 +232,11 @@ public class Parser {
     }
 
     private FunckyLiteral parseString(final String string, final Token token) {
-        return new FunckyLiteral(engine, token.file(), token.line(), token.column(), new FunckyList(engine,
-                new FunckyListType(engine, new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        FunckySimpleType.CHARACTER.apply(engine))), string.isEmpty() ? null
+        return new FunckyLiteral(engine, token.file(), token.line(), token.column(), new FunckyList(
+                new FunckyListType(new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                        FunckySimpleType.CHARACTER)), string.isEmpty() ? null
                         : new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                                new FunckyCharacter(engine, string.charAt(0))),
+                                new FunckyCharacter(string.charAt(0))),
                         string.isEmpty() ? null : parseString(string.substring(1), token)));
     }
 
@@ -252,14 +252,15 @@ public class Parser {
             final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
             final FunckyLiteral tail = elements.isEmpty() ? null
                     : parseList(elements.subList(1, elements.size()), leftSquareBracket);
-        final FunckyListType listType = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine,
-                (head == null) ? new FunckyTypeVariable(engine) : head.getType())).unify(
-                (tail == null) ? new FunckyListType(engine, new FunckyLiteral(engine, new FunckyTypeVariable(engine))) : tail.getType());
+        final FunckyListType listType = (FunckyListType) new FunckyListType(new FunckyLiteral(engine,
+                (head == null) ? new FunckyTypeVariable() : head.getType())).unify(
+                (tail == null) ? new FunckyListType(new FunckyLiteral(engine, new FunckyTypeVariable()))
+                        : tail.getType());
             if (listType == null) {
-                throw new SneakyCompilationException(new InvalidListLiteralException(engine, head, tail));
+                throw new SneakyCompilationException(new InvalidListLiteralException(head, tail));
             }
             return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(),
-                    leftSquareBracket.column(), new FunckyList(engine, listType, head, tail));
+                    leftSquareBracket.column(), new FunckyList(listType, head, tail));
     }
 
     private FunckyLiteral parseRecord(final List<FunckyExpression> components, final Token leftCurlyBracket) {
@@ -268,7 +269,7 @@ public class Parser {
             types.add(component.getType());
         }
         return new FunckyLiteral(engine, leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),
-                new FunckyRecord(engine, new FunckyRecordType(engine, new FunckyLiteral(engine, engine.getConverter().convert(types))),
+                new FunckyRecord(new FunckyRecordType(new FunckyLiteral(engine, engine.getConverter().convert(types))),
                         components));
     }
 
