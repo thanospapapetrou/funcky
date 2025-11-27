@@ -3,6 +3,7 @@ package io.github.thanospapapetrou.funcky.runtime;
 import java.util.function.Function;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 
 public final class FunckyList extends FunckyValue implements Comparable<FunckyList> {
     private static final String DELIMITER = ", ";
@@ -15,6 +16,12 @@ public final class FunckyList extends FunckyValue implements Comparable<FunckyLi
 
     private static String toString(final FunckyExpression expression) {
         return expression.eval().toString();
+    }
+
+    public static FunckyList string(final String string) {
+        return new FunckyList(FunckyListType.STRING,
+                string.isEmpty() ? null : new FunckyLiteral(new FunckyCharacter(string.charAt(0))),
+                string.isEmpty() ? null : new FunckyLiteral(string(string.substring(1))));
     }
 
     public FunckyList(final FunckyListType type, final FunckyExpression head, final FunckyExpression tail) {

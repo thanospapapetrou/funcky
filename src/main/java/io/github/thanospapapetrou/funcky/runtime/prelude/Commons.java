@@ -49,8 +49,8 @@ public final class Commons extends FunckyLibrary {
     };
     public final HigherOrderFunction $string = new HigherOrderFunction(this, $_a, FunckyListType.STRING) {
         @Override
-        protected FunckyValue apply(final List<FunckyExpression> arguments) {
-            return engine.getConverter().convert(arguments.getFirst().eval().toString());
+        protected FunckyList apply(final List<FunckyExpression> arguments) {
+            return FunckyList.string(arguments.getFirst().eval().toString());
         }
     };
     public final HigherOrderFunction $number = new HigherOrderFunction(this,

@@ -9,6 +9,8 @@ import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.runtime.FunckyList;
+import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 
 public class FunckyScript extends CompiledScript {
@@ -19,6 +21,12 @@ public class FunckyScript extends CompiledScript {
     protected final URI file;
     protected final List<FunckyImport> imports;
     protected final List<FunckyDefinition> definitions;
+
+    private static FunckyLiteral arguments(final String[] arguments) {
+        return new FunckyLiteral(new FunckyList(FunckyListType.LIST(FunckyListType.STRING),
+                (arguments.length == 0) ? null : new FunckyLiteral(FunckyList.string(arguments[0])),
+                (arguments.length == 0) ? null : arguments(Arrays.copyOfRange(arguments, 1, arguments.length))));
+    }
 
     public FunckyScript(final FunckyEngine engine, final URI file) {
         this(engine, file, new ArrayList<>(), new ArrayList<>());
@@ -52,7 +60,6 @@ public class FunckyScript extends CompiledScript {
     @Override
     public FunckyNumber eval(final ScriptContext context) {
         return (FunckyNumber) new FunckyApplication(new FunckyReference(getFile(), -1, -1, getFile(), MAIN),
-                new FunckyLiteral(
-                        engine.getConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval();
+                arguments(engine.getManager().getArguments())).eval();
     }
 }

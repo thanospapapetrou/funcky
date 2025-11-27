@@ -40,7 +40,6 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     private final Preprocessor preprocessor;
     private final Linker linker;
     private final ContextManager manager;
-    private final FunckyJavaConverter converter;
 
     FunckyEngine(final FunckyFactory factory) {
         this.factory = factory;
@@ -49,7 +48,6 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
         preprocessor = new Preprocessor(this);
         linker = new Linker(this);
         manager = new ContextManager(this.getContext());
-        converter = new FunckyJavaConverter(this);
     }
 
     public Linker getLinker() {
@@ -58,10 +56,6 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
 
     public ContextManager getManager() {
         return manager;
-    }
-
-    public FunckyJavaConverter getConverter() {
-        return converter;
     }
 
     @Override
