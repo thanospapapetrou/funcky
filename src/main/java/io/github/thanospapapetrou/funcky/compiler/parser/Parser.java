@@ -33,7 +33,6 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType;
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
 
@@ -229,8 +228,7 @@ public class Parser {
 
     private FunckyLiteral parseString(final String string, final Token token) {
         return new FunckyLiteral(token.file(), token.line(), token.column(),
-                new FunckyList(new FunckyListType(new FunckyLiteral(token.file(), token.line(), token.column(),
-                        FunckySimpleType.CHARACTER)), string.isEmpty() ? null
+                new FunckyList(FunckyListType.STRING, string.isEmpty() ? null
                         : new FunckyLiteral(token.file(), token.line(), token.column(),
                                 new FunckyCharacter(string.charAt(0))), string.isEmpty() ? null
                         : parseString(string.substring(1), token)));
@@ -264,8 +262,7 @@ public class Parser {
             types.add(component.getType());
         }
         return new FunckyLiteral(leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),
-                new FunckyRecord(new FunckyRecordType(new FunckyLiteral(engine.getConverter().convert(types))),
-                        components));
+                new FunckyRecord(FunckyRecordType.RECORD(types.toArray(new FunckyType[0])), components));
     }
 
     private Token consume(final Queue<Token> input, final Set<TokenType> expected) {
