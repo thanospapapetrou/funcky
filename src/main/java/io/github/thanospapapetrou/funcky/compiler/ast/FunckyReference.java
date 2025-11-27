@@ -4,9 +4,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.script.ScriptContext;
-
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
@@ -25,28 +22,25 @@ public final class FunckyReference extends FunckyExpression {
     private final String prefix;
     private final String name;
 
-    public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
-            final URI namespace, final String name) {
-        this(engine, file, line, column, namespace, null, name);
+    public FunckyReference(final URI file, final int line, final int column, final URI namespace, final String name) {
+        this(file, line, column, namespace, null, name);
     }
 
-    public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
-            final String prefix, final String name) {
-        this(engine, file, line, column, null, prefix, name);
+    public FunckyReference(final URI file, final int line, final int column, final String prefix, final String name) {
+        this(file, line, column, null, prefix, name);
     }
 
-    public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
-            final String name) {
-        this(engine, file, line, column, null, null, name);
+    public FunckyReference(final URI file, final int line, final int column, final String name) {
+        this(file, line, column, null, null, name);
     }
 
-    public FunckyReference(final FunckyEngine engine, final URI namespace, final String name) {
-        this(engine, null, -1, -1, namespace, null, name);
+    public FunckyReference(final URI namespace, final String name) {
+        this(null, -1, -1, namespace, null, name);
     }
 
-    private FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
+    private FunckyReference(final URI file, final int line, final int column,
             final URI namespace, final String prefix, final String name) {
-        super(engine, file, line, column);
+        super(file, line, column);
         this.namespace = namespace;
         this.prefix = prefix;
         this.name = name;
@@ -75,13 +69,13 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public FunckyReference normalize() {
-        return new FunckyReference(engine, file, line, column, resolveNamespace(), name);
+        return new FunckyReference(file, line, column, resolveNamespace(), name);
     }
 
     @Override
-    public FunckyValue eval(final ScriptContext context) {
+    public FunckyValue eval() {
         try {
-            return resolveExpression().eval(context);
+            return resolveExpression().eval();
         } catch (final SneakyRuntimeException e) {
             e.getCause().getStack().add(this);
             throw e;

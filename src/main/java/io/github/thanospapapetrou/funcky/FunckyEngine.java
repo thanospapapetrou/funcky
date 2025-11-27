@@ -14,7 +14,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
@@ -77,9 +77,14 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     @Override
     public FunckyValue eval(final String expression, final ScriptContext context) throws FunckyCompilationException,
             FunckyRuntimeException {
-        final FunckyExpression expr = compile(expression);
+        final FunckyScript script = compile(expression);
         try {
-            return (expr == null) ? null : expr.eval(context);
+            // TODO
+            // return (script == null) ? null : script.eval(context);
+            return (script == null) ? null : script.getDefinitions().stream()
+                    .filter(definition -> definition.name().equals(FunckyScript.IT))
+                    .map(FunckyDefinition::expression)
+                    .findFirst().get().eval();
         } catch (final SneakyRuntimeException e) {
             throw e.getCause();
         }
@@ -104,7 +109,7 @@ public class FunckyEngine extends AbstractScriptEngine implements Compilable, In
     }
 
     @Override
-    public FunckyExpression compile(final String expression) throws FunckyCompilationException {
+    public FunckyScript compile(final String expression) throws FunckyCompilationException {
         try {
             return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
                     .filter(token -> token.type() != TokenType.COMMENT)

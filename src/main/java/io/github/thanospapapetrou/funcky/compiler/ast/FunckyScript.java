@@ -12,6 +12,7 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 
 public class FunckyScript extends CompiledScript {
+    public static final String IT = "it";
     public static final String MAIN = "main";
 
     protected final FunckyEngine engine;
@@ -50,9 +51,8 @@ public class FunckyScript extends CompiledScript {
 
     @Override
     public FunckyNumber eval(final ScriptContext context) {
-            return (FunckyNumber) new FunckyApplication(new FunckyReference(engine, getFile(), -1, -1, getFile(), MAIN),
-                    new FunckyLiteral(engine,
-                            engine.getConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval(
-                    context);
+        return (FunckyNumber) new FunckyApplication(new FunckyReference(getFile(), -1, -1, getFile(), MAIN),
+                new FunckyLiteral(
+                        engine.getConverter().convert(Arrays.asList(engine.getManager().getArguments())))).eval();
     }
 }

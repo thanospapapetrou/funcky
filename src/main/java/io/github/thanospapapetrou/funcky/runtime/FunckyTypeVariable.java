@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-
 public final class FunckyTypeVariable extends FunckyType {
     private static final AtomicInteger HASH = new AtomicInteger();
     private static final String FORMAT = "$_%1$x";
@@ -18,11 +16,6 @@ public final class FunckyTypeVariable extends FunckyType {
 
     private FunckyTypeVariable(final int hash) {
         this.hash = hash;
-    }
-
-    @Override
-    public FunckyLiteral toExpression() {
-        return new FunckyLiteral(null, this);
     }
 
     @Override

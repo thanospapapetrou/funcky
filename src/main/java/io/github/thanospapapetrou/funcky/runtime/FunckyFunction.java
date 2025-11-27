@@ -11,7 +11,7 @@ public non-sealed abstract class FunckyFunction extends FunckyValue implements C
         this.type = type;
     }
 
-    public abstract FunckyValue apply(final FunckyExpression argument, final ScriptContext context);
+    public abstract FunckyValue apply(final FunckyExpression argument);
 
     @Override
     public FunckyFunctionType getType() {

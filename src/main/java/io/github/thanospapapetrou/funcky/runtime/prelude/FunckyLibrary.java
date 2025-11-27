@@ -57,7 +57,7 @@ public sealed class FunckyLibrary extends FunckyScript
     private FunckyDefinition getDefinition(final Field field) {
         try {
             return new FunckyDefinition(getFile(), -1, field.getName().substring(Linker.JAVA_PREFIX.length()),
-                    new FunckyLiteral(engine, (FunckyValue) field.get(this)));
+                    new FunckyLiteral((FunckyValue) field.get(this)));
         } catch (final IllegalAccessException e) {
             throw new IllegalStateException(String.format(ERROR_RESOLVING_FIELD, field.getName()), e);
         }

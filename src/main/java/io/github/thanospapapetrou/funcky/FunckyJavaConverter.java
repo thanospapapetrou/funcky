@@ -69,14 +69,14 @@ public class FunckyJavaConverter {
             if (listType == null) {
                 throw new IllegalArgumentException(error);
             }
-        return new FunckyList(listType, (head == null) ? null : new FunckyLiteral(engine, head),
-                (tail == null) ? null : new FunckyLiteral(engine, tail));
+        return new FunckyList(listType, (head == null) ? null : new FunckyLiteral(head),
+                (tail == null) ? null : new FunckyLiteral(tail));
     }
 
     public FunckyList convert(final String string) {
         return new FunckyList(FunckyListType.STRING,
-                string.isEmpty() ? null : new FunckyLiteral(engine, convert(string.charAt(0))),
-                string.isEmpty() ? null : new FunckyLiteral(engine, convert(string.substring(1))));
+                string.isEmpty() ? null : new FunckyLiteral(convert(string.charAt(0))),
+                string.isEmpty() ? null : new FunckyLiteral(convert(string.substring(1))));
     }
 
     public Stream<?> convert(final FunckyList list) {

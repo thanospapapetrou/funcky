@@ -3,9 +3,6 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 import java.net.URI;
 import java.util.Map;
 
-import javax.script.ScriptContext;
-
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
@@ -20,14 +17,14 @@ public final class FunckyLiteral extends FunckyExpression {
 
     private final FunckyValue value;
 
-    public FunckyLiteral(final FunckyEngine engine, final URI file, final int line, final int column,
+    public FunckyLiteral(final URI file, final int line, final int column,
             final FunckyValue value) {
-        super(engine, file, line, column);
+        super(file, line, column);
         this.value = value;
     }
 
-    public FunckyLiteral(final FunckyEngine engine, final FunckyValue value) {
-        this(engine, null, -1, -1, value);
+    public FunckyLiteral(final FunckyValue value) {
+        this(null, -1, -1, value);
     }
 
     public FunckyValue getValue() {
@@ -40,7 +37,7 @@ public final class FunckyLiteral extends FunckyExpression {
     }
 
     @Override
-    public FunckyValue eval(final ScriptContext context) {
+    public FunckyValue eval() {
         return value;
     }
 

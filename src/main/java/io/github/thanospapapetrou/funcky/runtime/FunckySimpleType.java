@@ -31,7 +31,7 @@ public final class FunckySimpleType extends FunckyType {
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(null, new Types(null).getFile(), name);
+        return new FunckyReference(new Types(null).getFile(), name);
     }
 
     @Override

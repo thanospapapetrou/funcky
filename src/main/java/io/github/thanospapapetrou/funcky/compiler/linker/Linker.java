@@ -76,12 +76,15 @@ public class Linker {
         }
     }
 
-    public FunckyExpression link(final FunckyExpression expression) {
+    public FunckyScript link(final FunckyExpression expression) {
         engine.getManager().setLoaded(getStdin());
         if (expression != null) {
+            final FunckyScript script = new FunckyScript(engine, getStdin());
+            script.getDefinitions().add(new FunckyDefinition(getStdin(), -1, FunckyScript.IT, expression));
             LOGGER.fine(expression.getType().toString());
+            return script;
         }
-        return expression;
+        return null;
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) {

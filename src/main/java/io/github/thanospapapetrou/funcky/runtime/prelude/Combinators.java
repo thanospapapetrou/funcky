@@ -2,8 +2,6 @@ package io.github.thanospapapetrou.funcky.runtime.prelude;
 
 import java.util.List;
 
-import javax.script.ScriptContext;
-
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
@@ -19,15 +17,15 @@ public final class Combinators extends FunckyLibrary {
     public final HigherOrderFunction $s = new HigherOrderFunction(this,
             FUNCTION($_a, $_b, $_c), FUNCTION($_a, $_b), $_a, $_c) {
         @Override
-        protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        protected FunckyValue apply(final List<FunckyExpression> arguments) {
             return new FunckyApplication(new FunckyApplication(arguments.get(0), arguments.get(2)),
-                    new FunckyApplication(arguments.get(1), arguments.get(2))).eval(context);
+                    new FunckyApplication(arguments.get(1), arguments.get(2))).eval();
         }
     };
     public final HigherOrderFunction $k = new HigherOrderFunction(this, $_a, $_b, $_a) {
         @Override
-        protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-            return arguments.getFirst().eval(context);
+        protected FunckyValue apply(final List<FunckyExpression> arguments) {
+            return arguments.getFirst().eval();
         }
     };
 
