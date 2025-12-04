@@ -25,8 +25,15 @@ linear compiler and linker
 java code as java: URIs
 remove engine from values and expressions
 remove funckyjavaconverter
+convert context manager to context
 transpiler
 rewrite preprocessor
+switch with pattern matching
+instanceof with pattern matching
+static imports no in java, only in groovy
+use static methods for literal types and etc
+record does not need type, it is just the list of component types
+cleanup linker
 
 -Funcky> exit
 -java.net.MalformedURLException: unknown protocol: funcky
