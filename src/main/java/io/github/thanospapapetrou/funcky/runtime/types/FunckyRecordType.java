@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.runtime;
+package io.github.thanospapapetrou.funcky.runtime.types;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,10 +12,11 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.TYPE;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.TYPE;
 
 public final class FunckyRecordType extends FunckyType {
     public static final Function<FunckyEngine, FunckyRecordType> UNIT = RECORD();

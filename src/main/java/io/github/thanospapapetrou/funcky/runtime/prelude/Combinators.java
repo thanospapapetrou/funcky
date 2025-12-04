@@ -7,10 +7,10 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
 
 public final class Combinators extends FunckyLibrary {
     private final FunckyTypeVariable $_a = new FunckyTypeVariable(engine);

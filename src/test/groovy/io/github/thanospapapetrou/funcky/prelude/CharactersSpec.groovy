@@ -8,9 +8,9 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeExcepti
 import io.github.thanospapapetrou.funcky.runtime.prelude.Characters
 import spock.lang.Unroll
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER
 
 class CharactersSpec extends BaseSpec {
     @Unroll('Test uppercase (expression: #expression)')

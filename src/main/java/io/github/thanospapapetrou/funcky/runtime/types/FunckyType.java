@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.runtime;
+package io.github.thanospapapetrou.funcky.runtime.types;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.linker.TypeInferenceContext;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public sealed abstract class FunckyType extends FunckyValue implements Comparable<FunckyType>
         permits FunckySimpleType, FunckyFunctionType, FunckyListType, FunckyRecordType, FunckyTypeVariable {

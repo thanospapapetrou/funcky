@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.runtime;
+package io.github.thanospapapetrou.funcky.runtime.types;
 
 import java.util.Map;
 import java.util.Set;
@@ -10,7 +10,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
 
 public final class FunckyListType extends FunckyType {
     public static final Function<FunckyEngine, FunckyListType> STRING = LIST(CHARACTER);

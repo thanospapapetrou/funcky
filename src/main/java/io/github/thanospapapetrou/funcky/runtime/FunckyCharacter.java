@@ -2,6 +2,7 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
 public final class FunckyCharacter extends FunckyValue implements Comparable<FunckyCharacter> {
     private final char value;

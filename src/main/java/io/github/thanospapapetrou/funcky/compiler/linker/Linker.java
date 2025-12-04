@@ -24,16 +24,14 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.NameAlreadyDefinedE
 import io.github.thanospapapetrou.funcky.compiler.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedMainException;
-import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION;
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
 
 public class Linker {
     public static final String JAVA_PREFIX = "$"; // TODO move to transpiler

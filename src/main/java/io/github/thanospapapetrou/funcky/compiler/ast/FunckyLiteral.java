@@ -8,10 +8,10 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
-import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public final class FunckyLiteral extends FunckyExpression {

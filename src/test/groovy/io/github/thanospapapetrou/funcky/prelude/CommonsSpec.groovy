@@ -10,12 +10,12 @@ import spock.lang.Unroll
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyBoolean.FALSE
 import static io.github.thanospapapetrou.funcky.runtime.FunckyBoolean.TRUE
-import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.TYPE
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.BOOLEAN
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.TYPE
 
 class CommonsSpec extends BaseSpec {
     @Unroll('Test equal (expression: #expression)')

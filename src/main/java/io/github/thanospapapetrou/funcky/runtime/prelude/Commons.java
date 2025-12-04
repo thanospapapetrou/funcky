@@ -10,13 +10,13 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING;
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN;
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.BOOLEAN;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
 
 public final class Commons extends FunckyLibrary {
     private static final String ERROR_INVALID_NUMBER = "Invalid number `%1$s`";

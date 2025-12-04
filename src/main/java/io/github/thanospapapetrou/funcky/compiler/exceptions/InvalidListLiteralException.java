@@ -3,9 +3,9 @@ package io.github.thanospapapetrou.funcky.compiler.exceptions;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
 
 public final class InvalidListLiteralException extends FunckyCompilationException {
     private static final String MESSAGE =

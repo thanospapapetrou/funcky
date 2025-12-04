@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.runtime;
+package io.github.thanospapapetrou.funcky.runtime.types;
 
 import java.util.List;
 import java.util.Map;

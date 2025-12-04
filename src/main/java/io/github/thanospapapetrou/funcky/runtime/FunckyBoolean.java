@@ -5,6 +5,7 @@ import java.util.function.Function;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
 public final class FunckyBoolean extends FunckyValue implements Comparable<FunckyBoolean> {
     public static final Function<FunckyEngine, FunckyBoolean> FALSE = engine -> new FunckyBoolean(engine, false);

@@ -6,9 +6,9 @@ import spock.lang.Unroll
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyBoolean.FALSE
 import static io.github.thanospapapetrou.funcky.runtime.FunckyBoolean.TRUE
-import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.BOOLEAN
 
 class BooleansSpec extends BaseSpec {
     @Unroll('Test false (expression: #expression)')

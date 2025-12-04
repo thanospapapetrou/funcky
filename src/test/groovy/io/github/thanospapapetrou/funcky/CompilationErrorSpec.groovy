@@ -14,16 +14,16 @@ import io.github.thanospapapetrou.funcky.compiler.exceptions.UnexpectedTokenExce
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType
 import io.github.thanospapapetrou.funcky.compiler.exceptions.UnrecognizedInputException
-import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType
-import io.github.thanospapapetrou.funcky.runtime.FunckyListType
-import io.github.thanospapapetrou.funcky.runtime.FunckyType
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyType
 import spock.lang.Unroll
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.STRING
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.BOOLEAN
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER
 
 class CompilationErrorSpec extends BaseSpec {
     @Unroll('Test unrecognized input error in expression (expression: #expression)')

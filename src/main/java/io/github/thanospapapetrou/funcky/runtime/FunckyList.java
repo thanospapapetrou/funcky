@@ -5,6 +5,7 @@ import java.util.function.Function;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
 
 public final class FunckyList extends FunckyValue implements Comparable<FunckyList> {
     private static final String DELIMITER = ", ";

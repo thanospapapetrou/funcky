@@ -11,8 +11,8 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.CHARACTER;
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
 
 public final class Characters extends FunckyLibrary {
     private static final String ERROR_INVALID_UNICODE_CODE_POINT = "Invalid Unicode code point `%1$s`";

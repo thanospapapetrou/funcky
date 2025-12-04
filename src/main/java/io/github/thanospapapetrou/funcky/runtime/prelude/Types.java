@@ -7,18 +7,18 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
-import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
-import io.github.thanospapapetrou.funcky.runtime.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyRecordType;
-import io.github.thanospapapetrou.funcky.runtime.FunckySimpleType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.BOOLEAN;
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST;
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.TYPE;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.BOOLEAN;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.TYPE;
 
 public final class Types extends FunckyLibrary {
     private static final String ERROR_COMPONENTS = "Can not get components of non-record type `%1$s`";

@@ -11,7 +11,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
 
 public final class Numbers extends FunckyLibrary {
     private static final String ERROR_DIVISION_BY_ZERO = "Division by zero";

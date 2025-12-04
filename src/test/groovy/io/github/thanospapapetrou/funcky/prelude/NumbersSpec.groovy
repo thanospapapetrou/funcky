@@ -10,9 +10,9 @@ import spock.lang.Unroll
 import java.math.RoundingMode
 
 import static io.github.thanospapapetrou.funcky.runtime.FunckyBoolean.FALSE
-import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION
-import static io.github.thanospapapetrou.funcky.runtime.FunckyListType.LIST
-import static io.github.thanospapapetrou.funcky.runtime.FunckySimpleType.NUMBER
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER
 
 class NumbersSpec extends BaseSpec {
     @Unroll('Test rounding modes (expression: #expression)')

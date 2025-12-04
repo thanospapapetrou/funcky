@@ -16,12 +16,12 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
-import io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.FunckyTypeVariable;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
-import static io.github.thanospapapetrou.funcky.runtime.FunckyFunctionType.FUNCTION;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
 
 public abstract class HigherOrderFunction extends FunckyFunction {
     private static final String ERROR_RESOLVING_FIELD = "Error resolving field `%1$s`";

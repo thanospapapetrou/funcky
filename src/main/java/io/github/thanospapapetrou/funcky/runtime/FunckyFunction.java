@@ -4,6 +4,7 @@ import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 
 public non-sealed abstract class FunckyFunction extends FunckyValue implements Comparable<FunckyFunction> {
     protected final FunckyFunctionType type;
