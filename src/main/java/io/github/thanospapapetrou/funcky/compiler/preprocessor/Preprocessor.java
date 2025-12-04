@@ -1,5 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.preprocessor;
 
+import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.Map;
 
@@ -51,7 +52,8 @@ public class Preprocessor {
     }
 
     private FunckyExpression transform(final int argument, final FunckyExpression expression) {
-        if (isArgument(argument, expression)) {
+        if (isArgument(argument, expression)) { // TODO identify stray arguments (check for $ outside $$ and ($ N)
+            // where N >= arguments
             return i(expression);
         } else if (expression instanceof FunckyApplication application) {
             if ((!containsArgument(argument, application.getFunction()))
@@ -74,22 +76,35 @@ public class Preprocessor {
                 && (otherApplication.getFunction() instanceof FunckyReference reference)
                 && (reference.getNamespace() == null) && (reference.getPrefix() == null)
                 && (reference.getName().equals(REFERENCE_FUNCTION))) {
-            final int arguments =
-                    ((FunckyNumber) ((FunckyLiteral) otherApplication.getArgument()).getValue()).getValue().intValue();
-            final FunckyExpression body = application.getArgument();
-            return new AbstractMap.SimpleEntry<>(arguments, body);
+            if ((otherApplication.getArgument() instanceof FunckyLiteral literal)
+                    && (literal.getValue() instanceof FunckyNumber number)
+                    && (number.getValue().compareTo(new BigDecimal(number.getValue().intValue())) == 0)
+                    && (number.getValue().intValue() > 0)) {
+                return new AbstractMap.SimpleEntry<>(number.getValue().intValue(), application.getArgument());
+            } else {
+                throw new IllegalArgumentException("$$ should be followed by argument count (positive integer  "
+                        + "number literal)");
+            }
         }
         return null;
     }
 
     private boolean isArgument(final int argument, final FunckyExpression expression) {
-        return (expression instanceof FunckyApplication application)
+        if ((expression instanceof FunckyApplication application)
                 && (application.getFunction() instanceof FunckyReference reference)
                 && (reference.getNamespace() == null) && (reference.getPrefix() == null)
-                && reference.getName().equals(REFERENCE_ARGUMENT)
-                && (application.getArgument() instanceof FunckyLiteral literal)
-                && (literal.getValue() instanceof FunckyNumber number)
-                && (number.getValue().intValue() == argument);
+                && reference.getName().equals(REFERENCE_ARGUMENT)) {
+            if ((application.getArgument() instanceof FunckyLiteral literal)
+                    && (literal.getValue() instanceof FunckyNumber number)
+                    && (number.getValue().compareTo(new BigDecimal(number.getValue().intValue())) == 0)
+                    && (number.getValue().intValue() >= 0)) {
+                return number.getValue().intValue() == argument;
+            } else {
+                throw new IllegalArgumentException(
+                        "$ should be followed by argument index (positive integer number literal)");
+            }
+        }
+        return false;
     }
 
     private boolean containsArgument(final int argument, final FunckyExpression expression) {
