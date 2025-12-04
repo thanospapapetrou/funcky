@@ -11,9 +11,9 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnrecognizedInputException;
+import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.tokenizer.exceptions.UnrecognizedInputException;
 
 public class Tokenizer {
     private static final Logger LOGGER = Logger.getLogger(Tokenizer.class.getName());

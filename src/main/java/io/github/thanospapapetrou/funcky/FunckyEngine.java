@@ -16,8 +16,8 @@ import javax.script.SimpleBindings;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.linker.ContextManager;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.Parser;

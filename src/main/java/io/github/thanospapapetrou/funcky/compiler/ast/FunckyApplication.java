@@ -4,8 +4,8 @@ import java.util.Map;
 
 import javax.script.ScriptContext;
 
-import io.github.thanospapapetrou.funcky.compiler.exceptions.IllegalApplicationException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.IllegalApplicationException;
+import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;

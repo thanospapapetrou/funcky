@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky.compiler.exceptions;
+package io.github.thanospapapetrou.funcky.compiler;
 
 public class SneakyCompilationException extends RuntimeException {
     public SneakyCompilationException(final FunckyCompilationException e) {

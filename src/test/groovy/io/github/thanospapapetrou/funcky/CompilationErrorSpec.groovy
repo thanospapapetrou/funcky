@@ -1,19 +1,19 @@
 package io.github.thanospapapetrou.funcky
 
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker
-import io.github.thanospapapetrou.funcky.compiler.exceptions.IllegalApplicationException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidMainException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.NameAlreadyDefinedException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.PrefixAlreadyBoundException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedMainException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidListLiteralException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.InvalidUriException
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnexpectedTokenException
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.IllegalApplicationException
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidMainException
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyDefinedException
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedNameException
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidListLiteralException
+import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.InvalidUriException
+import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.UnexpectedTokenException
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnrecognizedInputException
+import io.github.thanospapapetrou.funcky.compiler.tokenizer.exceptions.UnrecognizedInputException
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType
@@ -379,8 +379,8 @@ class CompilationErrorSpec extends BaseSpec {
         e.message
         e.message.startsWith(UndefinedMainException.MESSAGE)
         e.fileName == CompilationErrorSpec.getResource(script).toURI().toString()
-        e.lineNumber == -1
-        e.columnNumber == -1
+        e.lineNumber == 1
+        e.columnNumber == 1
         cleanup:
         reader.close()
         where:

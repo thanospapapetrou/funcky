@@ -7,10 +7,10 @@ import java.util.Map;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.FunckyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.SneakyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UnboundPrefixException;
-import io.github.thanospapapetrou.funcky.compiler.exceptions.UndefinedNameException;
+import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
