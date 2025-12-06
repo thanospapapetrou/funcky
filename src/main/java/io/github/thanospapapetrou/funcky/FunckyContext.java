@@ -68,38 +68,38 @@ public class FunckyContext implements ScriptContext {
     }
 
     public boolean isLoaded(final URI script) {
-        return getAttribute(script.toString(), ENGINE_SCOPE) != null;
+        return getAttribute(script.toString(), GLOBAL_SCOPE) != null;
     }
 
     public void setLoaded(final URI script) {
-        setAttribute(script.toString(), true, ENGINE_SCOPE);
+        setAttribute(script.toString(), true, GLOBAL_SCOPE);
     }
 
     public URI getImport(final FunckyReference reference) {
-        return (URI) getAttribute(String.format(IMPORT, reference.getFile(), reference.getPrefix()), ENGINE_SCOPE);
+        return (URI) getAttribute(String.format(IMPORT, reference.getFile(), reference.getPrefix()), GLOBAL_SCOPE);
     }
 
     public void setImport(final FunckyImport inport, final URI namespace) {
-        setAttribute(String.format(IMPORT, inport.file(), inport.prefix()), namespace, ENGINE_SCOPE);
+        setAttribute(String.format(IMPORT, inport.file(), inport.prefix()), namespace, GLOBAL_SCOPE);
     }
 
     public FunckyExpression getDefinitionExpression(final FunckyReference reference) {
         return (FunckyExpression) getAttribute(String.format(DEFINITION_EXPRESSION, reference.getNamespace(),
-                reference.getName()), ENGINE_SCOPE);
+                reference.getName()), GLOBAL_SCOPE);
     }
 
     public void setDefinitionExpression(final FunckyDefinition definition) {
         setAttribute(String.format(DEFINITION_EXPRESSION, definition.file(), definition.name()),
-                definition.expression(), ENGINE_SCOPE);
+                definition.expression(), GLOBAL_SCOPE);
     }
 
     public FunckyType getDefinitionType(final FunckyReference reference) {
         return (FunckyType) getAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()),
-                ENGINE_SCOPE);
+                GLOBAL_SCOPE);
     }
 
     public void setDefinitionType(final FunckyReference reference, final FunckyType type) {
-        setAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()), type, ENGINE_SCOPE);
+        setAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()), type, GLOBAL_SCOPE);
     }
 
     @Override
