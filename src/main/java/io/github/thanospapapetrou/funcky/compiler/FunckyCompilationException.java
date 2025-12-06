@@ -7,10 +7,11 @@ import javax.script.ScriptException;
 
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.LinkerException;
 import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.ParserException;
+import io.github.thanospapapetrou.funcky.compiler.preprocessor.exceptions.PreprocessorException;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.exceptions.TokenizerException;
 
 public sealed class FunckyCompilationException extends ScriptException
-        permits TokenizerException, ParserException, LinkerException {
+        permits TokenizerException, ParserException, PreprocessorException, LinkerException {
     public FunckyCompilationException(final IOException e) {
         super(e);
     }

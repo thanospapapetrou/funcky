@@ -5,17 +5,20 @@ import java.util.AbstractMap;
 import java.util.Map;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
+import io.github.thanospapapetrou.funcky.compiler.preprocessor.exceptions.InvalidArgumentCountException;
+import io.github.thanospapapetrou.funcky.compiler.preprocessor.exceptions.InvalidArgumentIndexException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
 
 public class Preprocessor {
-    private static final String COMBINATOR_I = "i"; // TODO remplace with references
+    private static final String COMBINATOR_I = "i"; // TODO replace with references
     private static final String COMBINATOR_K = "k";
     private static final String COMBINATOR_S = "s";
     private static final String REFERENCE_ARGUMENT = "$";
@@ -52,7 +55,9 @@ public class Preprocessor {
     }
 
     private FunckyExpression transform(final int argument, final FunckyExpression expression) {
-        if (isArgument(argument, expression)) { // TODO identify stray arguments (check for $ outside $$ and ($ N)
+        // TODO unreduce or expand?
+        if (isArgument(argument, expression)) {
+            // TODO identify stray arguments (check for $ outside $$ and ($ N)
             // where N >= arguments
             return i(expression);
         } else if (expression instanceof FunckyApplication application) {
@@ -82,8 +87,7 @@ public class Preprocessor {
                     && (number.getValue().intValue() > 0)) {
                 return new AbstractMap.SimpleEntry<>(number.getValue().intValue(), application.getArgument());
             } else {
-                throw new IllegalArgumentException("$$ should be followed by argument count (positive integer  "
-                        + "number literal)");
+                throw new SneakyCompilationException(new InvalidArgumentCountException(otherApplication.getArgument()));
             }
         }
         return null;
@@ -100,8 +104,7 @@ public class Preprocessor {
                     && (number.getValue().intValue() >= 0)) {
                 return number.getValue().intValue() == argument;
             } else {
-                throw new IllegalArgumentException(
-                        "$ should be followed by argument index (positive integer number literal)");
+                throw new SneakyCompilationException(new InvalidArgumentIndexException(application.getArgument()));
             }
         }
         return false;
