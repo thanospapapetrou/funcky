@@ -12,10 +12,10 @@ import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 public final class FunckyReference extends FunckyExpression {
     private static final String FORMAT_NAMESPACE = "\"%1$s\".%2$s";
@@ -67,10 +67,10 @@ public final class FunckyReference extends FunckyExpression {
     @Override
     public FunckyType getType() {
         final FunckyReference normalized = normalize();
-        if (engine.getManager().getDefinitionType(normalized) == null) {
-            engine.getManager().setDefinitionType(normalized, super.getType());
+        if (engine.getContext().getDefinitionType(normalized) == null) {
+            engine.getContext().setDefinitionType(normalized, super.getType());
         }
-        return engine.getManager().getDefinitionType(normalized);
+        return engine.getContext().getDefinitionType(normalized);
     }
 
     @Override
@@ -109,7 +109,7 @@ public final class FunckyReference extends FunckyExpression {
             if (prefix == null) {
                 return file;
             } else {
-                final URI namespace = engine.getManager().getImport(this);
+                final URI namespace = engine.getContext().getImport(this);
                 if (namespace == null) {
                     throw new SneakyCompilationException(new UnboundPrefixException(this));
                 }
@@ -122,14 +122,14 @@ public final class FunckyReference extends FunckyExpression {
 
     private FunckyExpression resolveExpression() {
         final FunckyReference normalized = normalize();
-        if (!engine.getManager().isLoaded(normalized.getNamespace())) {
+        if (!engine.getContext().isLoaded(normalized.getNamespace())) {
             try {
                 engine.compile(normalized.getNamespace());
             } catch (final FunckyCompilationException e) {
                 throw new SneakyCompilationException(e);
             }
         }
-        final FunckyExpression expression = engine.getManager().getDefinitionExpression(normalized);
+        final FunckyExpression expression = engine.getContext().getDefinitionExpression(normalized);
         if (expression == null) {
             throw new SneakyCompilationException(new UndefinedNameException(normalized));
         }

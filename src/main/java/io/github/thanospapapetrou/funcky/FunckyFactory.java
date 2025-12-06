@@ -101,6 +101,7 @@ public class FunckyFactory implements ScriptEngineFactory {
     @Override
     public FunckyEngine getScriptEngine() {
         return new FunckyEngine(this);
+
     }
 
     private List<String> getParameters(final String key) {

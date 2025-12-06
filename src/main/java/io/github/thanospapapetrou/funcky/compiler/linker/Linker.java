@@ -15,18 +15,18 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidMainException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
+import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
@@ -80,7 +80,7 @@ public class Linker {
     }
 
     public FunckyExpression link(final FunckyExpression expression) {
-        engine.getManager().setLoaded(getStdin());
+        engine.getContext().setLoaded(getStdin());
         if (expression != null) {
             LOGGER.fine(expression.getType().toString());
         }
@@ -115,7 +115,7 @@ public class Linker {
             if (otherImport.isPresent()) {
                 throw new SneakyCompilationException(new PrefixAlreadyBoundException(inport, otherImport.get()));
             }
-            engine.getManager().setImport(inport, normalize(inport.file(), inport.namespace()));
+            engine.getContext().setImport(inport, normalize(inport.file(), inport.namespace()));
         }
     }
 
@@ -134,9 +134,9 @@ public class Linker {
                 throw new SneakyCompilationException(
                         new NameAlreadyDefinedException(definition, otherDefinition.get()));
             }
-            engine.getManager().setDefinitionExpression(definition);
+            engine.getContext().setDefinitionExpression(definition);
         }
-        engine.getManager().setLoaded(script.getFile());
+        engine.getContext().setLoaded(script.getFile());
         for (final FunckyDefinition definition : script.getDefinitions()) {
             definitionTypes.put(definition.name(), definition.expression().getType());
         }

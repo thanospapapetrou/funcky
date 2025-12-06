@@ -83,8 +83,8 @@ public class Funcky {
     private void runScript(final String script, final String... arguments) {
         try (final InputStreamReader reader = new InputStreamReader(engine.getLinker().normalize(engine.getLinker()
                 .getStdin(), new URI(script)).toURL().openStream())) {
-            engine.getManager().setFile(script);
-            engine.getManager().setArguments(arguments);
+            engine.getContext().setFile(script);
+            engine.getContext().setArguments(arguments);
             System.exit(engine.eval(reader, engine.getContext()).getValue().intValue());
         } catch (final FunckyCompilationException | FunckyRuntimeException e) {
             LOGGER.log(Level.WARNING, e.getMessage(), e);
