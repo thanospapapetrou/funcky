@@ -80,7 +80,7 @@ public class Linker {
     }
 
     public FunckyExpression link(final FunckyExpression expression) {
-        engine.getContext().setLoaded(getStdin());
+        engine.getContext().setScript(getStdin());
         if (expression != null) {
             LOGGER.fine(expression.getType().toString());
         }
@@ -88,6 +88,7 @@ public class Linker {
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) {
+        engine.getContext().setScript(script.getFile());
         validateImports(script);
         final Map<String, FunckyType> definitionTypes = validateDefinitions(script);
         if (main) {
@@ -136,7 +137,6 @@ public class Linker {
             }
             engine.getContext().setDefinitionExpression(definition);
         }
-        engine.getContext().setLoaded(script.getFile());
         for (final FunckyDefinition definition : script.getDefinitions()) {
             definitionTypes.put(definition.name(), definition.expression().getType());
         }

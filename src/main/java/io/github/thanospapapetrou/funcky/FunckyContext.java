@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.URI;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyScope;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
 public class FunckyContext implements ScriptContext {
@@ -67,20 +69,24 @@ public class FunckyContext implements ScriptContext {
         setAttribute(FunckyEngine.ARGV, arguments, ENGINE_SCOPE);
     }
 
-    public boolean isLoaded(final URI script) {
-        return getAttribute(script.toString(), GLOBAL_SCOPE) != null;
+    public Integer getScript(final URI script) {
+        return (Integer) getAttribute(script.toString(), GLOBAL_SCOPE);
     }
 
-    public void setLoaded(final URI script) {
-        setAttribute(script.toString(), true, GLOBAL_SCOPE);
+    public void setScript(final URI script) {
+        final int base = getScopes().stream().max(Comparator.naturalOrder()).orElse(-1) + 1;
+        setAttribute(script.toString(), base, GLOBAL_SCOPE);
+        for (final FunckyScope scope : FunckyScope.values()) {
+            setBindings(new SimpleBindings(), base + scope.ordinal());
+        }
     }
 
     public URI getImport(final FunckyReference reference) {
-        return (URI) getAttribute(String.format(IMPORT, reference.getFile(), reference.getPrefix()), GLOBAL_SCOPE);
+        return getAttribute(reference.getFile(), FunckyScope.IMPORTS, reference.getPrefix());
     }
 
     public void setImport(final FunckyImport inport, final URI namespace) {
-        setAttribute(String.format(IMPORT, inport.file(), inport.prefix()), namespace, GLOBAL_SCOPE);
+        setAttribute(inport.file(), FunckyScope.IMPORTS, inport.prefix(), namespace);
     }
 
     public FunckyExpression getDefinitionExpression(final FunckyReference reference) {
@@ -171,4 +177,14 @@ public class FunckyContext implements ScriptContext {
     public void setErrorWriter(final Writer errrorWriter) {
         this.errorWriter = errrorWriter;
     }
+
+    private <T> T getAttribute(final URI script, final FunckyScope scope, final String name) {
+        final Integer base = getScript(script);
+        return (T) ((base == null) ? null : getAttribute(name, base + scope.ordinal()));
+    }
+
+    private <T> void setAttribute(final URI script, final FunckyScope scope, final String name, final T value) {
+        setAttribute(name, value, getScript(script) + scope.ordinal());
+    }
+
 }
