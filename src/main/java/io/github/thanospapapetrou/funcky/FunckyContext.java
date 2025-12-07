@@ -26,11 +26,11 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 public class FunckyContext implements ScriptContext {
     public static final FunckyContext GLOBAL = new FunckyContext();
 
-    private static final String DEFINITION_EXPRESSION = "%1$s$definition$%2$s$expression";
-    private static final String DEFINITION_TYPE = "%1$s$definition$%2$s$type";
+    private static final String DEFINITION = "%1$s$definition$%2$s$expression";
     private static final String ERROR_RETRIEVING_ATTRIBUTE_SCOPE = "Retrieving attribute scope is not supported";
     private static final String ERROR_RETRIEVING_ATTRIBUTE_WITHOUT_SCOPE =
             "Retrieving attribute without scope is not supported";
+    private static final String TYPE = "%1$s$definition$%2$s$type";
 
     private final Map<Integer, Bindings> bindings;
     private Reader reader;
@@ -89,22 +89,22 @@ public class FunckyContext implements ScriptContext {
     }
 
     public FunckyExpression getDefinition(final FunckyReference reference) {
-        return (FunckyExpression) getAttribute(String.format(DEFINITION_EXPRESSION, reference.getNamespace(),
+        return (FunckyExpression) getAttribute(String.format(DEFINITION, reference.getNamespace(),
                 reference.getName()), GLOBAL_SCOPE);
     }
 
     public void setDefinition(final FunckyDefinition definition) {
-        setAttribute(String.format(DEFINITION_EXPRESSION, definition.file(), definition.name()),
+        setAttribute(String.format(DEFINITION, definition.file(), definition.name()),
                 definition.expression(), GLOBAL_SCOPE);
     }
 
     public FunckyType getType(final FunckyReference reference) {
-        return (FunckyType) getAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()),
+        return (FunckyType) getAttribute(String.format(TYPE, reference.getNamespace(), reference.getName()),
                 GLOBAL_SCOPE);
     }
 
     public void setType(final FunckyReference reference, final FunckyType type) {
-        setAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()), type, GLOBAL_SCOPE);
+        setAttribute(String.format(TYPE, reference.getNamespace(), reference.getName()), type, GLOBAL_SCOPE);
     }
 
     @Override
