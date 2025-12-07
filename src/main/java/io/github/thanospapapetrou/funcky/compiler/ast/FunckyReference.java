@@ -67,10 +67,10 @@ public final class FunckyReference extends FunckyExpression {
     @Override
     public FunckyType getType() {
         final FunckyReference normalized = normalize();
-        if (engine.getContext().getDefinitionType(normalized) == null) {
-            engine.getContext().setDefinitionType(normalized, super.getType());
+        if (engine.getContext().getType(normalized) == null) {
+            engine.getContext().setType(normalized, super.getType());
         }
-        return engine.getContext().getDefinitionType(normalized);
+        return engine.getContext().getType(normalized);
     }
 
     @Override
@@ -129,7 +129,7 @@ public final class FunckyReference extends FunckyExpression {
                 throw new SneakyCompilationException(e);
             }
         }
-        final FunckyExpression expression = engine.getContext().getDefinitionExpression(normalized);
+        final FunckyExpression expression = engine.getContext().getDefinition(normalized);
         if (expression == null) {
             throw new SneakyCompilationException(new UndefinedNameException(normalized));
         }

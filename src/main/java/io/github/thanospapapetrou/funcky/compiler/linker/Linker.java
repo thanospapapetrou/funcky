@@ -135,7 +135,7 @@ public class Linker {
                 throw new SneakyCompilationException(
                         new NameAlreadyDefinedException(definition, otherDefinition.get()));
             }
-            engine.getContext().setDefinitionExpression(definition);
+            engine.getContext().setDefinition(definition);
         }
         for (final FunckyDefinition definition : script.getDefinitions()) {
             definitionTypes.put(definition.name(), definition.expression().getType());

@@ -31,7 +31,6 @@ public class FunckyContext implements ScriptContext {
     private static final String ERROR_RETRIEVING_ATTRIBUTE_SCOPE = "Retrieving attribute scope is not supported";
     private static final String ERROR_RETRIEVING_ATTRIBUTE_WITHOUT_SCOPE =
             "Retrieving attribute without scope is not supported";
-    private static final String IMPORT = "%1$s$import$%2$s";
 
     private final Map<Integer, Bindings> bindings;
     private Reader reader;
@@ -89,22 +88,22 @@ public class FunckyContext implements ScriptContext {
         setAttribute(inport.file(), FunckyScope.IMPORTS, inport.prefix(), namespace);
     }
 
-    public FunckyExpression getDefinitionExpression(final FunckyReference reference) {
+    public FunckyExpression getDefinition(final FunckyReference reference) {
         return (FunckyExpression) getAttribute(String.format(DEFINITION_EXPRESSION, reference.getNamespace(),
                 reference.getName()), GLOBAL_SCOPE);
     }
 
-    public void setDefinitionExpression(final FunckyDefinition definition) {
+    public void setDefinition(final FunckyDefinition definition) {
         setAttribute(String.format(DEFINITION_EXPRESSION, definition.file(), definition.name()),
                 definition.expression(), GLOBAL_SCOPE);
     }
 
-    public FunckyType getDefinitionType(final FunckyReference reference) {
+    public FunckyType getType(final FunckyReference reference) {
         return (FunckyType) getAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()),
                 GLOBAL_SCOPE);
     }
 
-    public void setDefinitionType(final FunckyReference reference, final FunckyType type) {
+    public void setType(final FunckyReference reference, final FunckyType type) {
         setAttribute(String.format(DEFINITION_TYPE, reference.getNamespace(), reference.getName()), type, GLOBAL_SCOPE);
     }
 
