@@ -10,6 +10,7 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckyFunctionType extends FunckyType {
@@ -44,27 +45,24 @@ public final class FunckyFunctionType extends FunckyType {
     }
 
     @Override
-    public int compareTo(final FunckyType type) {
-            final int classComparison = super.compareTo(type);
-            if (classComparison == 0) {
-                final int domainComparison =
-                        ((FunckyType) domain.eval(engine.getContext())).compareTo((FunckyType) ((FunckyFunctionType) type).domain.eval(engine.getContext()));
-                return (domainComparison == 0) ? ((FunckyType) range.eval(engine.getContext())).compareTo(
-                        (FunckyType) ((FunckyFunctionType) type).range.eval(engine.getContext())) : domainComparison;
-            }
-            return classComparison;
+    public int compareTo(final FunckyValue value) {
+        if (value instanceof FunckyFunctionType type) {
+            final int domainComparison =
+                    domain.eval(engine.getContext()).compareTo(type.domain.eval(engine.getContext()));
+            return (domainComparison == 0) ? range.eval(engine.getContext())
+                    .compareTo(type.range.eval(engine.getContext())) : domainComparison;
+        }
+        return super.compareTo(value);
     }
 
     @Override
     public boolean equals(final Object object) {
-            return (object instanceof FunckyFunctionType) && domain.eval(engine.getContext())
-                    .equals(((FunckyFunctionType) object).domain.eval(engine.getContext()))
-                    && range.eval(engine.getContext()).equals(((FunckyFunctionType) object).range.eval(engine.getContext()));
+        return (object instanceof FunckyFunctionType type) && (compareTo(type) == 0);
     }
 
     @Override
     public int hashCode() {
-            return domain.eval(engine.getContext()).hashCode() + range.eval(engine.getContext()).hashCode();
+        return domain.eval(engine.getContext()).hashCode() + range.eval(engine.getContext()).hashCode();
     }
 
     @Override

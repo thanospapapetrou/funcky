@@ -6,7 +6,7 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 
-public non-sealed abstract class FunckyFunction extends FunckyValue implements Comparable<FunckyFunction> {
+public non-sealed abstract class FunckyFunction extends FunckyValue {
     protected final FunckyFunctionType type;
 
     protected FunckyFunction(final FunckyEngine engine, final FunckyFunctionType type) {
@@ -22,13 +22,14 @@ public non-sealed abstract class FunckyFunction extends FunckyValue implements C
     }
 
     @Override
-    public int compareTo(final FunckyFunction function) {
-        return toString().compareTo(function.toString());
+    public int compareTo(final FunckyValue value) {
+        return (value instanceof FunckyFunction function) ? toString().compareTo(function.toString())
+                : super.compareTo(value);
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckyFunction) && toString().equals(object.toString());
+        return (object instanceof FunckyFunction function) && (compareTo(function) == 0);
     }
 
     @Override

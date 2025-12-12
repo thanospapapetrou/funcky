@@ -1,17 +1,17 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
 
-public final class FunckyRecord extends FunckyValue implements Comparable<FunckyRecord> {
-    private static final String DELIMITER = ", ";
-    private static final String PREFIX = "{";
-    private static final String SUFFIX = "}";
+public final class FunckyRecord extends FunckyValue {
+    public static final String DELIMITER = ", ";
+    public static final String PREFIX = "{";
+    public static final String SUFFIX = "}";
 
     private final FunckyRecordType type;
     private final List<FunckyExpression> components;
@@ -38,48 +38,38 @@ public final class FunckyRecord extends FunckyValue implements Comparable<Funcky
     }
 
     @Override
-    public int compareTo(final FunckyRecord record) {
-            for (int i = 0; i < components.size(); i++) {
-                final int componentComparison =
-                        ((Comparable<FunckyValue>) components.get(i).eval(engine.getContext())).compareTo(record.components.get(i).eval(engine.getContext()));
-                if (componentComparison != 0) {
-                    return componentComparison;
+    public int compareTo(final FunckyValue value) {
+        if (value instanceof FunckyRecord record) {
+            for (int i = 0; (i < components.size()) && (i < record.components.size()); i++) {
+                final int comparison = components.get(i).eval(engine.getContext())
+                        .compareTo(record.components.get(i).eval(engine.getContext()));
+                if (comparison != 0) {
+                    return comparison;
                 }
             }
-            return 0;
+            return Integer.compare(components.size(), record.components.size());
+        }
+        return super.compareTo(value);
     }
 
     @Override
     public boolean equals(final Object object) {
-            return (object instanceof FunckyRecord) && eval().equals(((FunckyRecord) object).eval());
+        return (object instanceof FunckyRecord record) && (compareTo(record) == 0);
     }
 
     @Override
     public int hashCode() {
-            int hashCode = 0;
-            for (final FunckyExpression component : components) {
-                hashCode += component.eval(engine.getContext()).hashCode();
-            }
-            return hashCode;
+        return components.stream()
+                .map(component -> component.eval(engine.getContext()))
+                .mapToInt(FunckyValue::hashCode)
+                .sum();
     }
 
     @Override
     public String toString() {
-            final StringBuilder string = new StringBuilder(PREFIX);
-            for (final FunckyExpression component : components) {
-                string.append(component.eval(engine.getContext()).toString()).append(DELIMITER);
-            }
-            if (string.length() > PREFIX.length()) {
-                string.setLength(string.length() - DELIMITER.length());
-            }
-            return string.append(SUFFIX).toString();
-    }
-
-    private List<FunckyValue> eval() {
-        final List<FunckyValue> values = new ArrayList<>();
-        for (final FunckyExpression component : components) {
-            values.add(component.eval(engine.getContext()));
-        }
-        return values;
+        return PREFIX + components.stream()
+                .map(component -> component.eval(engine.getContext()))
+                .map(FunckyValue::toString)
+                .collect(Collectors.joining(DELIMITER)) + SUFFIX;
     }
 }

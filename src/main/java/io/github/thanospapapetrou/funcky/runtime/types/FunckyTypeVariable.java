@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public final class FunckyTypeVariable extends FunckyType {
     private static final AtomicInteger HASH = new AtomicInteger();
@@ -28,14 +29,14 @@ public final class FunckyTypeVariable extends FunckyType {
     }
 
     @Override
-    public int compareTo(FunckyType type) {
-        final int classComparison = super.compareTo(type);
-        return (classComparison == 0) ? Integer.compare(hash, ((FunckyTypeVariable) type).hash) : classComparison;
+    public int compareTo(FunckyValue value) {
+        return (value instanceof FunckyTypeVariable variable) ? Integer.compare(hash, variable.hash)
+                : super.compareTo(value);
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckyTypeVariable) && (hash == ((FunckyTypeVariable) object).hash);
+        return (object instanceof FunckyTypeVariable variable) && (compareTo(variable) == 0);
     }
 
     @Override

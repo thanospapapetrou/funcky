@@ -2,17 +2,19 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
+import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public final class FunckyLiteral extends FunckyExpression {
     private static final String FORMAT_CHARACTER = "'%1$s'";
@@ -48,12 +50,21 @@ public final class FunckyLiteral extends FunckyExpression {
     public String toString() {
         if (value.getType().equals(FunckySimpleType.CHARACTER.apply(engine))) {
             return String.format(FORMAT_CHARACTER, EscapeHelper.escape(value.toString()));
-        }
-        if (value.getType().equals(FunckyListType.STRING.apply(engine))) {
+        } else if (value.getType().equals(FunckyListType.STRING.apply(engine))) {
             return String.format(FORMAT_STRING, EscapeHelper.escape(value.toString()));
-        }
-        if (value.getType() instanceof FunckyListType) {
-            return ((FunckyList) value).toString(FunckyExpression::toString);
+        } else if (value instanceof FunckyList list) {
+            final StringBuilder string = new StringBuilder(FunckyList.PREFIX);
+            for (FunckyList l = list; l.getTail() != null; l = (FunckyList) l.getTail().eval(engine.getContext())) {
+                string.append(l.getHead().toString()).append(FunckyList.DELIMITER);
+            }
+            if (string.length() > FunckyList.PREFIX.length()) {
+                string.setLength(string.length() - FunckyList.DELIMITER.length());
+            }
+            return string.append(FunckyList.SUFFIX).toString();
+        } else if (value instanceof FunckyRecord record) {
+            return FunckyRecord.PREFIX + record.getComponents().stream()
+                    .map(FunckyExpression::toString)
+                    .collect(Collectors.joining(FunckyRecord.DELIMITER)) + FunckyRecord.SUFFIX;
         }
         return value.toString();
     }

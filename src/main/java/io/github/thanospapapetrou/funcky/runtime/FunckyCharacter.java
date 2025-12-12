@@ -4,7 +4,7 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
-public final class FunckyCharacter extends FunckyValue implements Comparable<FunckyCharacter> {
+public final class FunckyCharacter extends FunckyValue {
     private final char value;
 
     public FunckyCharacter(final FunckyEngine engine, final char value) {
@@ -27,13 +27,14 @@ public final class FunckyCharacter extends FunckyValue implements Comparable<Fun
     }
 
     @Override
-    public int compareTo(final FunckyCharacter character) {
-        return Character.compare(value, character.value);
+    public int compareTo(final FunckyValue value) {
+        return (value instanceof FunckyCharacter character) ? Character.compare(this.value, character.value)
+                : super.compareTo(value);
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckyCharacter) && (value == ((FunckyCharacter) object).value);
+        return (object instanceof FunckyCharacter character) && (compareTo(character) == 0);
     }
 
     @Override

@@ -7,7 +7,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
-public final class FunckyBoolean extends FunckyValue implements Comparable<FunckyBoolean> {
+public final class FunckyBoolean extends FunckyValue {
     public static final Function<FunckyEngine, FunckyBoolean> FALSE = engine -> new FunckyBoolean(engine, false);
     public static final Function<FunckyEngine, FunckyBoolean> TRUE = engine -> new FunckyBoolean(engine, true);
 
@@ -33,13 +33,13 @@ public final class FunckyBoolean extends FunckyValue implements Comparable<Funck
     }
 
     @Override
-    public int compareTo(final FunckyBoolean bool) {
-        return Boolean.compare(value, bool.value);
+    public int compareTo(final FunckyValue value) {
+        return (value instanceof FunckyBoolean bool) ? Boolean.compare(this.value, bool.value) : super.compareTo(value);
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckyBoolean) && (value == ((FunckyBoolean) object).value);
+        return (object instanceof FunckyBoolean bool) && (compareTo(bool) == 0);
     }
 
     @Override

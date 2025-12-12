@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckySimpleType extends FunckyType {
@@ -38,15 +39,14 @@ public final class FunckySimpleType extends FunckyType {
     }
 
     @Override
-    public int compareTo(final FunckyType type) {
-        final int classComparison = super.compareTo(type);
-        return (classComparison == 0) ? Integer.compare(getOrder(this), getOrder((FunckySimpleType) type))
-                : classComparison;
+    public int compareTo(final FunckyValue value) {
+        return (value instanceof FunckySimpleType type) ? Integer.compare(getOrder(this), getOrder(type))
+                : super.compareTo(value);
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckySimpleType) && name.equals(((FunckySimpleType) object).name);
+        return (object instanceof FunckySimpleType type) && (compareTo(type) == 0);
     }
 
     @Override

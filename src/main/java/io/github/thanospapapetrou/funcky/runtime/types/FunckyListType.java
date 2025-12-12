@@ -8,6 +8,7 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
@@ -37,16 +38,14 @@ public final class FunckyListType extends FunckyType {
     }
 
     @Override
-    public int compareTo(final FunckyType type) {
-            final int classComparison = super.compareTo(type);
-        return (classComparison == 0) ? ((FunckyType) element.eval(engine.getContext())).compareTo(
-                (FunckyType) ((FunckyListType) type).element.eval(engine.getContext())) : classComparison;
+    public int compareTo(final FunckyValue value) {
+        return (value instanceof FunckyListType type) ? element.eval(engine.getContext())
+                .compareTo(type.element.eval(engine.getContext())) : super.compareTo(value);
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckyListType) && element.eval(engine.getContext())
-                .equals(((FunckyListType) object).element.eval(engine.getContext()));
+        return (object instanceof FunckyListType type) && (compareTo(type) == 0);
     }
 
     @Override

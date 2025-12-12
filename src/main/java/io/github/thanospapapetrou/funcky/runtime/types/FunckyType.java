@@ -12,7 +12,7 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.linker.TypeInferenceContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
-public sealed abstract class FunckyType extends FunckyValue implements Comparable<FunckyType>
+public sealed abstract class FunckyType extends FunckyValue
         permits FunckySimpleType, FunckyFunctionType, FunckyListType, FunckyRecordType, FunckyTypeVariable {
     private static final List<Class<? extends FunckyType>> ORDERING = List.of(
             FunckySimpleType.class,
@@ -57,8 +57,9 @@ public sealed abstract class FunckyType extends FunckyValue implements Comparabl
     }
 
     @Override
-    public int compareTo(final FunckyType type) {
-        return Integer.compare(getOrder(this), getOrder(type));
+    public int compareTo(final FunckyValue value) {
+        return (value instanceof FunckyType type) ? Integer.compare(getOrder(this), getOrder(type))
+                : super.compareTo(value);
     }
 
     protected abstract Set<FunckyTypeVariable> getTypeVariables();

@@ -6,7 +6,7 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
-public final class FunckyNumber extends FunckyValue implements Comparable<FunckyNumber> {
+public final class FunckyNumber extends FunckyValue {
     private final BigDecimal value;
 
     public FunckyNumber(final FunckyEngine engine, final BigDecimal value) {
@@ -29,13 +29,13 @@ public final class FunckyNumber extends FunckyValue implements Comparable<Funcky
     }
 
     @Override
-    public int compareTo(final FunckyNumber number) {
-        return value.compareTo(number.value);
+    public int compareTo(final FunckyValue value) {
+        return (value instanceof FunckyNumber number) ? this.value.compareTo(number.value) : super.compareTo(value);
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckyNumber) && (compareTo((FunckyNumber) object) == 0);
+        return (object instanceof FunckyNumber number) && (compareTo(number) == 0);
     }
 
     @Override

@@ -13,6 +13,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
@@ -45,16 +46,14 @@ public final class FunckyRecordType extends FunckyType {
     }
 
     @Override
-    public int compareTo(final FunckyType type) {
-            final int classComparison = super.compareTo(type);
-        return (classComparison == 0) ? ((FunckyList) components.eval(engine.getContext())).compareTo(
-                (FunckyList) ((FunckyRecordType) type).components.eval(engine.getContext())) : classComparison;
+    public int compareTo(final FunckyValue value) {
+        return (value instanceof FunckyRecordType type) ? components.eval(engine.getContext())
+                .compareTo(type.components.eval(engine.getContext())) : super.compareTo(value);
     }
 
     @Override
     public boolean equals(final Object object) {
-        return (object instanceof FunckyRecordType) && components.eval(engine.getContext())
-                .equals(((FunckyRecordType) object).components.eval(engine.getContext()));
+        return (object instanceof FunckyRecordType type) && (compareTo(type) == 0);
     }
 
     @Override
