@@ -46,9 +46,9 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".Function'                                                                              || new Types(engine).$Function
         '"funcky:types".type "funcky:types".Function'                                                          || FUNCTION(TYPE, TYPE, TYPE).apply(engine)
         '"funcky:types".type ("funcky:types".Function "funcky:types".Type)'                                    || FUNCTION(TYPE, TYPE).apply(engine)
-        '"funcky:commons".string ("funcky:types".Function ("funcky:commons".error "foo"))'                     || engine.converter.convert('"funcky:types".Function ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:types".Function ("funcky:commons".error "foo"))'                     || engine.toFuncky('"funcky:types".Function ("funcky:commons".error "foo")')
         '"funcky:types".Function "funcky:types".Type "funcky:types".Number'                                    || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:commons".string ("funcky:types".Function "funcky:types".Type ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:types".Function "funcky:types".Type ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:types".Function "funcky:types".Type ("funcky:commons".error "foo"))' || engine.toFuncky('"funcky:types".Function "funcky:types".Type ("funcky:commons".error "foo")')
     }
 
     @Unroll('Test domain (expression: #expression)')
@@ -100,7 +100,7 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".List'                                                          || new Types(engine).$List
         '"funcky:types".type "funcky:types".List'                                      || FUNCTION(TYPE, TYPE).apply(engine)
         '"funcky:types".List "funcky:types".Type'                                      || LIST(TYPE).apply(engine)
-        '"funcky:commons".string ("funcky:types".List ("funcky:commons".error "foo"))' || engine.converter.convert('"funcky:types".List ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:types".List ("funcky:commons".error "foo"))' || engine.toFuncky('"funcky:types".List ("funcky:commons".error "foo")')
     }
 
     @Unroll('Test element (expression: #expression)')
@@ -324,7 +324,7 @@ class TypesSpec extends BaseSpec {
         '"funcky:types".unify'                                                                                                                                                             || new Types(engine).$unify
         '"funcky:types".type "funcky:types".unify'                                                                                                                                         || FUNCTION(TYPE, TYPE, TYPE).apply(engine)
         '"funcky:types".type ("funcky:types".unify "funcky:types".Type)'                                                                                                                   || FUNCTION(TYPE, TYPE).apply(engine)
-        '"funcky:commons".string ("funcky:types".unify ("funcky:commons".error "foo"))'                                                                                                    || engine.converter.convert('"funcky:types".unify ("funcky:commons".error "foo")')
+        '"funcky:commons".string ("funcky:types".unify ("funcky:commons".error "foo"))'                                                                                                    || engine.toFuncky('"funcky:types".unify ("funcky:commons".error "foo")')
         '"funcky:types".unify "funcky:types".Type "funcky:types".Type'                                                                                                                     || TYPE.apply(engine)
         '"funcky:types".unify "funcky:types".Type $_'                                                                                                                                      || TYPE.apply(engine)
         '"funcky:types".unify "funcky:types".Number "funcky:types".Number'                                                                                                                 || NUMBER.apply(engine)
