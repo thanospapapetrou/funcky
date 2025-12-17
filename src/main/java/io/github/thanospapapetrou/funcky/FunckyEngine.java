@@ -45,7 +45,6 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     private final Parser parser;
     private final Preprocessor preprocessor;
     private final Linker linker;
-    private final FunckyJavaConverter converter;
 
     public FunckyList toFuncky(final List<String> list) {
         return new FunckyList(this, FunckyListType.LIST(FunckyListType.STRING).apply(this),
@@ -66,17 +65,12 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
         parser = new Parser(this);
         preprocessor = new Preprocessor(this);
         linker = new Linker(this);
-        converter = new FunckyJavaConverter(this);
         setBindings(FunckyContext.GLOBAL.getBindings(FunckyContext.GLOBAL_SCOPE), FunckyContext.GLOBAL_SCOPE);
         setBindings(createBindings(), FunckyContext.ENGINE_SCOPE);
     }
 
     public Linker getLinker() {
         return linker;
-    }
-
-    public FunckyJavaConverter getConverter() {
-        return converter;
     }
 
     @Override
