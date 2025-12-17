@@ -1,12 +1,17 @@
 package io.github.thanospapapetrou.funcky
 
+
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter
 import io.github.thanospapapetrou.funcky.runtime.FunckyList
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber
-
-import javax.script.ScriptContext
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable
 import spock.lang.Shared
 import spock.lang.Specification
+
+import javax.script.ScriptContext
 
 abstract class BaseSpec extends Specification {
     protected static final Map<String, BigDecimal> BINARY_NUMBERS = [
@@ -116,6 +121,38 @@ abstract class BaseSpec extends Specification {
     }
 
     protected Map<String, FunckyList> getStrings() {
-        STRINGS.collectEntries { [(it.key): engine.converter.convert(it.value)] }
+        STRINGS.collectEntries { [(it.key): toFuncky(it.value)] }
+    }
+
+    protected FunckyValue toFuncky(final Object object) {
+        switch (object.class) {
+            case FunckyValue:
+                return (object as FunckyValue)
+            case BigDecimal:
+                return toFuncky(object as BigDecimal)
+            case Character:
+                return toFuncky(object as char)
+            default: // TODO
+                throw new IllegalStateException("Don't know how to convert `${object}` (${object.class}) to funcky")
+        }
+    }
+
+    protected FunckyNumber toFuncky(final BigDecimal number) {
+        new FunckyNumber(engine, number)
+    }
+
+    protected FunckyCharacter toFuncky(final char character) {
+        new FunckyCharacter(engine, character)
+    }
+
+    protected FunckyList toFuncky(final List<?> list) {
+        new FunckyList(engine,
+                FunckyListType.LIST { list.isEmpty() ? new FunckyTypeVariable(engine) : toFuncky(list.first).type }.apply(engine),
+                list.isEmpty() ? null : new FunckyLiteral(engine, toFuncky(list.first)),
+                list.isEmpty() ? null : new FunckyLiteral(engine, toFuncky(list.subList(1, list.size()))))
+    }
+
+    protected FunckyList toFuncky(final String string) {
+        toFuncky(string.toCharArray().collect() as List)
     }
 }
