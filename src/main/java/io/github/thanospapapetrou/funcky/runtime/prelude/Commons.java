@@ -10,9 +10,9 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.BOOLEAN;
@@ -55,7 +55,7 @@ public final class Commons extends FunckyLibrary {
     public final HigherOrderFunction $string = new HigherOrderFunction(engine, this, engine -> $_a, STRING) {
         @Override
         protected FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-            return engine.getConverter().convert(arguments.getFirst().eval(context).toString());
+            return engine.toFuncky(arguments.getFirst().eval(context).toString());
         }
     };
     public final HigherOrderFunction $number = new HigherOrderFunction(engine, this, STRING, NUMBER) {

@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
@@ -78,7 +80,9 @@ public class TypeInferenceContext {
                     list.getTail() != null; list = (FunckyList) list.getTail().eval(list.getEngine().getContext())) {
                 components.add(find((FunckyType) list.getHead().eval(list.getEngine().getContext())));
             }
-            return new FunckyRecordType(type.getEngine(), new FunckyLiteral(type.getEngine(), type.getEngine().getConverter().convert(components)));
+            return (FunckyRecordType) FunckyRecordType.RECORD(components.stream()
+                    .map(t -> (Function<FunckyEngine, FunckyType>) (e -> t))
+                    .toList().toArray(new Function[0])).apply(type.getEngine());
         } else if (type instanceof FunckyTypeVariable) {
             final FunckyType found = findRepresentative(findSet(type));
             if (found instanceof FunckyFunctionType ft) {
@@ -97,7 +101,9 @@ public class TypeInferenceContext {
                         list = (FunckyList) list.getTail().eval(list.getEngine().getContext())) {
                     components.add(find((FunckyType) list.getHead().eval(list.getEngine().getContext())));
                 }
-                return new FunckyRecordType(type.getEngine(), new FunckyLiteral(type.getEngine(), type.getEngine().getConverter().convert(components)));
+                return (FunckyRecordType) FunckyRecordType.RECORD(components.stream()
+                        .map(t -> (Function<FunckyEngine, FunckyType>) (e -> t))
+                        .toList().toArray(new Function[0])).apply(type.getEngine());
             }
             return found;
         }

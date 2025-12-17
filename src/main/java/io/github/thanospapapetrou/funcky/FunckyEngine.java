@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
 import java.util.ArrayDeque;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.script.Bindings;
@@ -18,16 +19,20 @@ import javax.script.SimpleBindings;
 import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.Parser;
 import io.github.thanospapapetrou.funcky.compiler.preprocessor.Preprocessor;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.TokenType;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Tokenizer;
+import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
+import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
 
 public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     public static final String PARAMETER_EXTENSIONS = "io.github.thanospapapetrou.funcky.extensions";
@@ -41,6 +46,18 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     private final Preprocessor preprocessor;
     private final Linker linker;
     private final FunckyJavaConverter converter;
+
+    public FunckyList toFuncky(final List<String> list) {
+        return new FunckyList(this, FunckyListType.LIST(FunckyListType.STRING).apply(this),
+                list.isEmpty() ? null : new FunckyLiteral(this, toFuncky(list.getFirst())),
+                list.isEmpty() ? null : new FunckyLiteral(this, toFuncky(list.subList(1, list.size()))));
+    }
+
+    public FunckyList toFuncky(final String string) {
+        return new FunckyList(this, FunckyListType.STRING.apply(this),
+                string.isEmpty() ? null : new FunckyLiteral(this, new FunckyCharacter(this, string.charAt(0))),
+                string.isEmpty() ? null : new FunckyLiteral(this, toFuncky(string.substring(1))));
+    }
 
     FunckyEngine(final FunckyFactory factory) {
         this.factory = factory;

@@ -78,6 +78,8 @@ public final class FunckyRecordType extends FunckyType {
                 list = (FunckyList) list.getTail().eval(engine.getContext())) {
             types.add(((FunckyType) list.getHead().eval(engine.getContext())).bind(bindings));
         }
-        return new FunckyRecordType(engine, new FunckyLiteral(engine, engine.getConverter().convert(types)));
+        return (FunckyRecordType) FunckyRecordType.RECORD(types.stream()
+                .map(t -> (Function<FunckyEngine, FunckyType>) (e -> t))
+                .toList().toArray(new Function[0])).apply(engine);
     }
 }

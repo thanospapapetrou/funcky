@@ -38,6 +38,7 @@ use separate scopes in context
 no global context
 validate context copying
 expressions and values need at least context to perform type checking
+values equals in superclass only
 
 -Funcky> exit
 -java.net.MalformedURLException: unknown protocol: funcky
