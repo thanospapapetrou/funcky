@@ -45,11 +45,6 @@ public final class FunckySimpleType extends FunckyType {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckySimpleType type) && (compareTo(type) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return name.hashCode();
     }

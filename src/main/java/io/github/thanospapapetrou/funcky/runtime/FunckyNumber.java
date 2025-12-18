@@ -34,11 +34,6 @@ public final class FunckyNumber extends FunckyValue {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckyNumber number) && (compareTo(number) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return Double.hashCode(value.doubleValue());
     }

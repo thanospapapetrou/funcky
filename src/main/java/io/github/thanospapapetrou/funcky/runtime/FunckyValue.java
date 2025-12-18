@@ -26,6 +26,11 @@ public sealed abstract class FunckyValue implements Comparable<FunckyValue>
     }
 
     @Override
+    public boolean equals(final Object object) {
+        return (object instanceof FunckyValue value) && (compareTo(value) == 0);
+    }
+
+    @Override
     public String toString() {
         return toExpression().normalize().toString();
     }

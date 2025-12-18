@@ -35,11 +35,6 @@ public final class FunckyTypeVariable extends FunckyType {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckyTypeVariable variable) && (compareTo(variable) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return hash;
     }

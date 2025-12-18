@@ -28,11 +28,6 @@ public non-sealed abstract class FunckyFunction extends FunckyValue {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckyFunction function) && (compareTo(function) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return toString().hashCode();
     }

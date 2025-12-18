@@ -52,11 +52,6 @@ public final class FunckyRecordType extends FunckyType {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckyRecordType type) && (compareTo(type) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return components.eval(engine.getContext()).hashCode();
     }

@@ -53,11 +53,6 @@ public final class FunckyRecord extends FunckyValue {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckyRecord record) && (compareTo(record) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return components.stream()
                 .map(component -> component.eval(engine.getContext()))

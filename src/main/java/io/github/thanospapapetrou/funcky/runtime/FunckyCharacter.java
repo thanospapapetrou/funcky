@@ -33,11 +33,6 @@ public final class FunckyCharacter extends FunckyValue {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckyCharacter character) && (compareTo(character) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return Character.hashCode(value);
     }

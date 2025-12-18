@@ -38,11 +38,6 @@ public final class FunckyBoolean extends FunckyValue {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckyBoolean bool) && (compareTo(bool) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return Boolean.hashCode(value);
     }

@@ -52,11 +52,6 @@ public final class FunckyList extends FunckyValue {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckyList list) && (compareTo(list) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return ((head == null) ? 0 : head.eval(engine.getContext()).hashCode())
                 + ((tail == null) ? 0 : tail.eval(engine.getContext()).hashCode());

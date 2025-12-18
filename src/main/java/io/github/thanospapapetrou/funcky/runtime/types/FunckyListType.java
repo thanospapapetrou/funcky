@@ -44,11 +44,6 @@ public final class FunckyListType extends FunckyType {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckyListType type) && (compareTo(type) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return element.eval(engine.getContext()).hashCode();
     }

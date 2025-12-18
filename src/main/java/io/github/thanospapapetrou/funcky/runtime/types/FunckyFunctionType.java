@@ -56,11 +56,6 @@ public final class FunckyFunctionType extends FunckyType {
     }
 
     @Override
-    public boolean equals(final Object object) {
-        return (object instanceof FunckyFunctionType type) && (compareTo(type) == 0);
-    }
-
-    @Override
     public int hashCode() {
         return domain.eval(engine.getContext()).hashCode() + range.eval(engine.getContext()).hashCode();
     }
