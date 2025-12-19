@@ -1,16 +1,16 @@
 # Convert character to uppercase
 # "funcky:types".Function "funcky:types".Character "funcky:types".Character
-uppercase = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Characters".$uppercase
+uppercase = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Characters".uppercase
 
 # Convert character to lowercase
 # "funcky:types".Function "funcky:types".Character "funcky:types".Character
-lowercase = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Characters".$lowercase
+lowercase = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Characters".lowercase
 
 # Convert character to corresponding Unicode code point
 # "funcky:types".Function "funcky:types".Character "funcky:types".Number
-number = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Characters".$number
+number = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Characters".number
 
 # Convert Unicode code point to character
 # "funcky:types".Function "funcky:types".Number "funcky:types".Character
 #   throws error if argument is invalid Unicode code point
-character = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Characters".$character
+character = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Characters".character

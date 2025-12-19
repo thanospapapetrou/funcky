@@ -19,7 +19,7 @@ class CharactersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                          || result
-        '"funcky:characters".uppercase'                     || new Characters(engine).$uppercase
+        '"funcky:characters".uppercase'                     || new Characters(engine).uppercase
         '"funcky:types".type "funcky:characters".uppercase' || FUNCTION(CHARACTER, CHARACTER).apply(engine)
         '"funcky:characters".uppercase \'A\''               || new FunckyCharacter(engine, 'A' as char)
         '"funcky:characters".uppercase \'a\''               || new FunckyCharacter(engine, 'A' as char)
@@ -32,7 +32,7 @@ class CharactersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                          || result
-        '"funcky:characters".lowercase'                     || new Characters(engine).$lowercase
+        '"funcky:characters".lowercase'                     || new Characters(engine).lowercase
         '"funcky:types".type "funcky:characters".lowercase' || FUNCTION(CHARACTER, CHARACTER).apply(engine)
         '"funcky:characters".lowercase \'A\''               || new FunckyCharacter(engine, 'a' as char)
         '"funcky:characters".lowercase \'a\''               || new FunckyCharacter(engine, 'a' as char)
@@ -45,7 +45,7 @@ class CharactersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                       || result
-        '"funcky:characters".number'                     || new Characters(engine).$number
+        '"funcky:characters".number'                     || new Characters(engine).number
         '"funcky:types".type "funcky:characters".number' || FUNCTION(CHARACTER, NUMBER).apply(engine)
         '"funcky:characters".number \'A\''               || new FunckyNumber(engine, 65.0G)
         '"funcky:characters".number \'a\''               || new FunckyNumber(engine, 97.0G)
@@ -74,7 +74,7 @@ class CharactersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                          || result
-        '"funcky:characters".character'                     || new Characters(engine).$character
+        '"funcky:characters".character'                     || new Characters(engine).character
         '"funcky:types".type "funcky:characters".character' || FUNCTION(NUMBER, CHARACTER).apply(engine)
         '"funcky:characters".character 65'                  || new FunckyCharacter(engine, 'A' as char)
         '"funcky:characters".character 97'                  || new FunckyCharacter(engine, 'a' as char)
