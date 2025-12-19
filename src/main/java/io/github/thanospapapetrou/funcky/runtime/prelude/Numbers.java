@@ -19,42 +19,42 @@ public final class Numbers extends FunckyLibrary {
     private static final String ERROR_INVALID_SCALE = "Invalid scale `%1$s`, should be an int";
     private static final String ERROR_INVALID_ROUNDING_MODE = "Invalid rounding mode `%1$s`";
 
-    public final HigherOrderFunction $plus = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
+    public final HigherOrderFunction _plus = new HigherOrderFunction(engine, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return (FunckyNumber) arguments.getFirst().eval(context);
         }
     };
-    public final HigherOrderFunction $minus = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
+    public final HigherOrderFunction _minus = new HigherOrderFunction(engine, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.getFirst().eval(context)).getValue().negate());
         }
     };
-    public final HigherOrderFunction $add = new HigherOrderFunction(engine, this, NUMBER, NUMBER, NUMBER) {
+    public final HigherOrderFunction _add = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .add(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction $subtract = new HigherOrderFunction(engine, this, NUMBER, NUMBER, NUMBER) {
+    public final HigherOrderFunction _subtract = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .subtract(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction $multiply = new HigherOrderFunction(engine, this, NUMBER, NUMBER, NUMBER) {
+    public final HigherOrderFunction _multiply = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .multiply(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction $divide = new HigherOrderFunction(engine, this, NUMBER, NUMBER, NUMBER, NUMBER, NUMBER) {
+    public final HigherOrderFunction _divide = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             final BigDecimal divisor = ((FunckyNumber) arguments.get(1).eval(context)).getValue();
             if (divisor.compareTo(BigDecimal.ZERO) == 0) {
                 throw new SneakyRuntimeException(ERROR_DIVISION_BY_ZERO);
@@ -71,44 +71,44 @@ public final class Numbers extends FunckyLibrary {
             }
         }
     };
-    public final HigherOrderFunction $byte = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
+    public final HigherOrderFunction _byte = new HigherOrderFunction(engine, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().byteValue()));
         }
     };
-    public final HigherOrderFunction $short = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
+    public final HigherOrderFunction _short = new HigherOrderFunction(engine, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().shortValue()));
         }
     };
-    public final HigherOrderFunction $int = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
+    public final HigherOrderFunction _int = new HigherOrderFunction(engine, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().intValue()));
         }
     };
-    public final HigherOrderFunction $long = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
+    public final HigherOrderFunction _long = new HigherOrderFunction(engine, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().longValue()));
         }
     };
-    public final HigherOrderFunction $float = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
+    public final HigherOrderFunction _float = new HigherOrderFunction(engine, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().floatValue()));
         }
     };
-    public final HigherOrderFunction $double = new HigherOrderFunction(engine, this, NUMBER, NUMBER) {
+    public final HigherOrderFunction _double = new HigherOrderFunction(engine, NUMBER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, new BigDecimal(((FunckyNumber) arguments.getFirst().eval(context))
                     .getValue().doubleValue()));
         }

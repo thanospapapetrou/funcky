@@ -5,6 +5,7 @@ import java.util.function.Function;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
+import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
 public final class FunckyBoolean extends FunckyValue {
@@ -29,7 +30,7 @@ public final class FunckyBoolean extends FunckyValue {
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(engine, new Booleans(engine).getFile(), Boolean.toString(value));
+        return new FunckyReference(engine, FunckyLibrary.getNamespace(Booleans.class), Boolean.toString(value));
     }
 
     @Override

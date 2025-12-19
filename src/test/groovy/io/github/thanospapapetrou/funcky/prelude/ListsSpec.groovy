@@ -24,7 +24,7 @@ class ListsSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                                                                                           || result
-        '"funcky:lists".head'                                                                                                                                                                || new Lists(engine).$head
+        '"funcky:commons".string "funcky:lists".head'                                                                                                                                        || toFuncky('"funcky:lists".head')
         '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".domain ("funcky:types".type "funcky:lists".head)))'                                                             || TRUE.apply(engine)
         '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".type "funcky:lists".head))'                                                                                       || TRUE.apply(engine)
         '"funcky:commons".equal ("funcky:types".element ("funcky:types".domain ("funcky:types".type "funcky:lists".head))) ("funcky:types".range ("funcky:types".type "funcky:lists".head))' || TRUE.apply(engine)
@@ -52,7 +52,7 @@ class ListsSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                                                                                                                    || result
-        '"funcky:lists".tail'                                                                                                                                                                                         || new Lists(engine).$tail
+        '"funcky:commons".string "funcky:lists".tail'                                                                                                                                                                 || toFuncky('"funcky:lists".tail')
         '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".domain ("funcky:types".type "funcky:lists".tail)))'                                                                                      || TRUE.apply(engine)
         '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".range ("funcky:types".type "funcky:lists".tail)))'                                                                                       || TRUE.apply(engine)
         '"funcky:commons".equal ("funcky:types".element ("funcky:types".domain ("funcky:types".type "funcky:lists".tail))) ("funcky:types".element ("funcky:types".range ("funcky:types".type "funcky:lists".tail)))' || TRUE.apply(engine)
@@ -80,7 +80,7 @@ class ListsSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                                                                                                                                                                                 || result
-        '"funcky:lists".prepend'                                                                                                                                                                                                                   || new Lists(engine).$prepend
+        '"funcky:commons".string "funcky:lists".prepend'                                                                                                                                                                                           || toFuncky('"funcky:lists".prepend')
         '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".domain ("funcky:types".type "funcky:lists".prepend)))'                                                                                                                || TRUE.apply(engine)
         '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".range ("funcky:types".type "funcky:lists".prepend)))'                                                                                                                  || TRUE.apply(engine)
         '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".range ("funcky:types".range ("funcky:types".type "funcky:lists".prepend))))'                                                                                          || TRUE.apply(engine)

@@ -17,30 +17,30 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.N
 public final class Characters extends FunckyLibrary {
     private static final String ERROR_INVALID_UNICODE_CODE_POINT = "Invalid Unicode code point `%1$s`";
 
-    public final HigherOrderFunction uppercase = new HigherOrderFunction(engine, this, CHARACTER, CHARACTER) {
+    public final HigherOrderFunction uppercase = new HigherOrderFunction(engine, CHARACTER, CHARACTER) {
         @Override
-        protected FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyCharacter(engine,
                     Character.toUpperCase(((FunckyCharacter) arguments.getFirst().eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction lowercase = new HigherOrderFunction(engine, this, CHARACTER, CHARACTER) {
+    public final HigherOrderFunction lowercase = new HigherOrderFunction(engine, CHARACTER, CHARACTER) {
         @Override
-        protected FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyCharacter(engine,
                     Character.toLowerCase(((FunckyCharacter) arguments.getFirst().eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction number = new HigherOrderFunction(engine, this, CHARACTER, NUMBER) {
+    public final HigherOrderFunction number = new HigherOrderFunction(engine, CHARACTER, NUMBER) {
         @Override
-        protected FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine,
                     new BigDecimal(((FunckyCharacter) arguments.getFirst().eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction character = new HigherOrderFunction(engine, this, NUMBER, CHARACTER) {
+    public final HigherOrderFunction character = new HigherOrderFunction(engine, NUMBER, CHARACTER) {
         @Override
-        protected FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyCharacter apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             final FunckyNumber codePointNumber = (FunckyNumber) arguments.getFirst().eval(context);
             final int codePointInt =
                     requireInt(codePointNumber, String.format(ERROR_INVALID_UNICODE_CODE_POINT, codePointNumber));

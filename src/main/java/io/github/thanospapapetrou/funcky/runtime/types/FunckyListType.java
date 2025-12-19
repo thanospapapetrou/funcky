@@ -8,7 +8,9 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
@@ -34,7 +36,7 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new Types(engine).$List.toExpression(), element);
+        return new FunckyApplication(new FunckyReference(engine, FunckyLibrary.getNamespace(Types.class), "List"), element); // TODO
     }
 
     @Override

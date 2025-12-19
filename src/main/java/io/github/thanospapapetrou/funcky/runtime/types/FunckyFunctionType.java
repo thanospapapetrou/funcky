@@ -10,7 +10,9 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckyFunctionType extends FunckyType {
@@ -40,7 +42,7 @@ public final class FunckyFunctionType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new FunckyApplication(new Types(engine).$Function.toExpression(),
+        return new FunckyApplication(new FunckyApplication(new FunckyReference(engine, FunckyLibrary.getNamespace(Types.class), "Function"), // TODO
                 domain), range);
     }
 

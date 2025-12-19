@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
+import javax.script.ScriptContext;
+
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
@@ -197,10 +199,19 @@ public class Linker {
                 final Constructor<?> constructor = clazz.getDeclaredConstructor(FunckyEngine.class);
                 if (FunckyValue.class.isAssignableFrom(field.getType())) {
                     if (HigherOrderFunction.class.isAssignableFrom(field.getType())) {
+                        final HigherOrderFunction function =
+                                (HigherOrderFunction) field.get(constructor.newInstance(engine));
                         normalized = new FunckyDefinition(definition.file(),
                                 definition.line(), definition.name(), new FunckyLiteral(engine,
                                 reference.getFile(), reference.getLine(), reference.getColumn(),
-                                (FunckyValue) field.get(constructor.newInstance(engine)))); // TODO new higherorderfunction
+                                new HigherOrderFunction(engine, function.getType(), function.getOrder(),
+                                        new FunckyReference(engine, definition.file(), definition.name())) {
+                                    @Override
+                                    public FunckyValue apply(final ScriptContext context,
+                                            final List<FunckyExpression> arguments) {
+                                        return function.apply(context, arguments);
+                                    }
+                                }));
                     } else {
                         normalized = new FunckyDefinition(definition.file(),
                                 definition.line(), definition.name(), new FunckyLiteral(engine,

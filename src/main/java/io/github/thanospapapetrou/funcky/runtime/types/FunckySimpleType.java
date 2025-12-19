@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckySimpleType extends FunckyType {
@@ -35,7 +36,7 @@ public final class FunckySimpleType extends FunckyType {
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(engine, new Types(engine).getFile(), name);
+        return new FunckyReference(engine, FunckyLibrary.getNamespace(Types.class), name);
     }
 
     @Override

@@ -29,12 +29,12 @@ class NumbersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                  || result
-        '"funcky:numbers".plus'                     || new Numbers(engine).$plus
-        '"funcky:types".type "funcky:numbers".plus' || FUNCTION(NUMBER, NUMBER).apply(engine)
-        '"funcky:numbers".plus 0'                   || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".plus 1'                   || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".plus -1'                  || new FunckyNumber(engine, -1.0G)
+        expression                                      || result
+        '"funcky:commons".string "funcky:numbers".plus' || toFuncky('"funcky:numbers".plus')
+        '"funcky:types".type "funcky:numbers".plus'     || FUNCTION(NUMBER, NUMBER).apply(engine)
+        '"funcky:numbers".plus 0'                       || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".plus 1'                       || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".plus -1'                      || new FunckyNumber(engine, -1.0G)
     }
 
     @Unroll('Test minus (expression: #expression)')
@@ -42,12 +42,12 @@ class NumbersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                   || result
-        '"funcky:numbers".minus'                     || new Numbers(engine).$minus
-        '"funcky:types".type "funcky:numbers".minus' || FUNCTION(NUMBER, NUMBER).apply(engine)
-        '"funcky:numbers".minus 0'                   || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".minus 1'                   || new FunckyNumber(engine, -1.0G)
-        '"funcky:numbers".minus -1'                  || new FunckyNumber(engine, 1.0G)
+        expression                                       || result
+        '"funcky:commons".string "funcky:numbers".minus' || toFuncky('"funcky:numbers".minus')
+        '"funcky:types".type "funcky:numbers".minus'     || FUNCTION(NUMBER, NUMBER).apply(engine)
+        '"funcky:numbers".minus 0'                       || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".minus 1'                       || new FunckyNumber(engine, -1.0G)
+        '"funcky:numbers".minus -1'                      || new FunckyNumber(engine, 1.0G)
     }
 
     @Unroll('Test round (expression: #expression)')
@@ -89,7 +89,7 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                      || result
-        '"funcky:numbers".add'                                                          || new Numbers(engine).$add
+        '"funcky:commons".string "funcky:numbers".add'                                  || toFuncky('"funcky:numbers".add')
         '"funcky:types".type "funcky:numbers".add'                                      || FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine)
         '"funcky:types".type ("funcky:numbers".add 1)'                                  || FUNCTION(NUMBER, NUMBER).apply(engine)
         '"funcky:commons".string ("funcky:numbers".add ("funcky:commons".error "foo"))' || toFuncky('"funcky:numbers".add ("funcky:commons".error "foo")')
@@ -105,7 +105,7 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                           || result
-        '"funcky:numbers".subtract'                                                          || new Numbers(engine).$subtract
+        '"funcky:commons".string "funcky:numbers".subtract'                                  || toFuncky('"funcky:numbers".subtract')
         '"funcky:types".type "funcky:numbers".subtract'                                      || FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine)
         '"funcky:types".type ("funcky:numbers".subtract 1)'                                  || FUNCTION(NUMBER, NUMBER).apply(engine)
         '"funcky:commons".string ("funcky:numbers".subtract ("funcky:commons".error "foo"))' || toFuncky('"funcky:numbers".subtract ("funcky:commons".error "foo")')
@@ -121,7 +121,7 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                           || result
-        '"funcky:numbers".multiply'                                                          || new Numbers(engine).$multiply
+        '"funcky:commons".string "funcky:numbers".multiply'                                  || toFuncky('"funcky:numbers".multiply')
         '"funcky:types".type "funcky:numbers".multiply'                                      || FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine)
         '"funcky:types".type ("funcky:numbers".multiply 1)'                                  || FUNCTION(NUMBER, NUMBER).apply(engine)
         '"funcky:commons".string ("funcky:numbers".multiply ("funcky:commons".error "foo"))' || toFuncky('"funcky:numbers".multiply ("funcky:commons".error "foo")')
@@ -137,7 +137,7 @@ class NumbersSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                                                             || result
-        '"funcky:numbers".divide'                                                              || new Numbers(engine).$divide
+        '"funcky:commons".string "funcky:numbers".divide'                                      || toFuncky('"funcky:numbers".divide')
         '"funcky:types".type "funcky:numbers".divide'                                          || FUNCTION(NUMBER, NUMBER, NUMBER, NUMBER, NUMBER).apply(engine)
         '"funcky:types".type ("funcky:numbers".divide 1)'                                      || FUNCTION(NUMBER, NUMBER, NUMBER, NUMBER).apply(engine)
         '"funcky:types".type ("funcky:numbers".divide 1 2)'                                    || FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine)
@@ -201,20 +201,20 @@ class NumbersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                  || result
-        '"funcky:numbers".byte'                     || new Numbers(engine).$byte
-        '"funcky:types".type "funcky:numbers".byte' || FUNCTION(NUMBER, NUMBER).apply(engine)
-        '"funcky:numbers".byte 0'                   || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".byte 1'                   || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".byte 127'                 || new FunckyNumber(engine, 127.0G)
-        '"funcky:numbers".byte -128'                || new FunckyNumber(engine, -128.0G)
-        '"funcky:numbers".byte 0.1'                 || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".byte 0.9'                 || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".byte 1.1'                 || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".byte 128'                 || new FunckyNumber(engine, -128.0G)
-        '"funcky:numbers".byte 129'                 || new FunckyNumber(engine, -127.0G)
-        '"funcky:numbers".byte -129'                || new FunckyNumber(engine, 127.0G)
-        '"funcky:numbers".byte -130'                || new FunckyNumber(engine, 126.0G)
+        expression                                      || result
+        '"funcky:commons".string "funcky:numbers".byte' || toFuncky('"funcky:numbers".byte')
+        '"funcky:types".type "funcky:numbers".byte'     || FUNCTION(NUMBER, NUMBER).apply(engine)
+        '"funcky:numbers".byte 0'                       || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".byte 1'                       || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".byte 127'                     || new FunckyNumber(engine, 127.0G)
+        '"funcky:numbers".byte -128'                    || new FunckyNumber(engine, -128.0G)
+        '"funcky:numbers".byte 0.1'                     || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".byte 0.9'                     || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".byte 1.1'                     || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".byte 128'                     || new FunckyNumber(engine, -128.0G)
+        '"funcky:numbers".byte 129'                     || new FunckyNumber(engine, -127.0G)
+        '"funcky:numbers".byte -129'                    || new FunckyNumber(engine, 127.0G)
+        '"funcky:numbers".byte -130'                    || new FunckyNumber(engine, 126.0G)
     }
 
     @Unroll('Test short (expression: #expression)')
@@ -222,20 +222,20 @@ class NumbersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                   || result
-        '"funcky:numbers".short'                     || new Numbers(engine).$short
-        '"funcky:types".type "funcky:numbers".short' || FUNCTION(NUMBER, NUMBER).apply(engine)
-        '"funcky:numbers".short 0'                   || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".short 1'                   || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".short 32767'               || new FunckyNumber(engine, 32767.0G)
-        '"funcky:numbers".short -32768'              || new FunckyNumber(engine, -32768.0G)
-        '"funcky:numbers".short 0.1'                 || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".short 0.9'                 || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".short 1.1'                 || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".short 32768'               || new FunckyNumber(engine, -32768.0G)
-        '"funcky:numbers".short 32769'               || new FunckyNumber(engine, -32767.0G)
-        '"funcky:numbers".short -32769'              || new FunckyNumber(engine, 32767.0G)
-        '"funcky:numbers".short -32770'              || new FunckyNumber(engine, 32766.0G)
+        expression                                       || result
+        '"funcky:commons".string "funcky:numbers".short' || toFuncky('"funcky:numbers".short')
+        '"funcky:types".type "funcky:numbers".short'     || FUNCTION(NUMBER, NUMBER).apply(engine)
+        '"funcky:numbers".short 0'                       || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".short 1'                       || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".short 32767'                   || new FunckyNumber(engine, 32767.0G)
+        '"funcky:numbers".short -32768'                  || new FunckyNumber(engine, -32768.0G)
+        '"funcky:numbers".short 0.1'                     || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".short 0.9'                     || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".short 1.1'                     || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".short 32768'                   || new FunckyNumber(engine, -32768.0G)
+        '"funcky:numbers".short 32769'                   || new FunckyNumber(engine, -32767.0G)
+        '"funcky:numbers".short -32769'                  || new FunckyNumber(engine, 32767.0G)
+        '"funcky:numbers".short -32770'                  || new FunckyNumber(engine, 32766.0G)
     }
 
     @Unroll('Test int (expression: #expression)')
@@ -243,20 +243,20 @@ class NumbersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                 || result
-        '"funcky:numbers".int'                     || new Numbers(engine).$int
-        '"funcky:types".type "funcky:numbers".int' || FUNCTION(NUMBER, NUMBER).apply(engine)
-        '"funcky:numbers".int 0'                   || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".int 1'                   || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".int 2147483647'          || new FunckyNumber(engine, 2147483647.0G)
-        '"funcky:numbers".int -2147483648'         || new FunckyNumber(engine, -2147483648.0G)
-        '"funcky:numbers".int 0.1'                 || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".int 0.9'                 || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".int 1.1'                 || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".int 2147483648'          || new FunckyNumber(engine, -2147483648.0G)
-        '"funcky:numbers".int 2147483649'          || new FunckyNumber(engine, -2147483647.0G)
-        '"funcky:numbers".int -2147483649'         || new FunckyNumber(engine, 2147483647.0G)
-        '"funcky:numbers".int -2147483650'         || new FunckyNumber(engine, 2147483646.0G)
+        expression                                     || result
+        '"funcky:commons".string "funcky:numbers".int' || toFuncky('"funcky:numbers".int')
+        '"funcky:types".type "funcky:numbers".int'     || FUNCTION(NUMBER, NUMBER).apply(engine)
+        '"funcky:numbers".int 0'                       || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".int 1'                       || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".int 2147483647'              || new FunckyNumber(engine, 2147483647.0G)
+        '"funcky:numbers".int -2147483648'             || new FunckyNumber(engine, -2147483648.0G)
+        '"funcky:numbers".int 0.1'                     || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".int 0.9'                     || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".int 1.1'                     || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".int 2147483648'              || new FunckyNumber(engine, -2147483648.0G)
+        '"funcky:numbers".int 2147483649'              || new FunckyNumber(engine, -2147483647.0G)
+        '"funcky:numbers".int -2147483649'             || new FunckyNumber(engine, 2147483647.0G)
+        '"funcky:numbers".int -2147483650'             || new FunckyNumber(engine, 2147483646.0G)
     }
 
     @Unroll('Test long (expression: #expression)')
@@ -264,20 +264,20 @@ class NumbersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                   || result
-        '"funcky:numbers".long'                      || new Numbers(engine).$long
-        '"funcky:types".type "funcky:numbers".long'  || FUNCTION(NUMBER, NUMBER).apply(engine)
-        '"funcky:numbers".long 0'                    || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".long 1'                    || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".long 9223372036854775807'  || new FunckyNumber(engine, 9223372036854775807.0G)
-        '"funcky:numbers".long -9223372036854775808' || new FunckyNumber(engine, -9223372036854775808.0G)
-        '"funcky:numbers".long 0.1'                  || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".long 0.9'                  || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".long 1.1'                  || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".long 9223372036854775808'  || new FunckyNumber(engine, -9223372036854775808.0G)
-        '"funcky:numbers".long 9223372036854775809'  || new FunckyNumber(engine, -9223372036854775807.0G)
-        '"funcky:numbers".long -9223372036854775809' || new FunckyNumber(engine, 9223372036854775807.0G)
-        '"funcky:numbers".long -9223372036854775810' || new FunckyNumber(engine, 9223372036854775806.0G)
+        expression                                      || result
+        '"funcky:commons".string "funcky:numbers".long' || toFuncky('"funcky:numbers".long')
+        '"funcky:types".type "funcky:numbers".long'     || FUNCTION(NUMBER, NUMBER).apply(engine)
+        '"funcky:numbers".long 0'                       || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".long 1'                       || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".long 9223372036854775807'     || new FunckyNumber(engine, 9223372036854775807.0G)
+        '"funcky:numbers".long -9223372036854775808'    || new FunckyNumber(engine, -9223372036854775808.0G)
+        '"funcky:numbers".long 0.1'                     || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".long 0.9'                     || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".long 1.1'                     || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".long 9223372036854775808'     || new FunckyNumber(engine, -9223372036854775808.0G)
+        '"funcky:numbers".long 9223372036854775809'     || new FunckyNumber(engine, -9223372036854775807.0G)
+        '"funcky:numbers".long -9223372036854775809'    || new FunckyNumber(engine, 9223372036854775807.0G)
+        '"funcky:numbers".long -9223372036854775810'    || new FunckyNumber(engine, 9223372036854775806.0G)
     }
 
     @Unroll('Test float (expression: #expression)')
@@ -285,13 +285,13 @@ class NumbersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                   || result
-        '"funcky:numbers".float'                     || new Numbers(engine).$float
-        '"funcky:types".type "funcky:numbers".float' || FUNCTION(NUMBER, NUMBER).apply(engine)
-        '"funcky:numbers".float 0'                   || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".float 1'                   || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".float -1'                  || new FunckyNumber(engine, -1.0G)
-        '"funcky:numbers".float 0.1'                 || new FunckyNumber(engine, 0.100000001490116119384765625G)
+        expression                                       || result
+        '"funcky:commons".string "funcky:numbers".float' || toFuncky('"funcky:numbers".float')
+        '"funcky:types".type "funcky:numbers".float'     || FUNCTION(NUMBER, NUMBER).apply(engine)
+        '"funcky:numbers".float 0'                       || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".float 1'                       || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".float -1'                      || new FunckyNumber(engine, -1.0G)
+        '"funcky:numbers".float 0.1'                     || new FunckyNumber(engine, 0.100000001490116119384765625G)
     }
 
     @Unroll('Test double (expression: #expression)')
@@ -299,13 +299,13 @@ class NumbersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                    || result
-        '"funcky:numbers".double'                     || new Numbers(engine).$double
-        '"funcky:types".type "funcky:numbers".double' || FUNCTION(NUMBER, NUMBER).apply(engine)
-        '"funcky:numbers".double 0'                   || new FunckyNumber(engine, 0.0G)
-        '"funcky:numbers".double 1'                   || new FunckyNumber(engine, 1.0G)
-        '"funcky:numbers".double -1'                  || new FunckyNumber(engine, -1.0G)
-        '"funcky:numbers".double 0.1'                 || new FunckyNumber(engine, 0.1000000000000000055511151231257827021181583404541015625G)
+        expression                                        || result
+        '"funcky:commons".string "funcky:numbers".double' || toFuncky('"funcky:numbers".double')
+        '"funcky:types".type "funcky:numbers".double'     || FUNCTION(NUMBER, NUMBER).apply(engine)
+        '"funcky:numbers".double 0'                       || new FunckyNumber(engine, 0.0G)
+        '"funcky:numbers".double 1'                       || new FunckyNumber(engine, 1.0G)
+        '"funcky:numbers".double -1'                      || new FunckyNumber(engine, -1.0G)
+        '"funcky:numbers".double 0.1'                     || new FunckyNumber(engine, 0.1000000000000000055511151231257827021181583404541015625G)
     }
 
     @Unroll('Test sum (expression: #expression)')

@@ -18,12 +18,12 @@ class CharactersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                          || result
-        '"funcky:characters".uppercase'                     || new Characters(engine).uppercase
-        '"funcky:types".type "funcky:characters".uppercase' || FUNCTION(CHARACTER, CHARACTER).apply(engine)
-        '"funcky:characters".uppercase \'A\''               || new FunckyCharacter(engine, 'A' as char)
-        '"funcky:characters".uppercase \'a\''               || new FunckyCharacter(engine, 'A' as char)
-        '"funcky:characters".uppercase \'$\''               || new FunckyCharacter(engine, '$' as char)
+        expression                                              || result
+        '"funcky:commons".string "funcky:characters".uppercase' || toFuncky('"funcky:characters".uppercase')
+        '"funcky:types".type "funcky:characters".uppercase'     || FUNCTION(CHARACTER, CHARACTER).apply(engine)
+        '"funcky:characters".uppercase \'A\''                   || new FunckyCharacter(engine, 'A' as char)
+        '"funcky:characters".uppercase \'a\''                   || new FunckyCharacter(engine, 'A' as char)
+        '"funcky:characters".uppercase \'$\''                   || new FunckyCharacter(engine, '$' as char)
     }
 
     @Unroll('Test lowercase (expression: #expression)')
@@ -31,12 +31,12 @@ class CharactersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                          || result
-        '"funcky:characters".lowercase'                     || new Characters(engine).lowercase
-        '"funcky:types".type "funcky:characters".lowercase' || FUNCTION(CHARACTER, CHARACTER).apply(engine)
-        '"funcky:characters".lowercase \'A\''               || new FunckyCharacter(engine, 'a' as char)
-        '"funcky:characters".lowercase \'a\''               || new FunckyCharacter(engine, 'a' as char)
-        '"funcky:characters".lowercase \'$\''               || new FunckyCharacter(engine, '$' as char)
+        expression                                              || result
+        '"funcky:commons".string "funcky:characters".lowercase' || toFuncky('"funcky:characters".lowercase')
+        '"funcky:types".type "funcky:characters".lowercase'     || FUNCTION(CHARACTER, CHARACTER).apply(engine)
+        '"funcky:characters".lowercase \'A\''                   || new FunckyCharacter(engine, 'a' as char)
+        '"funcky:characters".lowercase \'a\''                   || new FunckyCharacter(engine, 'a' as char)
+        '"funcky:characters".lowercase \'$\''                   || new FunckyCharacter(engine, '$' as char)
     }
 
     @Unroll('Test number (expression: #expression)')
@@ -44,28 +44,28 @@ class CharactersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                       || result
-        '"funcky:characters".number'                     || new Characters(engine).number
-        '"funcky:types".type "funcky:characters".number' || FUNCTION(CHARACTER, NUMBER).apply(engine)
-        '"funcky:characters".number \'A\''               || new FunckyNumber(engine, 65.0G)
-        '"funcky:characters".number \'a\''               || new FunckyNumber(engine, 97.0G)
-        '"funcky:characters".number \'\\\\\''            || new FunckyNumber(engine, 92.0G)
-        '"funcky:characters".number \'\\t\''             || new FunckyNumber(engine, 9.0G)
-        '"funcky:characters".number \'\\b\''             || new FunckyNumber(engine, 8.0G)
-        '"funcky:characters".number \'\\n\''             || new FunckyNumber(engine, 10.0G)
-        '"funcky:characters".number \'\\r\''             || new FunckyNumber(engine, 13.0G)
-        '"funcky:characters".number \'\\f\''             || new FunckyNumber(engine, 12.0G)
-        '"funcky:characters".number \'\\\'\''            || new FunckyNumber(engine, 39.0G)
-        '"funcky:characters".number \'\\"\''             || new FunckyNumber(engine, 34.0G)
-        '"funcky:characters".number \'\\0\''             || new FunckyNumber(engine, 0.0G)
-        '"funcky:characters".number \'\\1\''             || new FunckyNumber(engine, 1.0G)
-        '"funcky:characters".number \'\\01\''            || new FunckyNumber(engine, 1.0G)
-        '"funcky:characters".number \'\\10\''            || new FunckyNumber(engine, 8.0G)
-        '"funcky:characters".number \'\\u0000\''         || new FunckyNumber(engine, 0.0G)
-        '"funcky:characters".number \'\\u0001\''         || new FunckyNumber(engine, 1.0G)
-        '"funcky:characters".number \'\\u000F\''         || new FunckyNumber(engine, 15.0G)
-        '"funcky:characters".number \'\\u000f\''         || new FunckyNumber(engine, 15.0G)
-        '"funcky:characters".number \'\\u0010\''         || new FunckyNumber(engine, 16.0G)
+        expression                                           || result
+        '"funcky:commons".string "funcky:characters".number' || toFuncky('"funcky:characters".number')
+        '"funcky:types".type "funcky:characters".number'     || FUNCTION(CHARACTER, NUMBER).apply(engine)
+        '"funcky:characters".number \'A\''                   || new FunckyNumber(engine, 65.0G)
+        '"funcky:characters".number \'a\''                   || new FunckyNumber(engine, 97.0G)
+        '"funcky:characters".number \'\\\\\''                || new FunckyNumber(engine, 92.0G)
+        '"funcky:characters".number \'\\t\''                 || new FunckyNumber(engine, 9.0G)
+        '"funcky:characters".number \'\\b\''                 || new FunckyNumber(engine, 8.0G)
+        '"funcky:characters".number \'\\n\''                 || new FunckyNumber(engine, 10.0G)
+        '"funcky:characters".number \'\\r\''                 || new FunckyNumber(engine, 13.0G)
+        '"funcky:characters".number \'\\f\''                 || new FunckyNumber(engine, 12.0G)
+        '"funcky:characters".number \'\\\'\''                || new FunckyNumber(engine, 39.0G)
+        '"funcky:characters".number \'\\"\''                 || new FunckyNumber(engine, 34.0G)
+        '"funcky:characters".number \'\\0\''                 || new FunckyNumber(engine, 0.0G)
+        '"funcky:characters".number \'\\1\''                 || new FunckyNumber(engine, 1.0G)
+        '"funcky:characters".number \'\\01\''                || new FunckyNumber(engine, 1.0G)
+        '"funcky:characters".number \'\\10\''                || new FunckyNumber(engine, 8.0G)
+        '"funcky:characters".number \'\\u0000\''             || new FunckyNumber(engine, 0.0G)
+        '"funcky:characters".number \'\\u0001\''             || new FunckyNumber(engine, 1.0G)
+        '"funcky:characters".number \'\\u000F\''             || new FunckyNumber(engine, 15.0G)
+        '"funcky:characters".number \'\\u000f\''             || new FunckyNumber(engine, 15.0G)
+        '"funcky:characters".number \'\\u0010\''             || new FunckyNumber(engine, 16.0G)
     }
 
     @Unroll('Test character (expression: #expression)')
@@ -73,13 +73,13 @@ class CharactersSpec extends BaseSpec {
         expect:
         engine.eval(expression) == result
         where:
-        expression                                          || result
-        '"funcky:characters".character'                     || new Characters(engine).character
-        '"funcky:types".type "funcky:characters".character' || FUNCTION(NUMBER, CHARACTER).apply(engine)
-        '"funcky:characters".character 65'                  || new FunckyCharacter(engine, 'A' as char)
-        '"funcky:characters".character 97'                  || new FunckyCharacter(engine, 'a' as char)
-        '"funcky:characters".character 0'                   || new FunckyCharacter(engine, '\u0000' as char)
-        '"funcky:characters".character 65535'               || new FunckyCharacter(engine, '\uFFFF' as char)
+        expression                                              || result
+        '"funcky:commons".string "funcky:characters".character' || toFuncky('"funcky:characters".character')
+        '"funcky:types".type "funcky:characters".character'     || FUNCTION(NUMBER, CHARACTER).apply(engine)
+        '"funcky:characters".character 65'                      || new FunckyCharacter(engine, 'A' as char)
+        '"funcky:characters".character 97'                      || new FunckyCharacter(engine, 'a' as char)
+        '"funcky:characters".character 0'                       || new FunckyCharacter(engine, '\u0000' as char)
+        '"funcky:characters".character 65535'                   || new FunckyCharacter(engine, '\uFFFF' as char)
     }
 
     @Unroll('Test character (runtime error, expression: #expression)')

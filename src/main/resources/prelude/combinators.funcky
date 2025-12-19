@@ -1,10 +1,10 @@
 # Substitution (S x y z = x z (y z))
 # "funcky:types".Function ("funcky:types".Function $_7 ("funcky:types".Function $_8 $_9)) ("funcky:types".Function ("funcky:types".Function $_7 $_8) ("funcky:types".Function $_7 $_9))
-s = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Combinators".$s
+s = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Combinators".s
 
 # Constant (K x y = x)
 # "funcky:types".Function $_7 ("funcky:types".Function $_8 $_7)
-k = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Combinators".$k
+k = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Combinators".k
 
 # Identity (I x = x)
 # "funcky:types".Function $_7 $_7

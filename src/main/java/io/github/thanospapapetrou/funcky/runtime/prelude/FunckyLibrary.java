@@ -1,25 +1,27 @@
 package io.github.thanospapapetrou.funcky.runtime.prelude;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.net.URI;
-import java.util.Arrays;
+import java.net.URISyntaxException;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.Locale;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
+import io.github.thanospapapetrou.funcky.FunckyFactory;
+import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
-public sealed class FunckyLibrary extends FunckyScript // TODO do not extend script
-        permits Types, Numbers, Booleans, Characters, Lists, Commons, Combinators {
-    private static final String ERROR_RESOLVING_FIELD = "Error resolving field `%1$s``";
+public sealed class FunckyLibrary permits Types, Numbers, Booleans, Characters, Lists, Commons, Combinators {
+    protected final FunckyEngine engine;
+
+    public static URI getNamespace(final Class<? extends FunckyLibrary> library) {
+        try {
+            return new URI("funcky", library.getSimpleName().toLowerCase(Locale.ROOT), null); // TODO
+        } catch (final URISyntaxException e) {
+            throw new RuntimeException(e); // TODO
+        }
+    }
 
     protected static int requireInt(final FunckyNumber number, final String message) {
         if ((number.getValue().compareTo(BigDecimal.valueOf(number.getValue().intValue())) != 0)) {
@@ -38,28 +40,6 @@ public sealed class FunckyLibrary extends FunckyScript // TODO do not extend scr
     }
 
     protected FunckyLibrary(final FunckyEngine engine) {
-        super(engine, null);
-    }
-
-    @Override
-    public URI getFile() {
-        return engine.getLinker().getNamespace(getClass());
-    }
-
-    @Override
-    public List<FunckyDefinition> getDefinitions() {
-        return Arrays.stream(getClass().getDeclaredFields()).filter(field -> Modifier.isPublic(field.getModifiers()))
-                .filter(field -> field.getName().startsWith(Linker.JAVA_PREFIX))
-                .map(this::getDefinition)
-                .toList();
-    }
-
-    private FunckyDefinition getDefinition(final Field field) {
-        try {
-            return new FunckyDefinition(getFile(), -1, field.getName().substring(Linker.JAVA_PREFIX.length()),
-                    new FunckyLiteral(engine, (FunckyValue) field.get(this)));
-        } catch (final IllegalAccessException e) {
-            throw new IllegalStateException(String.format(ERROR_RESOLVING_FIELD, field.getName()), e);
-        }
+        this.engine = engine;
     }
 }
