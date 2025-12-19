@@ -17,7 +17,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
-public sealed class FunckyLibrary extends FunckyScript
+public sealed class FunckyLibrary extends FunckyScript // TODO do not extend script
         permits Types, Numbers, Booleans, Characters, Lists, Commons, Combinators {
     private static final String ERROR_RESOLVING_FIELD = "Error resolving field `%1$s``";
 

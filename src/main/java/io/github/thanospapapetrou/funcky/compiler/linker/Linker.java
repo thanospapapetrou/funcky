@@ -3,10 +3,14 @@ package io.github.thanospapapetrou.funcky.compiler.linker;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -19,12 +23,16 @@ import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidMainException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
+import io.github.thanospapapetrou.funcky.runtime.prelude.HigherOrderFunction;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
@@ -88,17 +96,16 @@ public class Linker {
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) {
-        engine.getContext().setScript(script.getFile());
-        validateImports(script);
-        final Map<String, FunckyType> definitionTypes = validateDefinitions(script);
+        final FunckyScript normalized = normalize(script);
+        final Map<String, FunckyType> definitionTypes = validateDefinitions(normalized);
         if (main) {
-            validateMain(script);
+            validateMain(normalized);
         }
-        LOGGER.fine(script.getFile().toString());
+        LOGGER.fine(normalized.getFile().toString());
         definitionTypes.entrySet().stream()
                 .map(definitionType -> String.format(DEFINITION, definitionType.getKey(), definitionType.getValue()))
                 .forEach(LOGGER::fine);
-        return script;
+        return normalized;
     }
 
     public InputStream getScript(final URI file) throws IOException {
@@ -107,36 +114,8 @@ public class Linker {
                         engine.getFactory().getExtensions().getFirst())) : file.toURL()).openStream();
     }
 
-    private void validateImports(final FunckyScript script) {
-        for (final FunckyImport inport : script.getImports()) {
-            final Optional<FunckyImport> otherImport = script.getImports().stream()
-                    .filter(imp -> imp.line() < inport.line())
-                    .filter(imp -> imp.prefix().equals(inport.prefix()))
-                    .findFirst();
-            if (otherImport.isPresent()) {
-                throw new SneakyCompilationException(new PrefixAlreadyBoundException(inport, otherImport.get()));
-            }
-            engine.getContext().setImport(inport, normalize(inport.file(), inport.namespace()));
-        }
-    }
-
     private Map<String, FunckyType> validateDefinitions(final FunckyScript script) {
         final Map<String, FunckyType> definitionTypes = new LinkedHashMap<>();
-        final Class<? extends FunckyLibrary> library = getLibrary(script.getFile());
-        if (library != null) {
-            script.getDefinitions().addAll(loadLibrary(library).getDefinitions());
-        }
-        for (final FunckyDefinition definition : script.getDefinitions()) {
-            final Optional<FunckyDefinition> otherDefinition = script.getDefinitions().stream()
-                    .filter(def -> def.line() < definition.line())
-                    .filter(def -> def.name().equals(definition.name()))
-                    .findFirst();
-            if (otherDefinition.isPresent()) {
-                throw new SneakyCompilationException(
-                        new NameAlreadyDefinedException(definition, otherDefinition.get()));
-            }
-            engine.getContext().setDefinition(definition);
-        }
         for (final FunckyDefinition definition : script.getDefinitions()) {
             definitionTypes.put(definition.name(), definition.expression().getType());
         }
@@ -163,15 +142,81 @@ public class Linker {
                 .orElse(null);
     }
 
-    private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {
-        try {
-            return library.getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
-        } catch (final ReflectiveOperationException e) {
-            throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
-        }
-    }
+    //    private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {
+    //        try {
+    //            return library.getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
+    //        } catch (final ReflectiveOperationException e) {
+    //            throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
+    //        }
+    //    }
 
     private String getPreludeScheme() {
         return engine.getFactory().getLanguageName().toLowerCase(Locale.ROOT);
+    }
+
+    private FunckyScript normalize(final FunckyScript script) {
+        final FunckyScript normalized = new FunckyScript(engine, script.getFile());
+        engine.getContext().setScript(normalized.getFile());
+        script.getImports().stream()
+                .map(inport -> normalize(inport, script.getImports()))
+                .forEach(normalized.getImports()::add);
+        script.getDefinitions().stream()
+                .map(definition -> normalize(definition, script.getDefinitions()))
+                .forEach(normalized.getDefinitions()::add);
+        return normalized;
+    }
+
+    private FunckyImport normalize(final FunckyImport inport, final List<FunckyImport> others) {
+        final Optional<FunckyImport> other = others.stream()
+                .filter(imp -> imp.line() < inport.line())
+                .filter(imp -> imp.prefix().equals(inport.prefix()))
+                .findFirst();
+        if (other.isPresent()) {
+            throw new SneakyCompilationException(new PrefixAlreadyBoundException(inport, other.get()));
+        }
+        final FunckyImport normalized = new FunckyImport(inport.file(), inport.line(), inport.prefix(),
+                normalize(inport.file(), inport.namespace()));
+        engine.getContext().setImport(inport);
+        return normalized;
+    }
+
+    private FunckyDefinition normalize(final FunckyDefinition definition, final List<FunckyDefinition> others) {
+        final Optional<FunckyDefinition> other = others.stream()
+                .filter(def -> def.line() < definition.line())
+                .filter(def -> def.name().equals(definition.name()))
+                .findFirst();
+        if (other.isPresent()) {
+            throw new SneakyCompilationException(new NameAlreadyDefinedException(definition, other.get()));
+        }
+        FunckyDefinition normalized = null; // TODO improve
+        if ((definition.expression() instanceof FunckyReference reference) && (reference.getNamespace() != null)
+                && reference.getNamespace().getScheme().equals("java")) { // TODO
+            try {
+                final Class<?> clazz = Class.forName(reference.getNamespace().getSchemeSpecificPart());
+                final Field field = clazz.getDeclaredField(reference.getName());
+                final Constructor<?> constructor = clazz.getDeclaredConstructor(FunckyEngine.class);
+                if (FunckyValue.class.isAssignableFrom(field.getType())) {
+                    if (HigherOrderFunction.class.isAssignableFrom(field.getType())) {
+                        normalized = new FunckyDefinition(definition.file(),
+                                definition.line(), definition.name(), new FunckyLiteral(engine,
+                                reference.getFile(), reference.getLine(), reference.getColumn(),
+                                (FunckyValue) field.get(constructor.newInstance(engine)))); // TODO new higherorderfunction
+                    } else {
+                        normalized = new FunckyDefinition(definition.file(),
+                                definition.line(), definition.name(), new FunckyLiteral(engine,
+                                reference.getFile(), reference.getLine(), reference.getColumn(),
+                                (FunckyValue) field.get(constructor.newInstance(engine))));
+                    }
+                }
+            } catch (final ClassNotFoundException | NoSuchFieldException | InstantiationException |
+                    IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            normalized = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
+                    definition.expression()); // TODO
+        }
+        engine.getContext().setDefinition(normalized);
+        return normalized;
     }
 }

@@ -5,16 +5,16 @@ numbers: "funcky:numbers"
 # Get head of given list
 #   throws error if argument is empty
 # "funcky:types".Function ("funcky:types".List $_7) $_7
-# head = ...
+head = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Lists".$head
 
 # Get tail of given list
 #   throws error if argument is empty
 # "funcky:types".Function ("funcky:types".List $_7) ("funcky:types".List $_7)
-# tail = ...
+tail = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Lists".$tail
 
 # Prepend given element to given list
 # "funcky:types".Function ("funcky:types".List $_7) ("funcky:types".Function $_7 ("funcky:types".List $_7))
-# prepend = ...
+prepend = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Lists".$prepend
 
 # Append given element to given list
 # "funcky:types".Function ("funcky:types".List $_115d) ("funcky:types".Function $_115d ("funcky:types".List $_115d))

@@ -2,7 +2,7 @@ booleans: "funcky:booleans"
 
 # Check for equality given values (x = y)
 # "funcky:types".Function $_2 ("funcky:types".Function $_2 "funcky:types".Boolean)
-# equal = ...
+equal = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".$equal
 
 # Check if first argument is greater than second argument (x > y)
 # "funcky:types".Function $_1cb ("funcky:types".Function $_1cb "funcky:types".Boolean)
@@ -22,30 +22,30 @@ lessEqual = $$ 2 (booleans.or (lessThan ($ 0) ($ 1)) (equal ($ 0) ($ 1)))
 
 # Compare given values
 # "funcky:types".Function $_2 ("funcky:types".Function $_2 "funcky:types".Number)
-# compare = ...
+compare = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".$compare
 
 # Hash given value
 # "funcky:types".Function $_3 "funcky:types".Number
-# hash = ...
+hash = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".$hash
 
 # Ternary conditional operator (return second value if first value is true or third value otherwise)
 # "funcky:types".Function "funcky:types".Boolean ("funcky:types".Function $_7 ("funcky:types".Function $_7 $_7))
-# if = ...
+if = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".$if
 
 # Convert value to string
 # "funcky:types".Function $_4 ("funcky:types".List "funcky:types".Character)
-# string = ...
+string = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".$string
 
 # Parse number from string
 #   throws error if argument is not a valid representation of a number
 # "funcky:types".Function ("funcky:types".List "funcky:types".Character) "funcky:types".Number
-# number = ...
+number = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".$number
 
 # Throw error with given message
 #   throws error
 # "funcky:types".Function ("funcky:types".List "funcky:types".Character) $_7
-# error = ...
+error = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".$error
 
 # Infinite recursion
 # "funcky:types".Function $_7 $_8
-# bottom = ...
+bottom = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".$bottom

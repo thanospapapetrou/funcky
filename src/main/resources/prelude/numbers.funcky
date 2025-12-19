@@ -34,11 +34,11 @@ UNNECESSARY = 7
 
 # Arithmetic unary plus (+x)
 # "funcky:types".Function "funcky:types".Number "funcky:types".Number
-# plus = ...
+plus = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$plus
 
 # Arithmetic unary minus (-x)
 # "funcky:types".Function "funcky:types".Number "funcky:types".Number
-# minus = ...
+minus = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$minus
 
 # Arithmetic rounding
 #   throws error if scale is not integer
@@ -49,15 +49,15 @@ round = $$ 3 (divide ($ 0) 1 ($ 1) ($ 2))
 
 # Arithmetic addition (x + y)
 # "funcky:types".Function "funcky:types".Number ("funcky:types".Function "funcky:types".Number "funcky:types".Number)
-# add = ...
+add = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$add
 
 # Arithmetic subtraction (x - y)
 # "funcky:types".Function "funcky:types".Number ("funcky:types".Function "funcky:types".Number "funcky:types".Number)
-# subtract = ...
+subtract = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$subtract
 
 # Arithmetic multiplication (x * y)
 # "funcky:types".Function "funcky:types".Number ("funcky:types".Function "funcky:types".Number "funcky:types".Number)
-# multiply = ...
+multiply = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$multiply
 
 # Arithmetic division (x / y)
 #   throws error if divisor is zero
@@ -65,7 +65,7 @@ round = $$ 3 (divide ($ 0) 1 ($ 1) ($ 2))
 #   throws error if rounding mode is invalid (not one of UP, DOWN, CEILING, FLOOR, HALF_UP, HALF_DOWN, HALF_EVEN, UNNECESSARY)
 #   throws error if scale is insufficient and rounding mode is UNNECESSARY
 # "funcky:types".Function "funcky:types".Number ("funcky:types".Function "funcky:types".Number ("funcky:types".Function "funcky:types".Number ("funcky:types".Function "funcky:types".Number "funcky:types".Number)))
-# divide = ...
+divide = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$divide
 
 # Arithmetic modulo (x - y * ⌊x/y⌋)
 #   throws error if divisor is zero
@@ -74,27 +74,27 @@ modulo = $$ 2 (subtract ($ 0) (multiply (divide ($ 0) ($ 1) 0 FLOOR) ($ 1)))
 
 # Convert value to byte (8-bit signed integer)
 # "funcky:types".Function "funcky:types".Number "funcky:types".Number
-# byte = ...
+byte = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$byte
 
 # Convert value to short (16-bit signed integer)
 # "funcky:types".Function "funcky:types".Number "funcky:types".Number
-# short = ...
+short = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$short
 
 # Convert value to int (32-bit signed integer)
 # "funcky:types".Function "funcky:types".Number "funcky:types".Number
-# int = ...
+int = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$int
 
 # Convert value to long (64-bit signed integer)
 # "funcky:types".Function "funcky:types".Number "funcky:types".Number
-# long = ...
+long = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$long
 
 # Convert value to float (32-bit IEEE 754 floating point number)
 # "funcky:types".Function "funcky:types".Number "funcky:types".Number
-# float = ...
+float = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$float
 
 # Convert value to double (64-bit IEEE 754 floating point number)
 # "funcky:types".Function "funcky:types".Number "funcky:types".Number
-# double = ...
+double = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Numbers".$double
 
 # Arithmetic summation (Σ)
 # "funcky:types".Function ("funcky:types".List "funcky:types".Number) "funcky:types".Number

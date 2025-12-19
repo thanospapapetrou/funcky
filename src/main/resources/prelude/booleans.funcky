@@ -3,11 +3,12 @@ lists: "funcky:lists"
 
 # Boolean false
 # "funcky:types".Boolean
-# false = ...
+#TODO remove these indirections
+false = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Booleans".$false
 
 # Boolean true
 # "funcky:types".Boolean
-# true = ...
+true = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Booleans".$true
 
 # Boolean negation
 # "funcky:types".Function "funcky:types".Boolean "funcky:types".Boolean
