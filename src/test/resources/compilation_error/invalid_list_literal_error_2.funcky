@@ -1,2 +1,2 @@
 foo = bar
-buz = ["funcky:booleans".false, "a"]
+bar = ["funcky:booleans".false, "a"]

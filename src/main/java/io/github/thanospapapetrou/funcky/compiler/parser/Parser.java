@@ -23,7 +23,6 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidListLiteralException;
 import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.InvalidUriException;
 import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.UnexpectedTokenException;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.Token;
@@ -253,14 +252,9 @@ public class Parser {
             final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
             final FunckyLiteral tail = elements.isEmpty() ? null
                     : parseList(elements.subList(1, elements.size()), leftSquareBracket);
-        final FunckyListType listType = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine,
-                (head == null) ? new FunckyTypeVariable(engine) : head.getType())).unify(
-                (tail == null) ? new FunckyListType(engine, new FunckyLiteral(engine, new FunckyTypeVariable(engine))) : tail.getType());
-            if (listType == null) {
-                throw new SneakyCompilationException(new InvalidListLiteralException(engine, head, tail));
-            }
             return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(),
-                    leftSquareBracket.column(), new FunckyList(engine, listType, head, tail));
+                    leftSquareBracket.column(), new FunckyList(engine, new FunckyListType(engine,
+                    new FunckyLiteral(engine, new FunckyTypeVariable(engine))), head, tail));
     }
 
     private FunckyLiteral parseRecord(final List<FunckyExpression> components, final Token leftCurlyBracket) {

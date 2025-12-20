@@ -9,10 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -22,21 +20,25 @@ import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidListLiteralException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidMainException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
+import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.HigherOrderFunction;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
@@ -88,50 +90,28 @@ public class Linker {
     }
 
     public FunckyExpression link(final FunckyExpression expression) {
-        engine.getContext().setScript(getStdin());
-        if (expression != null) {
-            LOGGER.fine(expression.getType().toString());
+        if (expression == null) {
+            return null;
         }
-        return expression;
+        engine.getContext().setScript(getStdin());
+        final FunckyExpression typed = checkTypes(expression);
+        LOGGER.fine(typed.getType().toString());
+        return typed;
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) {
-        final FunckyScript normalized = normalize(script);
-        final Map<String, FunckyType> definitionTypes = validateDefinitions(normalized);
-        if (main) {
-            validateMain(normalized);
-        }
-        LOGGER.fine(normalized.getFile().toString());
-        definitionTypes.entrySet().stream()
-                .map(definitionType -> String.format(DEFINITION, definitionType.getKey(), definitionType.getValue()))
+        final FunckyScript checked = checkTypes(normalize(script), main);
+        LOGGER.fine(checked.getFile().toString());
+        checked.getDefinitions().stream()
+                .map(definition -> String.format(DEFINITION, definition.name(), definition.expression().getType()))
                 .forEach(LOGGER::fine);
-        return normalized;
+        return checked;
     }
 
     public InputStream getScript(final URI file) throws IOException {
         return Objects.requireNonNull((getLibrary(file) != null) ? Linker.class.getResource(
                 String.format(PRELUDE_SCRIPT, file.getSchemeSpecificPart(),
                         engine.getFactory().getExtensions().getFirst())) : file.toURL()).openStream();
-    }
-
-    private Map<String, FunckyType> validateDefinitions(final FunckyScript script) {
-        final Map<String, FunckyType> definitionTypes = new LinkedHashMap<>();
-        for (final FunckyDefinition definition : script.getDefinitions()) {
-            definitionTypes.put(definition.name(), definition.expression().getType());
-        }
-        return definitionTypes;
-    }
-
-    private void validateMain(final FunckyScript script) {
-        final Optional<FunckyDefinition> main = script.getDefinitions().stream()
-                .filter(def -> def.name().equals(FunckyScript.MAIN))
-                .findAny();
-        if (main.isEmpty()) {
-            throw new SneakyCompilationException(new UndefinedMainException(script));
-        }
-        if (main.get().expression().getType().unify(MAIN_TYPE.apply(engine)) == null) {
-            throw new SneakyCompilationException(new InvalidMainException(main.get()));
-        }
     }
 
     @SuppressWarnings("unchecked")
@@ -219,5 +199,73 @@ public class Linker {
         }
         engine.getContext().setDefinition(normalized);
         return normalized;
+    }
+
+    private FunckyScript checkTypes(final FunckyScript script, final boolean checkMain) {
+        final FunckyScript scr = new FunckyScript(engine, script.getFile());
+        scr.getImports().addAll(script.getImports());
+        script.getDefinitions().stream().map(this::checkTypes).forEach(scr.getDefinitions()::add);
+        if (checkMain) {
+            final Optional<FunckyDefinition> main =
+                    scr.getDefinitions().stream().filter(def -> def.name().equals(FunckyScript.MAIN)).findAny();
+            if (main.isEmpty()) {
+                throw new SneakyCompilationException(new UndefinedMainException(scr));
+            }
+            if (main.get().expression().getType().unify(MAIN_TYPE.apply(engine)) == null) {
+                throw new SneakyCompilationException(new InvalidMainException(main.get()));
+            }
+        }
+        return scr;
+    }
+
+    private FunckyDefinition checkTypes(final FunckyDefinition definition) {
+        final FunckyDefinition def = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
+                checkTypes(definition.expression()));
+        def.expression().getType();
+        // TODO store type in context
+        return def;
+    }
+
+    private FunckyExpression checkTypes(final FunckyExpression expression) {
+        return switch (expression) {
+            case FunckyLiteral literal -> checkTypes(literal);
+            case FunckyReference reference -> reference;
+            case FunckyApplication application -> checkTypes(application);
+        };
+    }
+
+    private FunckyLiteral checkTypes(final FunckyLiteral literal) {
+        return new FunckyLiteral(engine, literal.getFile(), literal.getLine(), literal.getColumn(),
+                checkTypes(literal.getValue()));
+    }
+
+    private FunckyApplication checkTypes(final FunckyApplication application) {
+        return new FunckyApplication(checkTypes(application.getFunction()), checkTypes(application.getArgument()));
+    }
+
+    private FunckyValue checkTypes(final FunckyValue value) {
+        return (value instanceof FunckyList list) ? checkTypes(list) : value;
+    }
+
+    private FunckyList checkTypes(final FunckyList list) {
+        if ((list.getType().getElement() instanceof FunckyLiteral literal)
+                && (literal.getValue() instanceof FunckyTypeVariable)) {
+            final FunckyExpression tail = (list.getTail() == null) ? null : checkTypes(list.getTail());
+            final FunckyListType type = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine,
+                    (list.getHead() == null) ? new FunckyTypeVariable(engine) : list.getHead().getType())).unify(
+                    (tail == null) ? new FunckyListType(engine, new FunckyLiteral(engine,
+                            new FunckyTypeVariable(engine))) : tail.getType());
+            if (type == null) {
+                throw new SneakyCompilationException(new InvalidListLiteralException(engine, list.getHead(), tail));
+            }
+            return imposeType(type, list.getHead(), tail);
+        }
+        return list;
+    }
+
+    private FunckyList imposeType(final FunckyListType type, final FunckyExpression head, final FunckyExpression tail) {
+        return new FunckyList(engine, type, head,
+                (tail instanceof FunckyLiteral literal) && (literal.getValue() instanceof FunckyList list) ?
+                        new FunckyLiteral(engine, imposeType(type, list.getHead(), list.getTail())) : tail);
     }
 }
