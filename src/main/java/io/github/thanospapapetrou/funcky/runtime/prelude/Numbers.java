@@ -19,40 +19,40 @@ public final class Numbers extends FunckyLibrary {
     private static final String ERROR_INVALID_SCALE = "Invalid scale `%1$s`, should be an int";
     private static final String ERROR_INVALID_ROUNDING_MODE = "Invalid rounding mode `%1$s`";
 
-    public final HigherOrderFunction _plus = new HigherOrderFunction(engine, NUMBER, NUMBER) {
+    public final HigherOrderFunction plus = new HigherOrderFunction(engine, NUMBER, NUMBER) {
         @Override
         public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return (FunckyNumber) arguments.getFirst().eval(context);
         }
     };
-    public final HigherOrderFunction _minus = new HigherOrderFunction(engine, NUMBER, NUMBER) {
+    public final HigherOrderFunction minus = new HigherOrderFunction(engine, NUMBER, NUMBER) {
         @Override
         public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.getFirst().eval(context)).getValue().negate());
         }
     };
-    public final HigherOrderFunction _add = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER) {
+    public final HigherOrderFunction add = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER) {
         @Override
         public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .add(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction _subtract = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER) {
+    public final HigherOrderFunction subtract = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER) {
         @Override
         public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .subtract(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction _multiply = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER) {
+    public final HigherOrderFunction multiply = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER) {
         @Override
         public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             return new FunckyNumber(engine, ((FunckyNumber) arguments.get(0).eval(context)).getValue()
                     .multiply(((FunckyNumber) arguments.get(1).eval(context)).getValue()));
         }
     };
-    public final HigherOrderFunction _divide = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER, NUMBER, NUMBER) {
+    public final HigherOrderFunction divide = new HigherOrderFunction(engine, NUMBER, NUMBER, NUMBER, NUMBER, NUMBER) {
         @Override
         public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             final BigDecimal divisor = ((FunckyNumber) arguments.get(1).eval(context)).getValue();

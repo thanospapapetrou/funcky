@@ -13,7 +13,6 @@ Funcky> "funcky:records".unit
 java.net.MalformedURLException: unknown protocol: funcky
 
 instanceof -> pattern matching
-converter -> part of engine?
 transpile
 generics
 new methods and tests for records
@@ -38,9 +37,6 @@ use separate scopes in context
 no global context
 validate context copying
 expressions and values need at least context to perform type checking
-values equals in superclass only
-remove dollars
-
 
 -Funcky> exit
 -java.net.MalformedURLException: unknown protocol: funcky

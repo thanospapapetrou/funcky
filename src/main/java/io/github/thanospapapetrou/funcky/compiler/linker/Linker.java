@@ -44,11 +44,9 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STR
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
 
 public class Linker {
-    public static final String JAVA_PREFIX = "$"; // TODO move to transpiler
     public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
 
     private static final String DEFINITION = "  %1$s%n    %2$s";
-    private static final String ERROR_LOADING_LIBRARY = "Error loading library %1$s";
     private static final String ERROR_NORMALISING_NAMESPACE = "Error normalising namespace %1$s";
     private static final String ERROR_RESOLVING_NAMESPACE = "Error resolving namespace for library `%1$s`";
     private static final String ERROR_RESOLVING_STDIN = "Error resolving stdin";
@@ -143,14 +141,6 @@ public class Linker {
                 .findFirst()
                 .orElse(null);
     }
-
-    //    private FunckyLibrary loadLibrary(final Class<? extends FunckyLibrary> library) {
-    //        try {
-    //            return library.getDeclaredConstructor(FunckyEngine.class).newInstance(engine);
-    //        } catch (final ReflectiveOperationException e) {
-    //            throw new IllegalStateException(String.format(ERROR_LOADING_LIBRARY, getNamespace(library)), e);
-    //        }
-    //    }
 
     private String getPreludeScheme() {
         return engine.getFactory().getLanguageName().toLowerCase(Locale.ROOT);
