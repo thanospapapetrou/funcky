@@ -33,6 +33,7 @@ import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyD
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
+import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.HigherOrderFunction;
@@ -94,7 +95,7 @@ public class Linker {
             return null;
         }
         engine.getContext().setScript(getStdin());
-        final FunckyExpression typed = checkTypes(expression);
+        final FunckyExpression typed = checkTypes(canonicalize(expression));
         LOGGER.fine(typed.getType().toString());
         return typed;
     }
@@ -182,6 +183,8 @@ public class Linker {
                                 reference.getFile(), reference.getLine(), reference.getColumn(),
                                 (FunckyValue) field.get(constructor.newInstance(engine))));
                     }
+                } else {
+                    throw new RuntimeException("Not a FunckyValue");
                 }
             } catch (final ClassNotFoundException | NoSuchFieldException | InstantiationException |
                     IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -189,10 +192,51 @@ public class Linker {
             }
         } else {
             canonical = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
-                    definition.expression()); // TODO
+                    canonicalize(definition.expression())); // TODO
         }
         engine.getContext().setDefinition(canonical);
         return canonical;
+    }
+
+    private FunckyExpression canonicalize(final FunckyExpression expression) {
+        return switch (expression) {
+            case FunckyLiteral literal -> canonicalize(literal);
+            case FunckyReference reference -> canonicalize(reference);
+            case FunckyApplication application -> canonicalize(application);
+        };
+    }
+
+    private FunckyLiteral canonicalize(final FunckyLiteral literal) {
+        return new FunckyLiteral(engine, literal.getFile(), literal.getLine(), literal.getColumn(),
+                canonicalize(literal.getValue()));
+    }
+
+    private FunckyReference canonicalize(final FunckyReference reference) {
+        return new FunckyReference(engine, reference.getFile(), reference.getLine(), reference.getColumn(),
+                reference.canonicalize().getNamespace(), reference.getName());
+    }
+
+    private FunckyApplication canonicalize(final FunckyApplication application) {
+        return new FunckyApplication(canonicalize(application.getFunction()), canonicalize(application.getArgument()));
+    }
+
+    private FunckyValue canonicalize(final FunckyValue value) {
+        return switch (value) {
+            case FunckyList list -> canonicalize(list);
+            case FunckyRecord record -> canonicalize(record);
+            default -> value;
+        };
+    }
+
+    private FunckyList canonicalize(final FunckyList list) {
+        return new FunckyList(engine, list.getType(), (list.getHead() == null) ? null : canonicalize(list.getHead()),
+                (list.getTail() == null) ? null : canonicalize(list.getTail()));
+    }
+
+    private FunckyRecord canonicalize(final FunckyRecord record) {
+        return new FunckyRecord(engine, record.getType(), record.getComponents().stream()
+                .map(this::canonicalize)
+                .toList());
     }
 
     private FunckyScript checkTypes(final FunckyScript script, final boolean checkMain) {
