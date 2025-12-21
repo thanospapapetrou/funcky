@@ -130,7 +130,7 @@ public class Linker {
         final FunckyScript canonical = new FunckyScript(engine, script.getFile());
         engine.getContext().setScript(canonical.getFile());
         script.getImports().stream()
-                .map(inport -> canonicalize(inport, script.getImports()))
+                .map(this::canonicalize)
                 .forEach(canonical.getImports()::add);
         script.getDefinitions().stream()
                 .map(definition -> canonicalize(definition, script.getDefinitions()))
@@ -138,17 +138,14 @@ public class Linker {
         return canonical;
     }
 
-    private FunckyImport canonicalize(final FunckyImport inport, final List<FunckyImport> others) {
-        final Optional<FunckyImport> other = others.stream()
-                .filter(imp -> imp.line() < inport.line())
-                .filter(imp -> imp.prefix().equals(inport.prefix()))
-                .findFirst();
-        if (other.isPresent()) {
-            throw new SneakyCompilationException(new PrefixAlreadyBoundException(inport, other.get()));
+    private FunckyImport canonicalize(final FunckyImport inport) {
+        final FunckyImport other = engine.getContext().getImport(inport.file(), inport.prefix());
+        if (other != null) {
+            throw new SneakyCompilationException(new PrefixAlreadyBoundException(inport, other));
         }
         final FunckyImport canonical = new FunckyImport(inport.file(), inport.line(), inport.prefix(),
                 canonicalize(inport.file(), inport.namespace()));
-        engine.getContext().setImport(inport);
+        engine.getContext().setImport(canonical);
         return canonical;
     }
 

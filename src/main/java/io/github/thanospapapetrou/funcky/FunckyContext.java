@@ -80,12 +80,12 @@ public class FunckyContext implements ScriptContext {
         }
     }
 
-    public URI getImport(final FunckyReference reference) {
-        return getAttribute(reference.getFile(), FunckyScope.IMPORTS, reference.getPrefix());
+    public FunckyImport getImport(final URI script, final String prefix) {
+        return getAttribute(script, FunckyScope.IMPORTS, prefix);
     }
 
     public void setImport(final FunckyImport inport) {
-        setAttribute(inport.file(), FunckyScope.IMPORTS, inport.prefix(), inport.namespace());
+        setAttribute(inport.file(), FunckyScope.IMPORTS, inport.prefix(), inport);
     }
 
     public FunckyExpression getDefinition(final FunckyReference reference) {

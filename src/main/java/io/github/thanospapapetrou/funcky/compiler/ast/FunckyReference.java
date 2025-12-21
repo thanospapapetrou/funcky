@@ -109,11 +109,11 @@ public final class FunckyReference extends FunckyExpression {
             if (prefix == null) {
                 return file;
             } else {
-                final URI namespace = engine.getContext().getImport(this);
-                if (namespace == null) {
+                final FunckyImport inport = engine.getContext().getImport(file, prefix);
+                if (inport == null) {
                     throw new SneakyCompilationException(new UnboundPrefixException(this));
                 }
-                return namespace;
+                return inport.namespace();
             }
         } else {
             return engine.getLinker().canonicalize(file, namespace);
