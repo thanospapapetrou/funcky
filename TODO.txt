@@ -38,6 +38,3 @@ expressions and values need at least context to perform type checking
 
 -Funcky> exit
 -java.net.MalformedURLException: unknown protocol: funcky
-
-use context for previous imports and definitions
-

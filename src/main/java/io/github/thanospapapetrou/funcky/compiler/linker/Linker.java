@@ -133,7 +133,7 @@ public class Linker {
                 .map(this::canonicalize)
                 .forEach(canonical.getImports()::add);
         script.getDefinitions().stream()
-                .map(definition -> canonicalize(definition, script.getDefinitions()))
+                .map(this::canonicalize)
                 .forEach(canonical.getDefinitions()::add);
         return canonical;
     }
@@ -149,13 +149,10 @@ public class Linker {
         return canonical;
     }
 
-    private FunckyDefinition canonicalize(final FunckyDefinition definition, final List<FunckyDefinition> others) {
-        final Optional<FunckyDefinition> other = others.stream()
-                .filter(def -> def.line() < definition.line())
-                .filter(def -> def.name().equals(definition.name()))
-                .findFirst();
-        if (other.isPresent()) {
-            throw new SneakyCompilationException(new NameAlreadyDefinedException(definition, other.get()));
+    private FunckyDefinition canonicalize(final FunckyDefinition definition) {
+        final FunckyDefinition other = engine.getContext().getDefinition(definition.file(), definition.name());
+        if (other != null) {
+            throw new SneakyCompilationException(new NameAlreadyDefinedException(definition, other));
         }
         FunckyDefinition canonical = null; // TODO improve
         if ((definition.expression() instanceof FunckyReference reference) && (reference.getNamespace() != null)

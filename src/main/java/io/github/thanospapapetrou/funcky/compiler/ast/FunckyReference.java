@@ -129,10 +129,10 @@ public final class FunckyReference extends FunckyExpression {
                 throw new SneakyCompilationException(e);
             }
         }
-        final FunckyExpression expression = engine.getContext().getDefinition(canonical);
-        if (expression == null) {
+        final FunckyDefinition definition = engine.getContext().getDefinition(canonical.namespace, canonical.name);
+        if (definition == null) {
             throw new SneakyCompilationException(new UndefinedNameException(canonical));
         }
-        return expression;
+        return definition.expression();
     }
 }

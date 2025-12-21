@@ -17,7 +17,6 @@ import javax.script.ScriptContext;
 import javax.script.SimpleBindings;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyScope;
@@ -88,14 +87,13 @@ public class FunckyContext implements ScriptContext {
         setAttribute(inport.file(), FunckyScope.IMPORTS, inport.prefix(), inport);
     }
 
-    public FunckyExpression getDefinition(final FunckyReference reference) {
-        return (FunckyExpression) getAttribute(String.format(DEFINITION, reference.getNamespace(),
-                reference.getName()), GLOBAL_SCOPE);
+    public FunckyDefinition getDefinition(final URI script, final String name) {
+        return (FunckyDefinition) getAttribute(String.format(DEFINITION, script, name), GLOBAL_SCOPE);
     }
 
     public void setDefinition(final FunckyDefinition definition) {
         setAttribute(String.format(DEFINITION, definition.file(), definition.name()),
-                definition.expression(), GLOBAL_SCOPE);
+                definition, GLOBAL_SCOPE);
     }
 
     public FunckyType getType(final FunckyReference reference) {
