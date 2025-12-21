@@ -49,7 +49,7 @@ public class Linker {
     public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
 
     private static final String DEFINITION = "  %1$s%n    %2$s";
-    private static final String ERROR_NORMALISING_NAMESPACE = "Error normalising namespace %1$s";
+    private static final String ERROR_CANONICALIZING_NAMESPACE = "Error canonicalizing namespace %1$s";
     private static final String ERROR_RESOLVING_NAMESPACE = "Error resolving namespace for library `%1$s`";
     private static final String ERROR_RESOLVING_STDIN = "Error resolving stdin";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
@@ -79,13 +79,13 @@ public class Linker {
         }
     }
 
-    public URI normalize(final URI base, final URI namespace) {
+    public URI canonicalize(final URI base, final URI namespace) {
         try {
             return namespace.isAbsolute() ? namespace
                     : (base.equals(getStdin()) ? new File(System.getProperty(USER_DIR)).getCanonicalFile().toURI()
                             : base).resolve(namespace);
         } catch (final IOException e) {
-            throw new IllegalStateException(String.format(ERROR_NORMALISING_NAMESPACE, namespace), e);
+            throw new IllegalStateException(String.format(ERROR_CANONICALIZING_NAMESPACE, namespace), e);
         }
     }
 
@@ -100,7 +100,7 @@ public class Linker {
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) {
-        final FunckyScript checked = checkTypes(normalize(script), main);
+        final FunckyScript checked = checkTypes(canonicalize(script), main);
         LOGGER.fine(checked.getFile().toString());
         checked.getDefinitions().stream()
                 .map(definition -> String.format(DEFINITION, definition.name(), definition.expression().getType()))
@@ -126,19 +126,19 @@ public class Linker {
         return engine.getFactory().getLanguageName().toLowerCase(Locale.ROOT);
     }
 
-    private FunckyScript normalize(final FunckyScript script) {
-        final FunckyScript normalized = new FunckyScript(engine, script.getFile());
-        engine.getContext().setScript(normalized.getFile());
+    private FunckyScript canonicalize(final FunckyScript script) {
+        final FunckyScript canonical = new FunckyScript(engine, script.getFile());
+        engine.getContext().setScript(canonical.getFile());
         script.getImports().stream()
-                .map(inport -> normalize(inport, script.getImports()))
-                .forEach(normalized.getImports()::add);
+                .map(inport -> canonicalize(inport, script.getImports()))
+                .forEach(canonical.getImports()::add);
         script.getDefinitions().stream()
-                .map(definition -> normalize(definition, script.getDefinitions()))
-                .forEach(normalized.getDefinitions()::add);
-        return normalized;
+                .map(definition -> canonicalize(definition, script.getDefinitions()))
+                .forEach(canonical.getDefinitions()::add);
+        return canonical;
     }
 
-    private FunckyImport normalize(final FunckyImport inport, final List<FunckyImport> others) {
+    private FunckyImport canonicalize(final FunckyImport inport, final List<FunckyImport> others) {
         final Optional<FunckyImport> other = others.stream()
                 .filter(imp -> imp.line() < inport.line())
                 .filter(imp -> imp.prefix().equals(inport.prefix()))
@@ -146,13 +146,13 @@ public class Linker {
         if (other.isPresent()) {
             throw new SneakyCompilationException(new PrefixAlreadyBoundException(inport, other.get()));
         }
-        final FunckyImport normalized = new FunckyImport(inport.file(), inport.line(), inport.prefix(),
-                normalize(inport.file(), inport.namespace()));
+        final FunckyImport canonical = new FunckyImport(inport.file(), inport.line(), inport.prefix(),
+                canonicalize(inport.file(), inport.namespace()));
         engine.getContext().setImport(inport);
-        return normalized;
+        return canonical;
     }
 
-    private FunckyDefinition normalize(final FunckyDefinition definition, final List<FunckyDefinition> others) {
+    private FunckyDefinition canonicalize(final FunckyDefinition definition, final List<FunckyDefinition> others) {
         final Optional<FunckyDefinition> other = others.stream()
                 .filter(def -> def.line() < definition.line())
                 .filter(def -> def.name().equals(definition.name()))
@@ -160,7 +160,7 @@ public class Linker {
         if (other.isPresent()) {
             throw new SneakyCompilationException(new NameAlreadyDefinedException(definition, other.get()));
         }
-        FunckyDefinition normalized = null; // TODO improve
+        FunckyDefinition canonical = null; // TODO improve
         if ((definition.expression() instanceof FunckyReference reference) && (reference.getNamespace() != null)
                 && reference.getNamespace().getScheme().equals("java")) { // TODO
             try {
@@ -171,7 +171,7 @@ public class Linker {
                     if (HigherOrderFunction.class.isAssignableFrom(field.getType())) {
                         final HigherOrderFunction function =
                                 (HigherOrderFunction) field.get(constructor.newInstance(engine));
-                        normalized = new FunckyDefinition(definition.file(),
+                        canonical = new FunckyDefinition(definition.file(),
                                 definition.line(), definition.name(), new FunckyLiteral(engine,
                                 reference.getFile(), reference.getLine(), reference.getColumn(),
                                 new HigherOrderFunction(engine, function.getType(), function.getOrder(),
@@ -183,7 +183,7 @@ public class Linker {
                                     }
                                 }));
                     } else {
-                        normalized = new FunckyDefinition(definition.file(),
+                        canonical = new FunckyDefinition(definition.file(),
                                 definition.line(), definition.name(), new FunckyLiteral(engine,
                                 reference.getFile(), reference.getLine(), reference.getColumn(),
                                 (FunckyValue) field.get(constructor.newInstance(engine))));
@@ -194,11 +194,11 @@ public class Linker {
                 throw new RuntimeException(e);
             }
         } else {
-            normalized = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
+            canonical = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
                     definition.expression()); // TODO
         }
-        engine.getContext().setDefinition(normalized);
-        return normalized;
+        engine.getContext().setDefinition(canonical);
+        return canonical;
     }
 
     private FunckyScript checkTypes(final FunckyScript script, final boolean checkMain) {

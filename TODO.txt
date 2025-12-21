@@ -20,9 +20,7 @@ monads
 java monad
 
 linear compiler and linker
-java code as java: URIs
 remove engine from values and expressions
-remove funckyjavaconverter
 transpiler
 rewrite preprocessor
 switch with pattern matching

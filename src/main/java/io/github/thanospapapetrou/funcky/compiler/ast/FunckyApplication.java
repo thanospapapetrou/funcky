@@ -35,8 +35,8 @@ public final class FunckyApplication extends FunckyExpression {
     }
 
     @Override
-    public FunckyApplication normalize() {
-        return new FunckyApplication(function.normalize(), argument.normalize());
+    public FunckyApplication canonicalize() {
+        return new FunckyApplication(function.canonicalize(), argument.canonicalize());
     }
 
     @Override

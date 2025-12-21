@@ -66,15 +66,15 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public FunckyType getType() {
-        final FunckyReference normalized = normalize();
-        if (engine.getContext().getType(normalized) == null) {
-            engine.getContext().setType(normalized, super.getType());
+        final FunckyReference canonical = canonicalize();
+        if (engine.getContext().getType(canonical) == null) {
+            engine.getContext().setType(canonical, super.getType());
         }
-        return engine.getContext().getType(normalized);
+        return engine.getContext().getType(canonical);
     }
 
     @Override
-    public FunckyReference normalize() {
+    public FunckyReference canonicalize() {
         return new FunckyReference(engine, file, line, column, resolveNamespace(), name);
     }
 
@@ -116,22 +116,22 @@ public final class FunckyReference extends FunckyExpression {
                 return namespace;
             }
         } else {
-            return engine.getLinker().normalize(file, namespace);
+            return engine.getLinker().canonicalize(file, namespace);
         }
     }
 
     private FunckyExpression resolveExpression() {
-        final FunckyReference normalized = normalize();
-        if (engine.getContext().getScript(normalized.getNamespace()) == null) {
+        final FunckyReference canonical = canonicalize();
+        if (engine.getContext().getScript(canonical.getNamespace()) == null) {
             try {
-                engine.compile(normalized.getNamespace());
+                engine.compile(canonical.getNamespace());
             } catch (final FunckyCompilationException e) {
                 throw new SneakyCompilationException(e);
             }
         }
-        final FunckyExpression expression = engine.getContext().getDefinition(normalized);
+        final FunckyExpression expression = engine.getContext().getDefinition(canonical);
         if (expression == null) {
-            throw new SneakyCompilationException(new UndefinedNameException(normalized));
+            throw new SneakyCompilationException(new UndefinedNameException(canonical));
         }
         return expression;
     }

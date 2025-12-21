@@ -41,7 +41,7 @@ public abstract sealed class FunckyExpression extends CompiledScript
         return getType(Map.of());
     }
 
-    public abstract FunckyExpression normalize();
+    public abstract FunckyExpression canonicalize();
 
     @Override
     public FunckyEngine getEngine() {

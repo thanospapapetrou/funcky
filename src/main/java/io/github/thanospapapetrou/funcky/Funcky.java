@@ -81,7 +81,7 @@ public class Funcky {
     }
 
     private void runScript(final String script, final String... arguments) {
-        try (final InputStreamReader reader = new InputStreamReader(engine.getLinker().normalize(engine.getLinker()
+        try (final InputStreamReader reader = new InputStreamReader(engine.getLinker().canonicalize(engine.getLinker()
                 .getStdin(), new URI(script)).toURL().openStream())) {
             engine.getContext().setFile(script);
             engine.getContext().setArguments(arguments);
