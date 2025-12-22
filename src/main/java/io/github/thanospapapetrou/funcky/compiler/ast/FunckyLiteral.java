@@ -37,17 +37,12 @@ public final class FunckyLiteral extends FunckyExpression {
     }
 
     @Override
-    public FunckyLiteral canonicalize() {
-        return this;
-    }
-
-    @Override
     public FunckyValue eval(final ScriptContext context) {
         return value;
     }
 
     @Override
-    public String toString() {
+    public String toString(final boolean canonical) {
         if (value.getType().equals(FunckySimpleType.CHARACTER.apply(engine))) {
             return String.format(FORMAT_CHARACTER, EscapeHelper.escape(value.toString()));
         } else if (value.getType().equals(FunckyListType.STRING.apply(engine))) {
@@ -55,7 +50,7 @@ public final class FunckyLiteral extends FunckyExpression {
         } else if (value instanceof FunckyList list) {
             final StringBuilder string = new StringBuilder(FunckyList.PREFIX);
             for (FunckyList l = list; l.getTail() != null; l = (FunckyList) l.getTail().eval(engine.getContext())) {
-                string.append(l.getHead().toString()).append(FunckyList.DELIMITER);
+                string.append(l.getHead().toString(canonical)).append(FunckyList.DELIMITER);
             }
             if (string.length() > FunckyList.PREFIX.length()) {
                 string.setLength(string.length() - FunckyList.DELIMITER.length());
@@ -63,7 +58,7 @@ public final class FunckyLiteral extends FunckyExpression {
             return string.append(FunckyList.SUFFIX).toString();
         } else if (value instanceof FunckyRecord record) {
             return FunckyRecord.PREFIX + record.getComponents().stream()
-                    .map(FunckyExpression::toString)
+                    .map(component -> component.toString(canonical))
                     .collect(Collectors.joining(FunckyRecord.DELIMITER)) + FunckyRecord.SUFFIX;
         }
         return value.toString();

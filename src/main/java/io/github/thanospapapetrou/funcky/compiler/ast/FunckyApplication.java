@@ -4,14 +4,14 @@ import java.util.Map;
 
 import javax.script.ScriptContext;
 
-import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.IllegalApplicationException;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.IllegalApplicationException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
 public final class FunckyApplication extends FunckyExpression {
     private static final String FORMAT_APPLICATION = "%1$s %2$s";
@@ -35,11 +35,6 @@ public final class FunckyApplication extends FunckyExpression {
     }
 
     @Override
-    public FunckyApplication canonicalize() {
-        return new FunckyApplication(function.canonicalize(), argument.canonicalize());
-    }
-
-    @Override
     public FunckyValue eval(final ScriptContext context) {
         try {
             return ((FunckyFunction) function.eval(context)).apply(argument, context);
@@ -50,12 +45,12 @@ public final class FunckyApplication extends FunckyExpression {
     }
 
     @Override
-    public String toString() {
+    public String toString(final boolean canonical) {
         return String.format(((argument instanceof FunckyApplication)
                 || ((argument instanceof FunckyLiteral)
                 && (((FunckyLiteral) argument).getValue().toExpression() instanceof FunckyApplication)))
                 ? NESTED_APPLICATION
-                : FORMAT_APPLICATION, function, argument);
+                : FORMAT_APPLICATION, function.toString(canonical), argument.toString(canonical));
     }
 
     @Override

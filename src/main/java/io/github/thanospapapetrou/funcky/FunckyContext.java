@@ -97,12 +97,12 @@ public class FunckyContext implements ScriptContext {
     }
 
     public FunckyType getType(final FunckyReference reference) {
-        return (FunckyType) getAttribute(String.format(TYPE, reference.getNamespace(), reference.getName()),
+        return (FunckyType) getAttribute(String.format(TYPE, reference.getCanonical(), reference.getName()),
                 GLOBAL_SCOPE);
     }
 
     public void setType(final FunckyReference reference, final FunckyType type) {
-        setAttribute(String.format(TYPE, reference.getNamespace(), reference.getName()), type, GLOBAL_SCOPE);
+        setAttribute(String.format(TYPE, reference.getCanonical(), reference.getName()), type, GLOBAL_SCOPE);
     }
 
     @Override

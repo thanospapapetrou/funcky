@@ -7,9 +7,9 @@ import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
-import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public abstract sealed class FunckyExpression extends CompiledScript
         permits FunckyLiteral, FunckyReference, FunckyApplication {
@@ -41,8 +41,6 @@ public abstract sealed class FunckyExpression extends CompiledScript
         return getType(Map.of());
     }
 
-    public abstract FunckyExpression canonicalize();
-
     @Override
     public FunckyEngine getEngine() {
         return engine;
@@ -50,6 +48,13 @@ public abstract sealed class FunckyExpression extends CompiledScript
 
     @Override
     public abstract FunckyValue eval(final ScriptContext context);
+
+    public abstract String toString(final boolean canonical);
+
+    @Override
+    public String toString() {
+        return toString(false);
+    }
 
     protected abstract FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions);
 }

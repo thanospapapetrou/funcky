@@ -32,6 +32,6 @@ public sealed abstract class FunckyValue implements Comparable<FunckyValue>
 
     @Override
     public String toString() {
-        return toExpression().canonicalize().toString();
+        return toExpression().toString(true);
     }
 }

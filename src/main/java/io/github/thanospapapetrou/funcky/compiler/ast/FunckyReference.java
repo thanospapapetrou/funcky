@@ -9,7 +9,6 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -62,22 +61,20 @@ public final class FunckyReference extends FunckyExpression {
         return prefix;
     }
 
+    public URI getCanonical() {
+        return canonical;
+    }
+
     public String getName() {
         return name;
     }
 
     @Override
     public FunckyType getType() {
-        final FunckyReference canonical = canonicalize();
-        if (engine.getContext().getType(canonical) == null) {
-            engine.getContext().setType(canonical, super.getType());
+        if (engine.getContext().getType(this) == null) {
+            engine.getContext().setType(this, super.getType());
         }
-        return engine.getContext().getType(canonical);
-    }
-
-    @Override
-    public FunckyReference canonicalize() {
-        return new FunckyReference(engine, file, line, column, resolveNamespace(), name);
+        return engine.getContext().getType(this);
     }
 
     @Override
@@ -91,9 +88,11 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     @Override
-    public String toString() {
-        return (namespace == null) ? ((prefix == null) ? name : String.format(FORMAT_PREFIX, prefix, name))
-                : String.format(FORMAT_NAMESPACE, EscapeHelper.escape(namespace.toString()), name);
+    public String toString(final boolean canonical) {
+        return ((!canonical) || (this.canonical == null)) ? ((namespace == null) ? ((prefix == null) ? name
+                : String.format(FORMAT_PREFIX, prefix, name))
+                : String.format(FORMAT_NAMESPACE, EscapeHelper.escape(namespace.toString()), name))
+                : String.format(FORMAT_NAMESPACE, EscapeHelper.escape(this.canonical.toString()), name);
     }
 
     @Override
@@ -106,22 +105,17 @@ public final class FunckyReference extends FunckyExpression {
         return resolveExpression().getType(newAssumptions);
     }
 
-    private URI resolveNamespace() {
-        return canonical;
-    }
-
     private FunckyExpression resolveExpression() {
-        final FunckyReference canonical = canonicalize();
-        if (engine.getContext().getScript(canonical.getNamespace()) == null) {
+        if (engine.getContext().getScript(canonical) == null) {
             try {
-                engine.compile(canonical.getNamespace());
+                engine.compile(canonical);
             } catch (final FunckyCompilationException e) {
                 throw new SneakyCompilationException(e);
             }
         }
-        final FunckyDefinition definition = engine.getContext().getDefinition(canonical.namespace, canonical.name);
+        final FunckyDefinition definition = engine.getContext().getDefinition(canonical, name);
         if (definition == null) {
-            throw new SneakyCompilationException(new UndefinedNameException(canonical));
+            throw new SneakyCompilationException(new UndefinedNameException(this));
         }
         return definition.expression();
     }

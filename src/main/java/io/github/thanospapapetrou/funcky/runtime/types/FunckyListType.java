@@ -36,7 +36,7 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new FunckyReference(engine, FunckyLibrary.getNamespace(Types.class), "List"), element); // TODO
+        return new FunckyApplication(new FunckyReference(engine, FunckyLibrary.getNamespace(Types.class), "List"), element); // TODO reference list to constant
     }
 
     @Override
