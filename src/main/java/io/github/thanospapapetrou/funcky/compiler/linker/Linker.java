@@ -31,6 +31,7 @@ import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidListL
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.InvalidMainException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyDefinedException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
@@ -212,8 +213,23 @@ public class Linker {
     }
 
     private FunckyReference canonicalize(final FunckyReference reference) {
+        URI canonical = null;
+        if (reference.getNamespace() == null) {
+            if (reference.getPrefix() == null) {
+                canonical = reference.getFile();
+            } else {
+                final FunckyImport inport = engine.getContext().getImport(reference.getFile(), reference.getPrefix());
+                if (inport == null) {
+                    throw new SneakyCompilationException(new UnboundPrefixException(reference));
+                }
+                canonical = inport.namespace();
+            }
+        } else {
+            canonical = engine.getLinker().canonicalize(reference.getFile(), reference.getNamespace());
+        } // TODO improve
+
         return new FunckyReference(engine, reference.getFile(), reference.getLine(), reference.getColumn(),
-                reference.canonicalize().getNamespace(), reference.getName());
+                reference.getNamespace(), reference.getPrefix(), canonical, reference.getName());
     }
 
     private FunckyApplication canonicalize(final FunckyApplication application) {

@@ -23,32 +23,34 @@ public final class FunckyReference extends FunckyExpression {
 
     private final URI namespace;
     private final String prefix;
+    private final URI canonical;
     private final String name;
 
     public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
             final URI namespace, final String name) {
-        this(engine, file, line, column, namespace, null, name);
+        this(engine, file, line, column, namespace, null, null, name);
     }
 
     public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
             final String prefix, final String name) {
-        this(engine, file, line, column, null, prefix, name);
+        this(engine, file, line, column, null, prefix, null, name);
     }
 
     public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
             final String name) {
-        this(engine, file, line, column, null, null, name);
+        this(engine, file, line, column, null, null, null, name);
     }
 
     public FunckyReference(final FunckyEngine engine, final URI namespace, final String name) {
-        this(engine, null, -1, -1, namespace, null, name);
+        this(engine, null, -1, -1, namespace, null, namespace, name);
     }
 
-    private FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
-            final URI namespace, final String prefix, final String name) {
+    public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
+            final URI namespace, final String prefix, final URI canonical, final String name) {
         super(engine, file, line, column);
         this.namespace = namespace;
         this.prefix = prefix;
+        this.canonical = canonical;
         this.name = name;
     }
 
@@ -105,19 +107,7 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     private URI resolveNamespace() {
-        if (namespace == null) {
-            if (prefix == null) {
-                return file;
-            } else {
-                final FunckyImport inport = engine.getContext().getImport(file, prefix);
-                if (inport == null) {
-                    throw new SneakyCompilationException(new UnboundPrefixException(this));
-                }
-                return inport.namespace();
-            }
-        } else {
-            return engine.getLinker().canonicalize(file, namespace);
-        }
+        return canonical;
     }
 
     private FunckyExpression resolveExpression() {
