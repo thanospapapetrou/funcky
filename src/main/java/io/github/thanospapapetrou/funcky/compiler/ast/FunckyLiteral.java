@@ -1,7 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.script.ScriptContext;
@@ -14,7 +13,6 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 public final class FunckyLiteral extends FunckyExpression {
     private static final String FORMAT_CHARACTER = "'%1$s'";
@@ -35,6 +33,11 @@ public final class FunckyLiteral extends FunckyExpression {
     public FunckyValue getValue() {
         return value;
     } // TODO remove and replace with eval
+
+    @Override
+    public FunckyType getType() {
+        return value.getType();
+    }
 
     @Override
     public FunckyValue eval(final ScriptContext context) {
@@ -62,10 +65,5 @@ public final class FunckyLiteral extends FunckyExpression {
                     .collect(Collectors.joining(FunckyRecord.DELIMITER)) + FunckyRecord.SUFFIX;
         }
         return value.toString();
-    }
-
-    @Override
-    protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions) {
-        return value.getType();
     }
 }

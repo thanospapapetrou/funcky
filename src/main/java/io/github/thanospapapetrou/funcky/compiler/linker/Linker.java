@@ -6,14 +6,11 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.TypeVariable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -201,7 +198,6 @@ public class Linker {
                     canonicalize(definition.expression())); // TODO
         }
         engine.getContext().setDefinition(canonical);
-        engine.getContext().setType(canonical, new FunckyTypeVariable(engine));
         return canonical;
     }
 
@@ -281,7 +277,8 @@ public class Linker {
     private FunckyDefinition checkTypes(final FunckyDefinition definition) {
         final FunckyDefinition checked = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
                 checkTypes(definition.expression()));
-        engine.getContext().setType(checked, checked.expression().getType());
+        engine.getContext().setType(checked.file(), checked.name(), new FunckyTypeVariable(engine));
+        engine.getContext().setType(checked.file(), checked.name(), checked.expression().getType());
         return checked;
     }
 

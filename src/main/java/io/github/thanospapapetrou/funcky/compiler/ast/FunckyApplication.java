@@ -1,7 +1,5 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
-import java.util.Map;
-
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
@@ -35,6 +33,20 @@ public final class FunckyApplication extends FunckyExpression {
     }
 
     @Override
+    public FunckyType getType() {
+        final FunckyType functionType = function.getType();
+        final FunckyType argumentType = argument.getType();
+        final FunckyFunctionType type = (FunckyFunctionType) functionType.unify(
+                new FunckyFunctionType(engine, new FunckyLiteral(engine, argumentType),
+                        new FunckyLiteral(engine, new FunckyTypeVariable(engine))));
+        if (type != null) {
+            return ((FunckyType) type.getRange().eval(engine.getContext()));
+        } else {
+            throw new SneakyCompilationException(new IllegalApplicationException(this, functionType, argumentType));
+        }
+    }
+
+    @Override
     public FunckyValue eval(final ScriptContext context) {
         try {
             return ((FunckyFunction) function.eval(context)).apply(argument, context);
@@ -51,18 +63,5 @@ public final class FunckyApplication extends FunckyExpression {
                 && (((FunckyLiteral) argument).getValue().toExpression() instanceof FunckyApplication)))
                 ? NESTED_APPLICATION
                 : FORMAT_APPLICATION, function.toString(canonical), argument.toString(canonical));
-    }
-
-    @Override
-    protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions) {
-        final FunckyType functionType = function.getType(assumptions);
-        final FunckyType argumentType = argument.getType(assumptions);
-            final FunckyFunctionType type = (FunckyFunctionType) functionType.unify(
-                    new FunckyFunctionType(engine, new FunckyLiteral(engine, argumentType), new FunckyLiteral(engine, new FunckyTypeVariable(engine))));
-            if (type != null) {
-                return ((FunckyType) type.getRange().eval(engine.getContext()));
-            } else {
-                throw new SneakyCompilationException(new IllegalApplicationException(this, functionType, argumentType));
-            }
     }
 }

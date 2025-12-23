@@ -37,9 +37,7 @@ public abstract sealed class FunckyExpression extends CompiledScript
         return column;
     }
 
-    public FunckyType getType() {
-        return getType(Map.of());
-    }
+    public abstract FunckyType getType();
 
     @Override
     public FunckyEngine getEngine() {
@@ -55,6 +53,4 @@ public abstract sealed class FunckyExpression extends CompiledScript
     public String toString() {
         return toString(false);
     }
-
-    protected abstract FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions);
 }

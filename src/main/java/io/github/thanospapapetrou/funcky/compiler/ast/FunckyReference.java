@@ -1,8 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.script.ScriptContext;
 
@@ -68,6 +66,11 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public FunckyType getType() {
+        if (engine.getContext().getType(this) == null) {
+            engine.getContext().setType(canonical, name, new FunckyTypeVariable(engine));
+            engine.getContext().setType(canonical, name,
+                    engine.getContext().getDefinition(canonical, name).expression().getType());
+        }
         return engine.getContext().getType(this);
     }
 
@@ -87,15 +90,5 @@ public final class FunckyReference extends FunckyExpression {
                 : String.format(FORMAT_PREFIX, prefix, name))
                 : String.format(FORMAT_NAMESPACE, EscapeHelper.escape(namespace.toString()), name))
                 : String.format(FORMAT_NAMESPACE, EscapeHelper.escape(this.canonical.toString()), name);
-    }
-
-    @Override
-    protected FunckyType getType(final Map<FunckyReference, FunckyTypeVariable> assumptions) {
-        if (assumptions.containsKey(this)) {
-            return assumptions.get(this);
-        }
-        final Map<FunckyReference, FunckyTypeVariable> newAssumptions = new HashMap<>(assumptions);
-        newAssumptions.put(this, new FunckyTypeVariable(engine));
-        return engine.getContext().getDefinition(canonical, name).expression().getType(newAssumptions);
     }
 }
