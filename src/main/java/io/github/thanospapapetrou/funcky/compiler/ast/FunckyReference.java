@@ -106,17 +106,6 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     private FunckyExpression resolveExpression() {
-        if (engine.getContext().getScript(canonical) == null) {
-            try {
-                engine.compile(canonical);
-            } catch (final FunckyCompilationException e) {
-                throw new SneakyCompilationException(e);
-            }
-        }
-        final FunckyDefinition definition = engine.getContext().getDefinition(canonical, name);
-        if (definition == null) {
-            throw new SneakyCompilationException(new UndefinedNameException(this));
-        }
-        return definition.expression();
+        return engine.getContext().getDefinition(canonical, name).expression();
     }
 }

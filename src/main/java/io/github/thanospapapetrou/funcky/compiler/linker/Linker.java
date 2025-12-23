@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
@@ -33,6 +34,7 @@ import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.NameAlreadyD
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.PrefixAlreadyBoundException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefixException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -283,7 +285,7 @@ public class Linker {
     private FunckyExpression checkTypes(final FunckyExpression expression) {
         return switch (expression) {
             case FunckyLiteral literal -> checkTypes(literal);
-            case FunckyReference reference -> reference;
+            case FunckyReference reference -> checkTypes(reference);
             case FunckyApplication application -> checkTypes(application);
         };
     }
@@ -291,6 +293,20 @@ public class Linker {
     private FunckyLiteral checkTypes(final FunckyLiteral literal) {
         return new FunckyLiteral(engine, literal.getFile(), literal.getLine(), literal.getColumn(),
                 checkTypes(literal.getValue()));
+    }
+
+    private FunckyReference checkTypes(final FunckyReference reference) {
+        if (engine.getContext().getScript(reference.getCanonical()) == null) {
+            try {
+                engine.compile(reference.getCanonical());
+            } catch (final FunckyCompilationException e) {
+                throw new SneakyCompilationException(e);
+            }
+        }
+        if (engine.getContext().getDefinition(reference.getCanonical(), reference.getName()) == null) {
+            throw new SneakyCompilationException(new UndefinedNameException(reference));
+        }
+        return reference;
     }
 
     private FunckyApplication checkTypes(final FunckyApplication application) {
@@ -304,15 +320,16 @@ public class Linker {
     private FunckyList checkTypes(final FunckyList list) {
         if ((list.getType().getElement() instanceof FunckyLiteral literal)
                 && (literal.getValue() instanceof FunckyTypeVariable)) {
+            final FunckyExpression head = (list.getHead() == null) ? null : checkTypes(list.getHead());
             final FunckyExpression tail = (list.getTail() == null) ? null : checkTypes(list.getTail());
             final FunckyListType type = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine,
-                    (list.getHead() == null) ? new FunckyTypeVariable(engine) : list.getHead().getType())).unify(
-                    (tail == null) ? new FunckyListType(engine, new FunckyLiteral(engine,
+                    (list.getHead() == null) ? new FunckyTypeVariable(engine) : list.getHead().getType()))
+                    .unify((tail == null) ? new FunckyListType(engine, new FunckyLiteral(engine,
                             new FunckyTypeVariable(engine))) : tail.getType());
             if (type == null) {
                 throw new SneakyCompilationException(new InvalidListLiteralException(engine, list.getHead(), tail));
             }
-            return imposeType(type, list.getHead(), tail);
+            return imposeType(type, head, tail);
         }
         return list;
     }
