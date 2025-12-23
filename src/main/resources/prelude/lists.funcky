@@ -67,23 +67,25 @@ repeat = $$ 1 (prepend (repeat ($ 0)) ($ 0))
 # Take the first n elements of given list and discard the rest (return a list with size less than n if given list contains less elements)
 # "funcky:types".Function ("funcky:types".List $_176a) ("funcky:types".Function "funcky:types".Number ("funcky:types".List $_176a))
 #   throws error if second argument is not a non-negative int
-take = $$ 2 (commons.if (commons.equal (_validateNonNegativeInt ($ 1) (_nonNegativeIntError ($ 1))) 0) [] (commons.if (empty ($ 0)) [] (prepend (take (tail ($ 0)) (numbers.subtract ($ 1) 1)) (head ($ 0)))))
+take = $$ 2 (commons.if (commons.equal (_validateNonNegativeInt ($ 1)) 0) [] (commons.if (empty ($ 0)) [] (prepend (take (tail ($ 0)) (numbers.subtract ($ 1) 1)) (head ($ 0)))))
 
 # Drop the first n elements of given list and keep the rest (return empty list if given list contains less elements)
 # "funcky:types".Function ("funcky:types".List $_1f83) ("funcky:types".Function "funcky:types".Number ("funcky:types".List $_1f83))
 #   throws error if second argument is not a non-negative int
-drop = $$ 2 (commons.if (commons.equal (_validateNonNegativeInt ($ 1) (_nonNegativeIntError ($ 1))) 0) ($ 0) (commons.if (empty ($ 0)) [] (drop (tail ($ 0)) (numbers.subtract ($ 1) 1))))
+drop = $$ 2 (commons.if (commons.equal (_validateNonNegativeInt ($ 1)) 0) ($ 0) (commons.if (empty ($ 0)) [] (drop (tail ($ 0)) (numbers.subtract ($ 1) 1))))
 
 # Get a sublist of given list between start index (inclusive) and end index (exclusive)
 #   throws error if start is not a non-negative int or is greater than end or if end is not a non-negative int or is greater than list size
-sublist = $$ 3 (take (drop ($ 0) (_validateStart ($ 1) (_validateEnd ($ 0) ($ 2)))) (numbers.subtract ($ 2) ($ 1)))
+sublist = $$ 3 (take (drop ($ 0) (_validateStart ($ 1) (_validateEnd ($ 2) ($ 0)))) (numbers.subtract ($ 2) ($ 1)))
 
 # TODO get set insert remove zip unzip
-# TODO eager validations?
 
-_validateNonNegativeInt = $$ 2 (commons.if (booleans.or (booleans.not (commons.equal ($ 0) (numbers.int ($ 0)))) (commons.lessThan ($ 0) 0)) ($ 1) ($ 0))
-_validateStart = $$ 2 (commons.if (commons.greaterThan (_validateNonNegativeInt ($ 0) (_startError ($ 0) ($ 1))) ($ 1)) (_startError ($ 0) ($ 1)) ($ 0))
-_validateEnd = $$ 2 (commons.if (commons.greaterThan (_validateNonNegativeInt ($ 1) (_endError ($ 1) (size ($ 0)))) (size ($ 0))) (_endError ($ 1) (size ($ 0))) ($ 1))
-_nonNegativeIntError = $$ 1 (commons.error (concat "Invalid n `" (concat (commons.string ($ 0)) "`, should be a non-negative int")))
+# TODO check these validations
+_nonNegativeInt = $$ 1 (booleans.and (commons.equal (numbers.int ($ 0)) ($ 0)) (commons.greaterEqual ($ 0) 0))
+_withinBounds = $$ 2 (booleans.and (_nonNegativeInt ($ 0)) (commons.lessEqual ($ 0) ($ 1)))
 _startError = $$ 2 (commons.error (concat "Invalid start `" (concat (commons.string ($ 0)) (concat "`, should be an int between `0` and `" (concat (commons.string ($ 1)) "`")))))
 _endError = $$ 2 (commons.error (concat "Invalid end `" (concat (commons.string ($ 0)) (concat "`, should be an int between `0` and `" (concat (commons.string ($ 1)) "`")))))
+_validateEnd = $$ 2 (commons.if (_withinBounds ($ 0) (size ($ 1))) ($ 0) (_endError ($ 0) (size ($ 1))))
+_validateStart = $$ 2 (commons.if (_withinBounds ($ 0) ($ 1)) ($ 0) (_startError ($ 0) ($ 1)))
+_nonNegativeIntError = $$ 1 (commons.error (concat "Invalid n `" (concat (commons.string ($ 0)) "`, should be a non-negative int")))
+_validateNonNegativeInt = $$ 1 (commons.if (_nonNegativeInt ($ 0)) ($ 0) (_nonNegativeIntError ($ 0)))

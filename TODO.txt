@@ -19,7 +19,6 @@ new methods and tests for records
 monads
 java monad
 
-linear compiler and linker
 remove engine from values and expressions
 transpiler
 rewrite preprocessor

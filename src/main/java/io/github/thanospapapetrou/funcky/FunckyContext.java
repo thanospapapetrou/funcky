@@ -20,16 +20,20 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyScope;
+import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
 public class FunckyContext implements ScriptContext {
     public static final FunckyContext GLOBAL = new FunckyContext();
 
     private static final String DEFINITION = "%1$s$definition$%2$s$expression";
+    private static final String ERROR = "%1$s$definition$%2$s$error";
     private static final String ERROR_RETRIEVING_ATTRIBUTE_SCOPE = "Retrieving attribute scope is not supported";
     private static final String ERROR_RETRIEVING_ATTRIBUTE_WITHOUT_SCOPE =
             "Retrieving attribute without scope is not supported";
     private static final String TYPE = "%1$s$definition$%2$s$type";
+    private static final String VALUE = "%1$s$definition$%2$s$value";
 
     private final Map<Integer, Bindings> bindings;
     private Reader reader;
@@ -103,6 +107,25 @@ public class FunckyContext implements ScriptContext {
 
     public void setType(final URI script, final String name, final FunckyType type) {
         setAttribute(String.format(TYPE, script, name), type, GLOBAL_SCOPE);
+    }
+
+    public FunckyValue getValue(final FunckyReference reference) {
+        return (FunckyValue) getAttribute(String.format(VALUE, reference.getCanonical(), reference.getName()),
+                GLOBAL_SCOPE);
+    }
+
+    public void setValue(final URI script, final String name, final FunckyValue value) {
+        setAttribute(String.format(VALUE, script, name), value, GLOBAL_SCOPE);
+    }
+
+    public FunckyRuntimeException getError(final FunckyReference reference) {
+        return (FunckyRuntimeException) getAttribute(String.format(ERROR, reference.getCanonical(),
+                        reference.getName()),
+                GLOBAL_SCOPE);
+    }
+
+    public void setError(final URI script, final String name, final FunckyRuntimeException error) {
+        setAttribute(String.format(ERROR, script, name), error, GLOBAL_SCOPE);
     }
 
     @Override

@@ -18,13 +18,13 @@ public class FunckyRuntimeException extends ScriptException {
     private static final String ERROR_FORMATTING_STACK = "Error formatting stack for literal `%1$s`";
     private final List<FunckyExpression> stack;
 
-    FunckyRuntimeException(final String message) {
-        this(message, new ArrayList<>());
-    }
-
-    private FunckyRuntimeException(final String message, final List<FunckyExpression> stack) {
+    public FunckyRuntimeException(final String message, final List<FunckyExpression> stack) {
         super(message, null, -1, -1);
         this.stack = stack;
+    }
+
+    FunckyRuntimeException(final String message) {
+        this(message, new ArrayList<>());
     }
 
     public List<FunckyExpression> getStack() {

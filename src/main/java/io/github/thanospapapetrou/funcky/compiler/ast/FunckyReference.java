@@ -1,12 +1,14 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
+import java.util.ArrayList;
 
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
@@ -76,12 +78,22 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public FunckyValue eval(final ScriptContext context) {
-        try {
-            return engine.getContext().getDefinition(canonical, name).expression().eval(context);
-        } catch (final SneakyRuntimeException e) {
-            e.getCause().getStack().add(this);
-            throw e;
+        final FunckyRuntimeException error = engine.getContext().getError(this);
+        if (error != null) {
+            throw new SneakyRuntimeException(new FunckyRuntimeException(error.getMessage(),
+                    new ArrayList<>(error.getStack())));
         }
+        if (engine.getContext().getValue(this) == null) {
+            try {
+                engine.getContext().setValue(canonical, name,
+                        engine.getContext().getDefinition(canonical, name).expression().eval(context));
+            } catch (final SneakyRuntimeException e) {
+                e.getCause().getStack().add(this);
+                engine.getContext().setError(canonical, name, e.getCause());
+                throw e;
+            }
+        }
+        return engine.getContext().getValue(this);
     }
 
     @Override

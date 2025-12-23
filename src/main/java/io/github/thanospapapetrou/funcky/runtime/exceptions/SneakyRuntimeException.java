@@ -5,7 +5,7 @@ public class SneakyRuntimeException extends RuntimeException {
         this(new FunckyRuntimeException(message));
     }
 
-    private SneakyRuntimeException(final FunckyRuntimeException e) {
+    public SneakyRuntimeException(final FunckyRuntimeException e) {
         super(e);
     }
 
