@@ -101,8 +101,8 @@ public class FunckyContext implements ScriptContext {
                 GLOBAL_SCOPE);
     }
 
-    public void setType(final FunckyReference reference, final FunckyType type) {
-        setAttribute(String.format(TYPE, reference.getCanonical(), reference.getName()), type, GLOBAL_SCOPE);
+    public void setType(final URI script, final String name, final FunckyType type) {
+        setAttribute(String.format(TYPE, script, name), type, GLOBAL_SCOPE);
     }
 
     @Override

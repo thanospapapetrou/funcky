@@ -34,7 +34,7 @@ public final class FunckyLiteral extends FunckyExpression {
 
     public FunckyValue getValue() {
         return value;
-    }
+    } // TODO remove and replace with eval
 
     @Override
     public FunckyValue eval(final ScriptContext context) {

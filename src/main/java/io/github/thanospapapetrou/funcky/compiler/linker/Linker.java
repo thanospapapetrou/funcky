@@ -6,11 +6,14 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.TypeVariable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -277,8 +280,8 @@ public class Linker {
     private FunckyDefinition checkTypes(final FunckyDefinition definition) {
         final FunckyDefinition def = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
                 checkTypes(definition.expression()));
-        def.expression().getType();
-        // TODO store type in context
+        engine.getContext().setType(def.file(), def.name(), new FunckyTypeVariable(engine));
+        engine.getContext().setType(def.file(), def.name(), def.expression().getType());
         return def;
     }
 

@@ -7,9 +7,6 @@ import java.util.Map;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
@@ -71,16 +68,13 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public FunckyType getType() {
-        if (engine.getContext().getType(this) == null) {
-            engine.getContext().setType(this, super.getType());
-        }
         return engine.getContext().getType(this);
     }
 
     @Override
     public FunckyValue eval(final ScriptContext context) {
         try {
-            return resolveExpression().eval(context);
+            return engine.getContext().getDefinition(canonical, name).expression().eval(context);
         } catch (final SneakyRuntimeException e) {
             e.getCause().getStack().add(this);
             throw e;
@@ -102,10 +96,6 @@ public final class FunckyReference extends FunckyExpression {
         }
         final Map<FunckyReference, FunckyTypeVariable> newAssumptions = new HashMap<>(assumptions);
         newAssumptions.put(this, new FunckyTypeVariable(engine));
-        return resolveExpression().getType(newAssumptions);
-    }
-
-    private FunckyExpression resolveExpression() {
-        return engine.getContext().getDefinition(canonical, name).expression();
+        return engine.getContext().getDefinition(canonical, name).expression().getType(newAssumptions);
     }
 }
