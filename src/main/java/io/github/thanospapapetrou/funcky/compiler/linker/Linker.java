@@ -201,6 +201,7 @@ public class Linker {
                     canonicalize(definition.expression())); // TODO
         }
         engine.getContext().setDefinition(canonical);
+        engine.getContext().setType(canonical, new FunckyTypeVariable(engine));
         return canonical;
     }
 
@@ -261,28 +262,27 @@ public class Linker {
     }
 
     private FunckyScript checkTypes(final FunckyScript script, final boolean checkMain) {
-        final FunckyScript scr = new FunckyScript(engine, script.getFile());
-        scr.getImports().addAll(script.getImports());
-        script.getDefinitions().stream().map(this::checkTypes).forEach(scr.getDefinitions()::add);
+        final FunckyScript checked = new FunckyScript(engine, script.getFile());
+        checked.getImports().addAll(script.getImports());
+        script.getDefinitions().stream().map(this::checkTypes).forEach(checked.getDefinitions()::add);
         if (checkMain) {
             final Optional<FunckyDefinition> main =
-                    scr.getDefinitions().stream().filter(def -> def.name().equals(FunckyScript.MAIN)).findAny();
+                    checked.getDefinitions().stream().filter(def -> def.name().equals(FunckyScript.MAIN)).findAny();
             if (main.isEmpty()) {
-                throw new SneakyCompilationException(new UndefinedMainException(scr));
+                throw new SneakyCompilationException(new UndefinedMainException(checked));
             }
             if (main.get().expression().getType().unify(MAIN_TYPE.apply(engine)) == null) {
                 throw new SneakyCompilationException(new InvalidMainException(main.get()));
             }
         }
-        return scr;
+        return checked;
     }
 
     private FunckyDefinition checkTypes(final FunckyDefinition definition) {
-        final FunckyDefinition def = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
+        final FunckyDefinition checked = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
                 checkTypes(definition.expression()));
-        engine.getContext().setType(def.file(), def.name(), new FunckyTypeVariable(engine));
-        engine.getContext().setType(def.file(), def.name(), def.expression().getType());
-        return def;
+        engine.getContext().setType(checked, checked.expression().getType());
+        return checked;
     }
 
     private FunckyExpression checkTypes(final FunckyExpression expression) {
