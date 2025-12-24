@@ -21,6 +21,7 @@ import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.Parser;
 import io.github.thanospapapetrou.funcky.compiler.preprocessor.Preprocessor;
@@ -65,8 +66,9 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
         parser = new Parser(this);
         preprocessor = new Preprocessor(this);
         linker = new Linker(this);
-        setBindings(FunckyContext.GLOBAL.getBindings(FunckyContext.GLOBAL_SCOPE), FunckyContext.GLOBAL_SCOPE);
+        setBindings(createBindings(), FunckyContext.GLOBAL_SCOPE);
         setBindings(createBindings(), FunckyContext.ENGINE_SCOPE);
+        setBindings(createBindings(), FunckyContext.SCRIPTS_SCOPE);
     }
 
     public Linker getLinker() {
@@ -121,9 +123,9 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     @Override
     public FunckyValue eval(final String expression, final ScriptContext context) throws FunckyCompilationException,
             FunckyRuntimeException {
-        final FunckyExpression expr = compile(expression);
+        final FunckyExpression compiled = compile(expression);
         try {
-            return (expr == null) ? null : expr.eval(context);
+            return (compiled == null) ? null : compiled.eval(context);
         } catch (final SneakyRuntimeException e) {
             throw e.getCause();
         }

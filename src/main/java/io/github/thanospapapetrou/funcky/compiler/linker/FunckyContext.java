@@ -1,4 +1,4 @@
-package io.github.thanospapapetrou.funcky;
+package io.github.thanospapapetrou.funcky.compiler.linker;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,18 +16,17 @@ import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.SimpleBindings;
 
+import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
-import io.github.thanospapapetrou.funcky.compiler.linker.FunckyScope;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
 public class FunckyContext implements ScriptContext {
-    public static final FunckyContext GLOBAL = new FunckyContext();
+    public static final int SCRIPTS_SCOPE = 0;
 
-    private static final String DEFINITION = "%1$s$definition$%2$s$expression";
     private static final String ERROR = "%1$s$definition$%2$s$error";
     private static final String ERROR_RETRIEVING_ATTRIBUTE_SCOPE = "Retrieving attribute scope is not supported";
     private static final String ERROR_RETRIEVING_ATTRIBUTE_WITHOUT_SCOPE =
@@ -40,11 +39,7 @@ public class FunckyContext implements ScriptContext {
     private Writer writer;
     private Writer errorWriter;
 
-    static {
-        GLOBAL.setBindings(new SimpleBindings(), GLOBAL_SCOPE);
-    }
-
-    FunckyContext() {
+    public FunckyContext() {
         this(new HashMap<>());
         setReader(new InputStreamReader(System.in));
         setWriter(new PrintWriter(System.out, true));
@@ -72,14 +67,14 @@ public class FunckyContext implements ScriptContext {
     }
 
     public Integer getScript(final URI script) {
-        return (Integer) getAttribute(script.toString(), GLOBAL_SCOPE);
+        return (Integer) getAttribute(script.toString(), SCRIPTS_SCOPE);
     }
 
     public void setScript(final URI script) {
-        final int base = getScopes().stream().max(Comparator.naturalOrder()).orElse(-1) + 1;
-        setAttribute(script.toString(), base, GLOBAL_SCOPE);
+        final int base = getScopes().stream().min(Comparator.naturalOrder()).orElse(0) - 1;
+        setAttribute(script.toString(), base, SCRIPTS_SCOPE);
         for (final FunckyScope scope : FunckyScope.values()) {
-            setBindings(new SimpleBindings(), base + scope.ordinal());
+            setBindings(new SimpleBindings(), base - scope.ordinal());
         }
     }
 
@@ -92,44 +87,40 @@ public class FunckyContext implements ScriptContext {
     }
 
     public FunckyDefinition getDefinition(final URI script, final String name) {
-        return (FunckyDefinition) getAttribute(String.format(DEFINITION, script, name), GLOBAL_SCOPE);
+        return getAttribute(script, FunckyScope.DEFINITIONS, name);
     }
 
     public void setDefinition(final FunckyDefinition definition) {
-        setAttribute(String.format(DEFINITION, definition.file(), definition.name()),
-                definition, GLOBAL_SCOPE);
+        setAttribute(definition.file(), FunckyScope.DEFINITIONS, definition.name(), definition);
     }
 
     public FunckyType getType(final URI script, final String name) {
-        return (FunckyType) getAttribute(String.format(TYPE, script, name), GLOBAL_SCOPE);
+        return getAttribute(script, FunckyScope.TYPES, name);
     }
 
     public void setType(final URI script, final String name, final FunckyType type) {
-        setAttribute(String.format(TYPE, script, name), type, GLOBAL_SCOPE);
+        setAttribute(script, FunckyScope.TYPES, name, type);
     }
 
     public FunckyValue getValue(final FunckyReference reference) {
-        return (FunckyValue) getAttribute(String.format(VALUE, reference.getCanonical(), reference.getName()),
-                GLOBAL_SCOPE);
+        return getAttribute(reference.getCanonical(), FunckyScope.VALUES, reference.getName());
     }
 
     public void setValue(final URI script, final String name, final FunckyValue value) {
-        setAttribute(String.format(VALUE, script, name), value, GLOBAL_SCOPE);
+        setAttribute(script, FunckyScope.VALUES, name, value);
     }
 
     public FunckyRuntimeException getError(final FunckyReference reference) {
-        return (FunckyRuntimeException) getAttribute(String.format(ERROR, reference.getCanonical(),
-                        reference.getName()),
-                GLOBAL_SCOPE);
+        return getAttribute(reference.getCanonical(), FunckyScope.ERRORS, reference.getName());
     }
 
     public void setError(final URI script, final String name, final FunckyRuntimeException error) {
-        setAttribute(String.format(ERROR, script, name), error, GLOBAL_SCOPE);
+        setAttribute(script, FunckyScope.ERRORS, name, error);
     }
 
     @Override
     public List<Integer> getScopes() {
-        return bindings.keySet().stream().sorted().toList();
+        return bindings.keySet().stream().sorted(Comparator.reverseOrder()).toList();
     }
 
     @Override
@@ -197,13 +188,41 @@ public class FunckyContext implements ScriptContext {
         this.errorWriter = errrorWriter;
     }
 
+    @Override
+    public String toString() { // TODO remove
+        final StringBuilder string = new StringBuilder();
+        string.append("Global (").append(GLOBAL_SCOPE).append(")\n");
+        for (final String name : getBindings(GLOBAL_SCOPE).keySet()) {
+            string.append("\t").append(name).append(" ").append(getBindings(GLOBAL_SCOPE).get(name)).append("\n");
+        }
+        string.append("Engine (").append(ENGINE_SCOPE).append(")\n");
+        for (final String name : getBindings(ENGINE_SCOPE).keySet()) {
+            string.append("\t").append(name).append(" ").append(getBindings(ENGINE_SCOPE).get(name)).append("\n");
+        }
+        string.append("Scripts (").append(SCRIPTS_SCOPE).append(")\n");
+        for (final String script : getBindings(SCRIPTS_SCOPE).keySet()) {
+            string.append("\t").append(script).append(" ").append(getBindings(SCRIPTS_SCOPE).get(script)).append("\n");
+        }
+        for (final String script : getBindings(SCRIPTS_SCOPE).keySet()) {
+            final int base = (int) getBindings(SCRIPTS_SCOPE).get(script);
+            for (final FunckyScope scope : FunckyScope.values()) {
+                string.append(script).append(" ").append(scope).append(" (").append(base - scope.ordinal())
+                        .append(")\n");
+                // TODO
+                //                for (final String name : getBindings(base - scope.ordinal()).keySet()) {
+                //                    string.append("\t").append(name).append(" ").append(getBindings(base - scope.ordinal()).get(name)).append("\n");
+                //                }
+            }
+        }
+        return string.toString();
+    }
+
     private <T> T getAttribute(final URI script, final FunckyScope scope, final String name) {
         final Integer base = getScript(script);
-        return (T) ((base == null) ? null : getAttribute(name, base + scope.ordinal()));
+        return (T) ((base == null) ? null : getAttribute(name, base - scope.ordinal()));
     }
 
     private <T> void setAttribute(final URI script, final FunckyScope scope, final String name, final T value) {
-        setAttribute(name, value, getScript(script) + scope.ordinal());
+        setAttribute(name, value, getScript(script) - scope.ordinal());
     }
-
 }

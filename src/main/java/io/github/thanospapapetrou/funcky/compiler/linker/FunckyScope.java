@@ -1,5 +1,9 @@
 package io.github.thanospapapetrou.funcky.compiler.linker;
 
 public enum FunckyScope {
-    IMPORTS
+    IMPORTS,
+    DEFINITIONS,
+    TYPES,
+    VALUES,
+    ERRORS
 }
