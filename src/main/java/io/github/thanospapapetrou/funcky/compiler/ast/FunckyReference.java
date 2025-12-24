@@ -68,12 +68,12 @@ public final class FunckyReference extends FunckyExpression {
 
     @Override
     public FunckyType getType() {
-        if (engine.getContext().getType(this) == null) {
+        if (engine.getContext().getType(canonical, name) == null) {
             engine.getContext().setType(canonical, name, new FunckyTypeVariable(engine));
             engine.getContext().setType(canonical, name,
                     engine.getContext().getDefinition(canonical, name).expression().getType());
         }
-        return engine.getContext().getType(this);
+        return engine.getContext().getType(canonical, name);
     }
 
     @Override

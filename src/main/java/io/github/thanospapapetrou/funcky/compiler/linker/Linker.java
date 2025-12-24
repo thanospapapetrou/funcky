@@ -277,8 +277,10 @@ public class Linker {
     private FunckyDefinition checkTypes(final FunckyDefinition definition) {
         final FunckyDefinition checked = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
                 checkTypes(definition.expression()));
-        engine.getContext().setType(checked.file(), checked.name(), new FunckyTypeVariable(engine));
-        engine.getContext().setType(checked.file(), checked.name(), checked.expression().getType());
+        if (engine.getContext().getType(checked.file(), checked.name()) == null) {
+            engine.getContext().setType(checked.file(), checked.name(), new FunckyTypeVariable(engine));
+            engine.getContext().setType(checked.file(), checked.name(), checked.expression().getType());
+        }
         return checked;
     }
 
