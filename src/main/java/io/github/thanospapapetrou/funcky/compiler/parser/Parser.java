@@ -70,30 +70,6 @@ public class Parser {
         return result;
     }
 
-    private static void log(final FunckyExpression expression, final int indentation) {
-        if (expression != null) {
-            LOGGER.finer(
-                    String.format(EXPRESSION, INDENTATION.repeat(indentation),
-                            expression.getClass().getSimpleName(),
-                            expression, expression.getFile(), expression.getLine(), expression.getColumn()));
-            if (expression instanceof FunckyApplication) {
-                log(((FunckyApplication) expression).getFunction(), indentation + 1);
-                log(((FunckyApplication) expression).getArgument(), indentation + 1);
-            }
-        }
-    }
-
-    private static void log(final FunckyScript script) {
-        LOGGER.finer(String.format(SCRIPT, script.getFile()));
-        for (final FunckyImport imp : script.getImports()) {
-            LOGGER.finer(String.format(IMPORT, INDENTATION, imp, imp.file(), imp.line()));
-        }
-        for (final FunckyDefinition definition : script.getDefinitions()) {
-            LOGGER.finer(String.format(DEFINITION, INDENTATION, definition, definition.file(), definition.line()));
-            log(definition.expression(), 2);
-        }
-    }
-
     public Parser(final FunckyEngine engine) {
         this.engine = engine;
     }
@@ -283,5 +259,30 @@ public class Parser {
             return token;
         }
         throw new SneakyCompilationException(new UnexpectedTokenException(token, new TreeSet<>(expected)));
+    }
+
+    private void log(final FunckyExpression expression, final int indentation) {
+        if (expression != null) {
+            LOGGER.finer(
+                    String.format(EXPRESSION, INDENTATION.repeat(indentation),
+                            expression.getClass().getSimpleName(),
+                            expression.toString(engine.getContext()), expression.getFile(), expression.getLine(),
+                            expression.getColumn()));
+            if (expression instanceof FunckyApplication) {
+                log(((FunckyApplication) expression).getFunction(), indentation + 1);
+                log(((FunckyApplication) expression).getArgument(), indentation + 1);
+            }
+        }
+    }
+
+    private void log(final FunckyScript script) {
+        LOGGER.finer(String.format(SCRIPT, script.getFile()));
+        for (final FunckyImport imp : script.getImports()) {
+            LOGGER.finer(String.format(IMPORT, INDENTATION, imp, imp.file(), imp.line()));
+        }
+        for (final FunckyDefinition definition : script.getDefinitions()) {
+            LOGGER.finer(String.format(DEFINITION, INDENTATION, definition, definition.file(), definition.line()));
+            log(definition.expression(), 2);
+        }
     }
 }
