@@ -67,8 +67,8 @@ public class Tokenizer {
                 }
             }
         }
-        throw new SneakyCompilationException(
-                new UnrecognizedInputException(statement.substring(index.get()), file, line, index.get() + 1));
+        throw new SneakyCompilationException(new UnrecognizedInputException(statement.substring(index.get()), file,
+                line, index.get() + 1));
     }
 
     private void addToken(final List<Token> tokens, final TokenType type, final URI file, final int line,

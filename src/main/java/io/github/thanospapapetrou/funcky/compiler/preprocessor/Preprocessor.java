@@ -82,7 +82,7 @@ public class Preprocessor {
                 && (reference.getNamespace() == null) && (reference.getPrefix() == null)
                 && (reference.getName().equals(REFERENCE_FUNCTION))) {
             if ((otherApplication.getArgument() instanceof FunckyLiteral literal)
-                    && (literal.getValue() instanceof FunckyNumber number)
+                    && (literal.eval(engine.getContext()) instanceof FunckyNumber number)
                     && (number.getValue().compareTo(new BigDecimal(number.getValue().intValue())) == 0)
                     && (number.getValue().intValue() > 0)) {
                 return new AbstractMap.SimpleEntry<>(number.getValue().intValue(), application.getArgument());
@@ -99,7 +99,7 @@ public class Preprocessor {
                 && (reference.getNamespace() == null) && (reference.getPrefix() == null)
                 && reference.getName().equals(REFERENCE_ARGUMENT)) {
             if ((application.getArgument() instanceof FunckyLiteral literal)
-                    && (literal.getValue() instanceof FunckyNumber number)
+                    && (literal.eval(engine.getContext()) instanceof FunckyNumber number)
                     && (number.getValue().compareTo(new BigDecimal(number.getValue().intValue())) == 0)
                     && (number.getValue().intValue() >= 0)) {
                 return number.getValue().intValue() == argument;

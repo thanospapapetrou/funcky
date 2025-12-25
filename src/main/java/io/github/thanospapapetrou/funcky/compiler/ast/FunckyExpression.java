@@ -1,7 +1,6 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
-import java.util.Map;
 
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
@@ -9,7 +8,6 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 public abstract sealed class FunckyExpression extends CompiledScript
         permits FunckyLiteral, FunckyReference, FunckyApplication {

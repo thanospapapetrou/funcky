@@ -26,13 +26,9 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
 public class FunckyContext implements ScriptContext {
     public static final int SCRIPTS_SCOPE = 0;
-
-    private static final String ERROR = "%1$s$definition$%2$s$error";
     private static final String ERROR_RETRIEVING_ATTRIBUTE_SCOPE = "Retrieving attribute scope is not supported";
     private static final String ERROR_RETRIEVING_ATTRIBUTE_WITHOUT_SCOPE =
             "Retrieving attribute without scope is not supported";
-    private static final String TYPE = "%1$s$definition$%2$s$type";
-    private static final String VALUE = "%1$s$definition$%2$s$value";
 
     private final Map<Integer, Bindings> bindings;
     private Reader reader;

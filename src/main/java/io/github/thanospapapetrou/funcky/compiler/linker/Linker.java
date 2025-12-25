@@ -213,7 +213,7 @@ public class Linker {
 
     private FunckyLiteral canonicalize(final FunckyLiteral literal) {
         return new FunckyLiteral(engine, literal.getFile(), literal.getLine(), literal.getColumn(),
-                canonicalize(literal.getValue()));
+                canonicalize(literal.eval(engine.getContext())));
     }
 
     private FunckyReference canonicalize(final FunckyReference reference) {
@@ -296,7 +296,7 @@ public class Linker {
 
     private FunckyLiteral checkTypes(final FunckyLiteral literal) {
         return new FunckyLiteral(engine, literal.getFile(), literal.getLine(), literal.getColumn(),
-                checkTypes(literal.getValue()));
+                checkTypes(literal.eval(engine.getContext())));
     }
 
     private FunckyReference checkTypes(final FunckyReference reference) {
@@ -323,7 +323,7 @@ public class Linker {
 
     private FunckyList checkTypes(final FunckyList list) {
         if ((list.getType().getElement() instanceof FunckyLiteral literal)
-                && (literal.getValue() instanceof FunckyTypeVariable)) {
+                && (literal.eval(engine.getContext()) instanceof FunckyTypeVariable)) {
             final FunckyExpression head = (list.getHead() == null) ? null : checkTypes(list.getHead());
             final FunckyExpression tail = (list.getTail() == null) ? null : checkTypes(list.getTail());
             final FunckyListType type = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine,
@@ -339,8 +339,8 @@ public class Linker {
     }
 
     private FunckyList imposeType(final FunckyListType type, final FunckyExpression head, final FunckyExpression tail) {
-        return new FunckyList(engine, type, head,
-                (tail instanceof FunckyLiteral literal) && (literal.getValue() instanceof FunckyList list) ?
-                        new FunckyLiteral(engine, imposeType(type, list.getHead(), list.getTail())) : tail);
+        return new FunckyList(engine, type, head, (tail instanceof FunckyLiteral literal)
+                && (literal.eval(engine.getContext()) instanceof FunckyList list)
+                ? new FunckyLiteral(engine, imposeType(type, list.getHead(), list.getTail())) : tail);
     }
 }

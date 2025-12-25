@@ -36,14 +36,13 @@ public final class FunckyApplication extends FunckyExpression {
     public FunckyType getType() {
         final FunckyType functionType = function.getType();
         final FunckyType argumentType = argument.getType();
-        final FunckyFunctionType type = (FunckyFunctionType) functionType.unify(
-                new FunckyFunctionType(engine, new FunckyLiteral(engine, argumentType),
+        final FunckyFunctionType type = (FunckyFunctionType) functionType
+                .unify(new FunckyFunctionType(engine, new FunckyLiteral(engine, argumentType),
                         new FunckyLiteral(engine, new FunckyTypeVariable(engine))));
-        if (type != null) {
-            return ((FunckyType) type.getRange().eval(engine.getContext()));
-        } else {
+        if (type == null) {
             throw new SneakyCompilationException(new IllegalApplicationException(this, functionType, argumentType));
         }
+        return ((FunckyType) type.getRange().eval(engine.getContext()));
     }
 
     @Override
@@ -59,7 +58,7 @@ public final class FunckyApplication extends FunckyExpression {
     @Override
     public String toString(final boolean canonical) {
         return String.format(((argument instanceof FunckyApplication) || ((argument instanceof FunckyLiteral literal)
-                && ((literal.getValue().toExpression() instanceof FunckyApplication))))
+                && ((literal.eval(engine.getContext()).toExpression() instanceof FunckyApplication))))
                 ? NESTED_APPLICATION : FORMAT_APPLICATION, function.toString(canonical), argument.toString(canonical));
     }
 }

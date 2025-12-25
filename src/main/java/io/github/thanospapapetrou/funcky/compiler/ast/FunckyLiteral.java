@@ -30,10 +30,6 @@ public final class FunckyLiteral extends FunckyExpression {
         this(engine, null, -1, -1, value);
     }
 
-    public FunckyValue getValue() {
-        return value;
-    } // TODO remove and replace with eval
-
     @Override
     public FunckyType getType() {
         return value.getType();
