@@ -58,10 +58,8 @@ public final class FunckyApplication extends FunckyExpression {
 
     @Override
     public String toString(final boolean canonical) {
-        return String.format(((argument instanceof FunckyApplication)
-                || ((argument instanceof FunckyLiteral)
-                && (((FunckyLiteral) argument).getValue().toExpression() instanceof FunckyApplication)))
-                ? NESTED_APPLICATION
-                : FORMAT_APPLICATION, function.toString(canonical), argument.toString(canonical));
+        return String.format(((argument instanceof FunckyApplication) || ((argument instanceof FunckyLiteral literal)
+                && ((literal.getValue().toExpression() instanceof FunckyApplication))))
+                ? NESTED_APPLICATION : FORMAT_APPLICATION, function.toString(canonical), argument.toString(canonical));
     }
 }

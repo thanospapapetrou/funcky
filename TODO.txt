@@ -11,8 +11,6 @@ thread safety
 
 Funcky> "funcky:records".unit
 java.net.MalformedURLException: unknown protocol: funcky
-
-instanceof -> pattern matching
 transpile
 generics
 new methods and tests for records
@@ -23,7 +21,6 @@ remove engine from values and expressions
 transpiler
 rewrite preprocessor
 switch with pattern matching
-instanceof with pattern matching
 static imports no in java, only in groovy
 use static methods for literal types and etc
 record does not need type, it is just the list of component types

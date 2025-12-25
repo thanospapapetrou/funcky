@@ -76,9 +76,9 @@ public class Parser {
                     String.format(EXPRESSION, INDENTATION.repeat(indentation),
                             expression.getClass().getSimpleName(),
                             expression, expression.getFile(), expression.getLine(), expression.getColumn()));
-            if (expression instanceof FunckyApplication) {
-                log(((FunckyApplication) expression).getFunction(), indentation + 1);
-                log(((FunckyApplication) expression).getArgument(), indentation + 1);
+            if (expression instanceof FunckyApplication application) {
+                log(application.getFunction(), indentation + 1);
+                log(application.getArgument(), indentation + 1);
             }
         }
     }

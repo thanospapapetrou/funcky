@@ -41,8 +41,8 @@ public final class Types extends FunckyLibrary {
         @Override
         public FunckyType apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             final FunckyType type = (FunckyType) arguments.getFirst().eval(context);
-            if (type instanceof FunckyFunctionType) {
-                return (FunckyType) ((FunckyFunctionType) type).getDomain().eval(context);
+            if (type instanceof FunckyFunctionType function) {
+                return (FunckyType) function.getDomain().eval(context);
             }
             throw new SneakyRuntimeException(String.format(ERROR_DOMAIN, type));
         }
@@ -51,8 +51,8 @@ public final class Types extends FunckyLibrary {
         @Override
         public FunckyType apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             final FunckyType type = (FunckyType) arguments.getFirst().eval(context);
-            if (type instanceof FunckyFunctionType) {
-                return (FunckyType) ((FunckyFunctionType) type).getRange().eval(context);
+            if (type instanceof FunckyFunctionType function) {
+                return (FunckyType) function.getRange().eval(context);
             }
             throw new SneakyRuntimeException(String.format(ERROR_RANGE, type));
         }
@@ -67,8 +67,8 @@ public final class Types extends FunckyLibrary {
         @Override
         public FunckyType apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             final FunckyType type = (FunckyType) arguments.getFirst().eval(context);
-            if (type instanceof FunckyListType) {
-                return (FunckyType) ((FunckyListType) type).getElement().eval(context);
+            if (type instanceof FunckyListType list) {
+                return (FunckyType) list.getElement().eval(context);
             }
             throw new SneakyRuntimeException(String.format(ERROR_ELEMENT, type));
         }
@@ -85,8 +85,8 @@ public final class Types extends FunckyLibrary {
         @Override
         public FunckyList apply(final ScriptContext context, final List<FunckyExpression> arguments) {
             final FunckyType type = (FunckyType) arguments.getFirst().eval(context);
-            if (type instanceof FunckyRecordType) {
-                return (FunckyList) ((FunckyRecordType) type).getComponents().eval(context);
+            if (type instanceof FunckyRecordType record) {
+                return (FunckyList) record.getComponents().eval(context);
             }
             throw new SneakyRuntimeException(String.format(ERROR_COMPONENTS, type));
         }
