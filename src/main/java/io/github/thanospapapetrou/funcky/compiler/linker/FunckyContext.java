@@ -26,9 +26,6 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
 public class FunckyContext implements ScriptContext {
     public static final int SCRIPTS_SCOPE = 0;
-    private static final String ERROR_RETRIEVING_ATTRIBUTE_SCOPE = "Retrieving attribute scope is not supported";
-    private static final String ERROR_RETRIEVING_ATTRIBUTE_WITHOUT_SCOPE =
-            "Retrieving attribute without scope is not supported";
 
     private final Map<Integer, Bindings> bindings;
     private Reader reader;
@@ -131,27 +128,34 @@ public class FunckyContext implements ScriptContext {
 
     @Override
     public Object getAttribute(final String name, final int scope) {
-        return bindings.get(scope).get(name);
+        return bindings.containsKey(scope) ? bindings.get(scope).get(name) : null;
     }
 
     @Override
     public Object getAttribute(final String name) {
-        throw new UnsupportedOperationException(ERROR_RETRIEVING_ATTRIBUTE_WITHOUT_SCOPE);
+        return getAttribute(name, getAttributesScope(name));
     }
 
     @Override
     public void setAttribute(final String name, final Object value, final int scope) {
-        bindings.get(scope).put(name, value);
+        if (bindings.containsKey(scope)) {
+            bindings.get(scope).put(name, value);
+        }
     }
 
     @Override
     public Object removeAttribute(final String name, final int scope) {
-        return bindings.get(scope).remove(name);
+        return bindings.containsKey(scope) ? bindings.get(scope).remove(name) : null;
     }
 
     @Override
     public int getAttributesScope(final String name) {
-        throw new UnsupportedOperationException(ERROR_RETRIEVING_ATTRIBUTE_SCOPE);
+        return bindings.entrySet().stream()
+                .filter(binding -> binding.getValue().containsKey(name))
+                .map(Map.Entry::getKey)
+                .sorted()
+                .findFirst()
+                .orElse(Integer.MIN_VALUE);
     }
 
     @Override
@@ -184,41 +188,15 @@ public class FunckyContext implements ScriptContext {
         this.errorWriter = errrorWriter;
     }
 
-    @Override
-    public String toString() { // TODO remove
-        final StringBuilder string = new StringBuilder();
-        string.append("Global (").append(GLOBAL_SCOPE).append(")\n");
-        for (final String name : getBindings(GLOBAL_SCOPE).keySet()) {
-            string.append("\t").append(name).append(" ").append(getBindings(GLOBAL_SCOPE).get(name)).append("\n");
-        }
-        string.append("Engine (").append(ENGINE_SCOPE).append(")\n");
-        for (final String name : getBindings(ENGINE_SCOPE).keySet()) {
-            string.append("\t").append(name).append(" ").append(getBindings(ENGINE_SCOPE).get(name)).append("\n");
-        }
-        string.append("Scripts (").append(SCRIPTS_SCOPE).append(")\n");
-        for (final String script : getBindings(SCRIPTS_SCOPE).keySet()) {
-            string.append("\t").append(script).append(" ").append(getBindings(SCRIPTS_SCOPE).get(script)).append("\n");
-        }
-        for (final String script : getBindings(SCRIPTS_SCOPE).keySet()) {
-            final int base = (int) getBindings(SCRIPTS_SCOPE).get(script);
-            for (final FunckyScope scope : FunckyScope.values()) {
-                string.append(script).append(" ").append(scope).append(" (").append(base - scope.ordinal())
-                        .append(")\n");
-                // TODO
-                //                for (final String name : getBindings(base - scope.ordinal()).keySet()) {
-                //                    string.append("\t").append(name).append(" ").append(getBindings(base - scope.ordinal()).get(name)).append("\n");
-                //                }
-            }
-        }
-        return string.toString();
-    }
-
     private <T> T getAttribute(final URI script, final FunckyScope scope, final String name) {
         final Integer base = getScript(script);
         return (T) ((base == null) ? null : getAttribute(name, base - scope.ordinal()));
     }
 
     private <T> void setAttribute(final URI script, final FunckyScope scope, final String name, final T value) {
-        setAttribute(name, value, getScript(script) - scope.ordinal());
+        final Integer base = getScript(script);
+        if (base != null) {
+            setAttribute(name, value, base - scope.ordinal());
+        }
     }
 }

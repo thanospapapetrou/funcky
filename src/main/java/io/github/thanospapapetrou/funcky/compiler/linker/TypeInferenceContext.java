@@ -66,23 +66,15 @@ public class TypeInferenceContext {
         if (type instanceof FunckySimpleType) {
             return type;
         } else if (type instanceof FunckyFunctionType ft) {
-            return new FunckyFunctionType(type.getEngine(),
-                    new FunckyLiteral(type.getEngine(),
-                            find((FunckyType) ft.getDomain().eval(type.getEngine().getContext()))),
+            return new FunckyFunctionType(type.getEngine(), new FunckyLiteral(type.getEngine(),
+                    find((FunckyType) ft.getDomain().eval(type.getEngine().getContext()))),
                     new FunckyLiteral(type.getEngine(),
                             find((FunckyType) ft.getRange().eval(type.getEngine().getContext()))));
         } else if (type instanceof FunckyListType lt) {
             return new FunckyListType(type.getEngine(), new FunckyLiteral(type.getEngine(),
                     find((FunckyType) lt.getElement().eval(type.getEngine().getContext()))));
         } else if (type instanceof FunckyRecordType rt) {
-            final List<FunckyType> components = new ArrayList<>();
-            for (FunckyList list = (FunckyList) rt.getComponents().eval(type.getEngine().getContext());
-                    list.getTail() != null; list = (FunckyList) list.getTail().eval(list.getEngine().getContext())) {
-                components.add(find((FunckyType) list.getHead().eval(list.getEngine().getContext())));
-            }
-            return (FunckyRecordType) FunckyRecordType.RECORD(components.stream()
-                    .map(t -> (Function<FunckyEngine, FunckyType>) (e -> t))
-                    .toList().toArray(new Function[0])).apply(type.getEngine());
+            return find(rt);
         } else if (type instanceof FunckyTypeVariable) {
             final FunckyType found = findRepresentative(findSet(type));
             if (found instanceof FunckyFunctionType ft) {
@@ -94,27 +86,29 @@ public class TypeInferenceContext {
                 return new FunckyListType(type.getEngine(), new FunckyLiteral(type.getEngine(),
                         find((FunckyType) lt.getElement().eval(found.getEngine().getContext()))));
             } else if (found instanceof FunckyRecordType rt) {
-                final List<FunckyType> components = new ArrayList<>();
-                for (FunckyList list =
-                        (FunckyList) rt.getComponents().eval(found.getEngine().getContext());
-                        list.getTail() != null;
-                        list = (FunckyList) list.getTail().eval(list.getEngine().getContext())) {
-                    components.add(find((FunckyType) list.getHead().eval(list.getEngine().getContext())));
-                }
-                return (FunckyRecordType) FunckyRecordType.RECORD(components.stream()
-                        .map(t -> (Function<FunckyEngine, FunckyType>) (e -> t))
-                        .toList().toArray(new Function[0])).apply(type.getEngine());
+                return find(rt);
             }
             return found;
         }
         return null;
     }
 
+    private FunckyRecordType find(final FunckyRecordType type) {
+        final List<FunckyType> components = new ArrayList<>();
+        for (FunckyList list = (FunckyList) type.getComponents().eval(type.getEngine().getContext());
+                list.getTail() != null; list = (FunckyList) list.getTail().eval(list.getEngine().getContext())) {
+            components.add(find((FunckyType) list.getHead().eval(list.getEngine().getContext())));
+        }
+        return (FunckyRecordType) FunckyRecordType.RECORD(components.stream()
+                .map(t -> (Function<FunckyEngine, FunckyType>) (e -> t))
+                .toList().toArray(new Function[0])).apply(type.getEngine());
+    }
+
     private boolean union(final FunckyType a, final FunckyType b) {
         final Set<FunckyType> setA = findSet(a);
         final Set<FunckyType> setB = findSet(b);
-        if ((findRepresentative(setA) instanceof FunckyTypeVariable) || (findRepresentative(
-                setB) instanceof FunckyTypeVariable)) {
+        if ((findRepresentative(setA) instanceof FunckyTypeVariable)
+                || (findRepresentative(setB) instanceof FunckyTypeVariable)) {
             context.remove(setB);
             context.remove(setA);
             setA.addAll(setB);

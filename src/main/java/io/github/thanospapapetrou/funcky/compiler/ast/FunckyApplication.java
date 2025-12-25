@@ -34,13 +34,11 @@ public final class FunckyApplication extends FunckyExpression {
 
     @Override
     public FunckyType getType() {
-        final FunckyType functionType = function.getType();
-        final FunckyType argumentType = argument.getType();
-        final FunckyFunctionType type = (FunckyFunctionType) functionType
-                .unify(new FunckyFunctionType(engine, new FunckyLiteral(engine, argumentType),
+        final FunckyFunctionType type = (FunckyFunctionType) function.getType()
+                .unify(new FunckyFunctionType(engine, new FunckyLiteral(engine, argument.getType()),
                         new FunckyLiteral(engine, new FunckyTypeVariable(engine))));
         if (type == null) {
-            throw new SneakyCompilationException(new IllegalApplicationException(this, functionType, argumentType));
+            throw new SneakyCompilationException(new IllegalApplicationException(this));
         }
         return ((FunckyType) type.getRange().eval(engine.getContext()));
     }

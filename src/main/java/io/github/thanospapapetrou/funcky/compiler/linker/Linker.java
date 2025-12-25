@@ -42,6 +42,7 @@ import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.HigherOrderFunction;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
@@ -259,18 +260,21 @@ public class Linker {
                 .toList());
     }
 
-    private FunckyScript checkTypes(final FunckyScript script, final boolean checkMain) {
+    private FunckyScript checkTypes(final FunckyScript script, final boolean main) {
         final FunckyScript checked = new FunckyScript(engine, script.getFile());
         checked.getImports().addAll(script.getImports());
-        script.getDefinitions().stream().map(this::checkTypes).forEach(checked.getDefinitions()::add);
-        if (checkMain) {
-            final Optional<FunckyDefinition> main =
-                    checked.getDefinitions().stream().filter(def -> def.name().equals(FunckyScript.MAIN)).findAny();
-            if (main.isEmpty()) {
+        script.getDefinitions().stream()
+                .map(this::checkTypes)
+                .forEach(checked.getDefinitions()::add);
+        if (main) {
+            final Optional<FunckyDefinition> mane = checked.getDefinitions().stream()
+                    .filter(def -> def.name().equals(FunckyScript.MAIN))
+                    .findAny();
+            if (mane.isEmpty()) {
                 throw new SneakyCompilationException(new UndefinedMainException(checked));
             }
-            if (main.get().expression().getType().unify(MAIN_TYPE.apply(engine)) == null) {
-                throw new SneakyCompilationException(new InvalidMainException(main.get()));
+            if (mane.get().expression().getType().unify(MAIN_TYPE.apply(engine)) == null) {
+                throw new SneakyCompilationException(new InvalidMainException(mane.get()));
             }
         }
         return checked;
@@ -326,12 +330,13 @@ public class Linker {
                 && (literal.eval(engine.getContext()) instanceof FunckyTypeVariable)) {
             final FunckyExpression head = (list.getHead() == null) ? null : checkTypes(list.getHead());
             final FunckyExpression tail = (list.getTail() == null) ? null : checkTypes(list.getTail());
-            final FunckyListType type = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine,
-                    (list.getHead() == null) ? new FunckyTypeVariable(engine) : list.getHead().getType()))
-                    .unify((tail == null) ? new FunckyListType(engine, new FunckyLiteral(engine,
-                            new FunckyTypeVariable(engine))) : tail.getType());
+            final FunckyType headType = (head == null) ? new FunckyTypeVariable(engine) : head.getType();
+            final FunckyListType tailType = (tail == null) ? FunckyListType.LIST(FunckyTypeVariable::new).apply(engine)
+                    : (FunckyListType) tail.getType();
+            final FunckyListType type = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine, headType))
+                    .unify(tailType);
             if (type == null) {
-                throw new SneakyCompilationException(new InvalidListLiteralException(engine, list.getHead(), tail));
+                throw new SneakyCompilationException(new InvalidListLiteralException(head, headType, tail, tailType));
             }
             return imposeType(type, head, tail);
         }
