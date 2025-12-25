@@ -30,7 +30,7 @@ public final class FunckyBoolean extends FunckyValue {
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(engine, FunckyLibrary.getNamespace(Booleans.class), Boolean.toString(value));
+        return new FunckyReference(FunckyLibrary.getNamespace(Booleans.class), Boolean.toString(value));
     }
 
     @Override

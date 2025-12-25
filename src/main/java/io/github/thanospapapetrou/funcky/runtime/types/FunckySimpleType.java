@@ -36,7 +36,7 @@ public final class FunckySimpleType extends FunckyType {
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(engine, FunckyLibrary.getNamespace(Types.class), name);
+        return new FunckyReference(FunckyLibrary.getNamespace(Types.class), name);
     }
 
     @Override

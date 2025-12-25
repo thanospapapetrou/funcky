@@ -156,25 +156,25 @@ public class Parser {
             case BINARY_NUMBER:
             case OCTAL_NUMBER:
             case HEXADECIMAL_NUMBER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                return new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyNumber(engine, new BigDecimal(new BigInteger(token.signedValue(),
                                 token.type().getRadix().getRadix()))));
             case DECIMAL_NUMBER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                return new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyNumber(engine, new BigDecimal(token.value())));
             case CHARACTER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                return new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyCharacter(engine, token.stringValue().charAt(0)));
             case OCTAL_CHARACTER:
             case HEXADECIMAL_CHARACTER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                return new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyCharacter(engine, (char) Integer.parseInt(token.unsignedValue(),
                                 token.type().getRadix().getRadix())));
             case STRING:
                 if (peek(input, union(Set.of(TokenType.PERIOD, TokenType.SPACE), follow)).type()
                         == TokenType.PERIOD) {
                     consume(input, TokenType.PERIOD);
-                    return new FunckyReference(engine, token.file(), token.line(), token.column(),
+                    return new FunckyReference(token.file(), token.line(), token.column(),
                             parseUri(token), consume(input, TokenType.SYMBOL).value());
                 }
                 return parseString(token.stringValue(), token);
@@ -182,15 +182,13 @@ public class Parser {
                 if (peek(input, union(Set.of(TokenType.PERIOD, TokenType.SPACE), follow)).type()
                         == TokenType.PERIOD) {
                     consume(input, TokenType.PERIOD);
-                    return new FunckyReference(engine, token.file(), token.line(), token.column(),
-                            token.value(),
+                    return new FunckyReference(token.file(), token.line(), token.column(), token.value(),
                             consume(input, TokenType.SYMBOL).value());
                 }
                 return token.value().equals(TYPE_VARIABLE)
-                        ? new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                        ? new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyTypeVariable(engine))
-                        : new FunckyReference(engine, token.file(), token.line(), token.column(),
-                                token.value());
+                        : new FunckyReference(token.file(), token.line(), token.column(), token.value());
             case LEFT_PARENTHESIS:
                 final FunckyExpression expression = parseComplexExpression(input, Set.of(TokenType.RIGHT_PARENTHESIS));
                 consume(input, TokenType.RIGHT_PARENTHESIS);
@@ -232,10 +230,10 @@ public class Parser {
     }
 
     private FunckyLiteral parseString(final String string, final Token token) {
-        return new FunckyLiteral(engine, token.file(), token.line(), token.column(), new FunckyList(engine,
-                new FunckyListType(engine, new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+        return new FunckyLiteral(token.file(), token.line(), token.column(), new FunckyList(engine,
+                new FunckyListType(engine, new FunckyLiteral(token.file(), token.line(), token.column(),
                         FunckySimpleType.CHARACTER.apply(engine))), string.isEmpty() ? null
-                        : new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                : new FunckyLiteral(token.file(), token.line(), token.column(),
                                 new FunckyCharacter(engine, string.charAt(0))),
                         string.isEmpty() ? null : parseString(string.substring(1), token)));
     }
@@ -252,20 +250,20 @@ public class Parser {
             final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
             final FunckyLiteral tail = elements.isEmpty() ? null
                     : parseList(elements.subList(1, elements.size()), leftSquareBracket);
-            return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(),
+        return new FunckyLiteral(leftSquareBracket.file(), leftSquareBracket.line(),
                     leftSquareBracket.column(), new FunckyList(engine, new FunckyListType(engine,
-                    new FunckyLiteral(engine, new FunckyTypeVariable(engine))), head, tail));
+                new FunckyLiteral(new FunckyTypeVariable(engine))), head, tail));
     }
 
     private FunckyLiteral parseRecord(final List<FunckyExpression> components, final Token leftCurlyBracket) {
         final List<FunckyType> types = new ArrayList<>();
         for (final FunckyExpression component : components) {
-            types.add(component.getType());
+            types.add(component.getType(engine.getContext()));
         }
         final FunckyRecordType recordType = (FunckyRecordType) FunckyRecordType.RECORD(types.stream()
                 .map(t -> (Function<FunckyEngine, FunckyType>) (e -> t))
                 .toList().toArray(new Function[0])).apply(engine);
-        return new FunckyLiteral(engine, leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),
+        return new FunckyLiteral(leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),
                 new FunckyRecord(engine, recordType, components)); // TODO cleanup
     }
 

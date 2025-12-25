@@ -18,7 +18,6 @@ import javax.script.SimpleBindings;
 
 import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
@@ -49,14 +48,14 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
 
     public FunckyList toFuncky(final List<String> list) {
         return new FunckyList(this, FunckyListType.LIST(FunckyListType.STRING).apply(this),
-                list.isEmpty() ? null : new FunckyLiteral(this, toFuncky(list.getFirst())),
-                list.isEmpty() ? null : new FunckyLiteral(this, toFuncky(list.subList(1, list.size()))));
+                list.isEmpty() ? null : new FunckyLiteral(toFuncky(list.getFirst())),
+                list.isEmpty() ? null : new FunckyLiteral(toFuncky(list.subList(1, list.size()))));
     }
 
     public FunckyList toFuncky(final String string) {
         return new FunckyList(this, FunckyListType.STRING.apply(this),
-                string.isEmpty() ? null : new FunckyLiteral(this, new FunckyCharacter(this, string.charAt(0))),
-                string.isEmpty() ? null : new FunckyLiteral(this, toFuncky(string.substring(1))));
+                string.isEmpty() ? null : new FunckyLiteral(new FunckyCharacter(this, string.charAt(0))),
+                string.isEmpty() ? null : new FunckyLiteral(toFuncky(string.substring(1))));
     }
 
     FunckyEngine(final FunckyFactory factory) {
@@ -69,6 +68,7 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
         setBindings(createBindings(), FunckyContext.GLOBAL_SCOPE);
         setBindings(createBindings(), FunckyContext.ENGINE_SCOPE);
         setBindings(createBindings(), FunckyContext.SCRIPTS_SCOPE);
+        context.setEngine(this);
     }
 
     public Linker getLinker() {
@@ -123,9 +123,21 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     @Override
     public FunckyValue eval(final String expression, final ScriptContext context) throws FunckyCompilationException,
             FunckyRuntimeException {
-        final FunckyExpression compiled = compile(expression);
+        final FunckyScript script = compile(expression);
         try {
-            return (compiled == null) ? null : compiled.eval(context);
+            final FunckyContext funcky = new FunckyContext(); // TODO copy constructor?
+            for (int scope : context.getScopes()) {
+                funcky.setBindings(context.getBindings(scope), scope);
+            }
+            funcky.setReader(context.getReader());
+            funcky.setWriter(context.getWriter());
+            funcky.setErrorWriter(context.getErrorWriter());
+            if (funcky.getArguments() == null) {
+                funcky.setArguments();
+            }
+            return (script == null) ? null : script.getDefinitions().stream()
+                    .filter(definition -> definition.name().equals(FunckyScript.IT))
+                    .findFirst().get().expression().eval(funcky);
         } catch (final SneakyRuntimeException e) {
             throw e.getCause();
         }
@@ -184,7 +196,7 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     }
 
     @Override
-    public FunckyExpression compile(final String expression) throws FunckyCompilationException {
+    public FunckyScript compile(final String expression) throws FunckyCompilationException {
         try {
             return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
                     .filter(token -> token.type() != TokenType.COMMENT)

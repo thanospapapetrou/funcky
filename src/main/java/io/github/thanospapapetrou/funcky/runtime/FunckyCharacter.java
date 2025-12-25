@@ -23,7 +23,7 @@ public final class FunckyCharacter extends FunckyValue {
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
+        return new FunckyLiteral(this);
     }
 
     @Override

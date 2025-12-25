@@ -9,10 +9,12 @@ import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 
 public class FunckyScript extends CompiledScript {
     public static final String MAIN = "main";
+    public static final String IT = "it";
 
     protected final FunckyEngine engine;
     protected final URI file;
@@ -50,9 +52,19 @@ public class FunckyScript extends CompiledScript {
 
     @Override
     public FunckyNumber eval(final ScriptContext context) {
+        final FunckyContext funcky = new FunckyContext(); // TODO copy constructor?
+        for (int scope : context.getScopes()) {
+            funcky.setBindings(context.getBindings(scope), scope);
+        }
+        funcky.setReader(context.getReader());
+        funcky.setWriter(context.getWriter());
+        funcky.setErrorWriter(context.getErrorWriter());
+        if (funcky.getArguments() == null) {
+            funcky.setArguments();
+        }
         return (FunckyNumber) new FunckyApplication(
-                new FunckyReference(engine, getFile(), -1, -1, getFile(), MAIN),
-                new FunckyLiteral(engine, engine.toFuncky(Arrays.asList(engine.getContext().getArguments())))
-        ).eval(context);
+                new FunckyReference(getFile(), MAIN),
+                new FunckyLiteral(engine.toFuncky(Arrays.asList(engine.getContext().getArguments())))
+        ).eval(funcky);
     }
 }

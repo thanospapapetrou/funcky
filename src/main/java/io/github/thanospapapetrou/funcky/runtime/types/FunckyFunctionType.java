@@ -21,8 +21,8 @@ public final class FunckyFunctionType extends FunckyType {
 
     public static Function<FunckyEngine, FunckyFunctionType> FUNCTION(final Function<FunckyEngine, ?
             extends FunckyType>... types) {
-        return engine -> new FunckyFunctionType(engine, new FunckyLiteral(engine, types[0].apply(engine)),
-                new FunckyLiteral(engine, (types.length == 2) ? types[1].apply(engine) : FUNCTION(Arrays.copyOfRange(types, 1,
+        return engine -> new FunckyFunctionType(engine, new FunckyLiteral(types[0].apply(engine)),
+                new FunckyLiteral((types.length == 2) ? types[1].apply(engine) : FUNCTION(Arrays.copyOfRange(types, 1,
                         types.length)).apply(engine)));
     }
 
@@ -42,7 +42,8 @@ public final class FunckyFunctionType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new FunckyApplication(new FunckyReference(engine, FunckyLibrary.getNamespace(Types.class), "Function"), // TODO
+        return new FunckyApplication(
+                new FunckyApplication(new FunckyReference(FunckyLibrary.getNamespace(Types.class), "Function"), // TODO
                 domain), range);
     }
 
@@ -72,7 +73,7 @@ public final class FunckyFunctionType extends FunckyType {
     @Override
     protected FunckyFunctionType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
         return new FunckyFunctionType(engine,
-                new FunckyLiteral(engine, ((FunckyType) domain.eval(engine.getContext())).bind(bindings)),
-                new FunckyLiteral(engine, ((FunckyType) range.eval(engine.getContext())).bind(bindings)));
+                new FunckyLiteral(((FunckyType) domain.eval(engine.getContext())).bind(bindings)),
+                new FunckyLiteral(((FunckyType) range.eval(engine.getContext())).bind(bindings)));
     }
 }

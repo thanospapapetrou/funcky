@@ -16,8 +16,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
-import javax.script.ScriptContext;
-
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
@@ -38,10 +36,12 @@ import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedNam
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
+import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.HigherOrderFunction;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
@@ -93,24 +93,30 @@ public class Linker {
         }
     }
 
-    public FunckyExpression link(final FunckyExpression expression) {
+    public FunckyScript link(final FunckyExpression expression) {
         if (expression == null) {
             return null;
         }
         engine.getContext().setScript(getStdin());
-        final FunckyExpression typed = checkTypes(canonicalize(expression));
-        LOGGER.fine(typed.getType().toString());
-        LOGGER.fine(engine.getContext().toString());
-        return typed;
+        final FunckyScript script = new FunckyScript(engine, getStdin());
+        script.getDefinitions().add(new FunckyDefinition(getStdin(), -1, FunckyScript.IT, expression));
+        final FunckyScript checked = checkTypes(canonicalize(script), false);
+        checked.getDefinitions().stream()
+                .filter(definition -> definition.name().equals(FunckyScript.IT))
+                .map(FunckyDefinition::expression)
+                .map(exp -> exp.getType(engine.getContext()))
+                .map(FunckyType::toString)
+                .forEach(LOGGER::fine);
+        return checked;
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) {
         final FunckyScript checked = checkTypes(canonicalize(script), main);
         LOGGER.fine(checked.getFile().toString());
         checked.getDefinitions().stream()
-                .map(definition -> String.format(DEFINITION, definition.name(), definition.expression().getType()))
+                .map(definition -> String.format(DEFINITION, definition.name(),
+                        definition.expression().getType(engine.getContext())))
                 .forEach(LOGGER::fine);
-        LOGGER.fine(engine.getContext().toString());
         return checked;
     }
 
@@ -172,20 +178,20 @@ public class Linker {
                         final HigherOrderFunction function =
                                 (HigherOrderFunction) field.get(constructor.newInstance(engine));
                         canonical = new FunckyDefinition(definition.file(),
-                                definition.line(), definition.name(), new FunckyLiteral(engine,
-                                reference.getFile(), reference.getLine(), reference.getColumn(),
+                                definition.line(), definition.name(),
+                                new FunckyLiteral(reference.getFile(), reference.getLine(), reference.getColumn(),
                                 new HigherOrderFunction(engine, function.getType(), function.getOrder(),
-                                        new FunckyReference(engine, definition.file(), definition.name())) {
+                                        new FunckyReference(definition.file(), definition.name())) {
                                     @Override
-                                    public FunckyValue apply(final ScriptContext context,
+                                    public FunckyValue apply(final FunckyContext context,
                                             final List<FunckyExpression> arguments) {
                                         return function.apply(context, arguments);
                                     }
                                 }));
                     } else {
                         canonical = new FunckyDefinition(definition.file(),
-                                definition.line(), definition.name(), new FunckyLiteral(engine,
-                                reference.getFile(), reference.getLine(), reference.getColumn(),
+                                definition.line(), definition.name(),
+                                new FunckyLiteral(reference.getFile(), reference.getLine(), reference.getColumn(),
                                 (FunckyValue) field.get(constructor.newInstance(engine))));
                     }
                 } else {
@@ -212,7 +218,7 @@ public class Linker {
     }
 
     private FunckyLiteral canonicalize(final FunckyLiteral literal) {
-        return new FunckyLiteral(engine, literal.getFile(), literal.getLine(), literal.getColumn(),
+        return new FunckyLiteral(literal.getFile(), literal.getLine(), literal.getColumn(),
                 canonicalize(literal.getValue()));
     }
 
@@ -231,8 +237,7 @@ public class Linker {
         } else {
             canonical = engine.getLinker().canonicalize(reference.getFile(), reference.getNamespace());
         } // TODO improve
-
-        return new FunckyReference(engine, reference.getFile(), reference.getLine(), reference.getColumn(),
+        return new FunckyReference(reference.getFile(), reference.getLine(), reference.getColumn(),
                 reference.getNamespace(), reference.getPrefix(), canonical, reference.getName());
     }
 
@@ -269,8 +274,9 @@ public class Linker {
             if (main.isEmpty()) {
                 throw new SneakyCompilationException(new UndefinedMainException(checked));
             }
-            if (main.get().expression().getType().unify(MAIN_TYPE.apply(engine)) == null) {
-                throw new SneakyCompilationException(new InvalidMainException(main.get()));
+            if (main.get().expression().getType(engine.getContext()).unify(MAIN_TYPE.apply(engine)) == null) {
+                throw new SneakyCompilationException(new InvalidMainException(main.get(), main.get().expression()
+                        .getType(engine.getContext()), engine));
             }
         }
         return checked;
@@ -281,7 +287,8 @@ public class Linker {
                 checkTypes(definition.expression()));
         if (engine.getContext().getType(checked.file(), checked.name()) == null) {
             engine.getContext().setType(checked.file(), checked.name(), new FunckyTypeVariable(engine));
-            engine.getContext().setType(checked.file(), checked.name(), checked.expression().getType());
+            engine.getContext()
+                    .setType(checked.file(), checked.name(), checked.expression().getType(engine.getContext()));
         }
         return checked;
     }
@@ -295,7 +302,7 @@ public class Linker {
     }
 
     private FunckyLiteral checkTypes(final FunckyLiteral literal) {
-        return new FunckyLiteral(engine, literal.getFile(), literal.getLine(), literal.getColumn(),
+        return new FunckyLiteral(literal.getFile(), literal.getLine(), literal.getColumn(),
                 checkTypes(literal.getValue()));
     }
 
@@ -326,10 +333,11 @@ public class Linker {
                 && (literal.getValue() instanceof FunckyTypeVariable)) {
             final FunckyExpression head = (list.getHead() == null) ? null : checkTypes(list.getHead());
             final FunckyExpression tail = (list.getTail() == null) ? null : checkTypes(list.getTail());
-            final FunckyListType type = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine,
-                    (list.getHead() == null) ? new FunckyTypeVariable(engine) : list.getHead().getType()))
-                    .unify((tail == null) ? new FunckyListType(engine, new FunckyLiteral(engine,
-                            new FunckyTypeVariable(engine))) : tail.getType());
+            final FunckyListType type = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(
+                    (list.getHead() == null) ? new FunckyTypeVariable(engine)
+                            : list.getHead().getType(engine.getContext())))
+                    .unify((tail == null) ? new FunckyListType(engine,
+                            new FunckyLiteral(new FunckyTypeVariable(engine))) : tail.getType(engine.getContext()));
             if (type == null) {
                 throw new SneakyCompilationException(new InvalidListLiteralException(engine, list.getHead(), tail));
             }
@@ -340,7 +348,7 @@ public class Linker {
 
     private FunckyList imposeType(final FunckyListType type, final FunckyExpression head, final FunckyExpression tail) {
         return new FunckyList(engine, type, head,
-                (tail instanceof FunckyLiteral literal) && (literal.getValue() instanceof FunckyList list) ?
-                        new FunckyLiteral(engine, imposeType(type, list.getHead(), list.getTail())) : tail);
+                (tail instanceof FunckyLiteral literal) && (literal.getValue() instanceof FunckyList list)
+                        ? new FunckyLiteral(imposeType(type, list.getHead(), list.getTail())) : tail);
     }
 }

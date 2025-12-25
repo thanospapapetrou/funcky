@@ -7,8 +7,7 @@ import java.util.EnumSet;
 import java.util.Locale;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.FunckyFactory;
-import io.github.thanospapapetrou.funcky.runtime.FunckyList;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
@@ -23,20 +22,20 @@ public sealed class FunckyLibrary permits Types, Numbers, Booleans, Characters, 
         }
     }
 
-    protected static int requireInt(final FunckyNumber number, final String message) {
+    protected static int requireInt(final FunckyNumber number, final String message, final FunckyContext context) {
         if ((number.getValue().compareTo(BigDecimal.valueOf(number.getValue().intValue())) != 0)) {
-            throw new SneakyRuntimeException(message);
+            throw new SneakyRuntimeException(message, context);
         }
         return number.getValue().intValue();
     }
 
     protected static <E extends Enum<E>> E requireEnum(final FunckyNumber number, final Class<E> enumeration,
-            final String message) {
-        final int ordinal = requireInt(number, message);
+            final String message, final FunckyContext context) {
+        final int ordinal = requireInt(number, message, context);
         return EnumSet.allOf(enumeration).stream()
                 .filter(value -> value.ordinal() == ordinal)
                 .findFirst()
-                .orElseThrow(() -> new SneakyRuntimeException(message));
+                .orElseThrow(() -> new SneakyRuntimeException(message, context));
     }
 
     protected FunckyLibrary(final FunckyEngine engine) {

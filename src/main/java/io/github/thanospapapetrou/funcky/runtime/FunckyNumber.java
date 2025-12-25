@@ -25,7 +25,7 @@ public final class FunckyNumber extends FunckyValue {
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
+        return new FunckyLiteral(this);
     }
 
     @Override

@@ -27,9 +27,8 @@ public final class FunckyRecordType extends FunckyType {
     private final FunckyExpression components;
 
     public static Function<FunckyEngine, FunckyRecordType> RECORD(final Function<FunckyEngine, ? extends FunckyType>... components) {
-        return engine -> new FunckyRecordType(engine, new FunckyLiteral(engine, new FunckyList(engine,
-                LIST(TYPE).apply(engine), (components.length > 0) ? new FunckyLiteral(engine,
-                components[0].apply(engine)) : null, (components.length > 0) ? RECORD(Arrays.copyOfRange(components,
+        return engine -> new FunckyRecordType(engine, new FunckyLiteral(new FunckyList(engine,
+                LIST(TYPE).apply(engine), (components.length > 0) ? new FunckyLiteral(components[0].apply(engine)) : null, (components.length > 0) ? RECORD(Arrays.copyOfRange(components,
                 1, components.length)).apply(engine).components : null)));
     }
 
@@ -44,7 +43,7 @@ public final class FunckyRecordType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new FunckyReference(engine, FunckyLibrary.getNamespace(Types.class), "Record"), components); // TODO
+        return new FunckyApplication(new FunckyReference(FunckyLibrary.getNamespace(Types.class), "Record"), components); // TODO
     }
 
     @Override

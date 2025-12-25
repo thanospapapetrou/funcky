@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import javax.script.ScriptContext;
-
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
@@ -45,23 +44,24 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     }
 
     @Override
-    public FunckyValue apply(final FunckyExpression argument, final ScriptContext context) {
+    public FunckyValue apply(final FunckyExpression argument, final FunckyContext context) {
             final HigherOrderFunction that = this;
             final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(
-                    new FunckyFunctionType(engine, new FunckyLiteral(engine, argument.getType()), new FunckyLiteral(engine, new FunckyTypeVariable(engine))))).getRange()
+                    new FunckyFunctionType(engine, new FunckyLiteral(argument.getType(context)),
+                            new FunckyLiteral(new FunckyTypeVariable(engine))))).getRange()
                     .eval(engine.getContext());
             final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
             arguments.add(argument);
         return (order > 1) ? new HigherOrderFunction(engine, (FunckyFunctionType) range, order - 1,
                 new FunckyApplication(that.toExpression(), argument), arguments) {
                 @Override
-                public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+                public FunckyValue apply(final FunckyContext context, final List<FunckyExpression> arguments) {
                     return that.apply(context, arguments);
                 }
             } : apply(context, arguments);
     }
 
-    public abstract FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments);
+    public abstract FunckyValue apply(final FunckyContext context, final List<FunckyExpression> arguments);
 
     @Override
     public FunckyExpression toExpression() {

@@ -67,13 +67,11 @@ public class TypeInferenceContext {
             return type;
         } else if (type instanceof FunckyFunctionType ft) {
             return new FunckyFunctionType(type.getEngine(),
-                    new FunckyLiteral(type.getEngine(),
-                            find((FunckyType) ft.getDomain().eval(type.getEngine().getContext()))),
-                    new FunckyLiteral(type.getEngine(),
-                            find((FunckyType) ft.getRange().eval(type.getEngine().getContext()))));
+                    new FunckyLiteral(find((FunckyType) ft.getDomain().eval(type.getEngine().getContext()))),
+                    new FunckyLiteral(find((FunckyType) ft.getRange().eval(type.getEngine().getContext()))));
         } else if (type instanceof FunckyListType lt) {
-            return new FunckyListType(type.getEngine(), new FunckyLiteral(type.getEngine(),
-                    find((FunckyType) lt.getElement().eval(type.getEngine().getContext()))));
+            return new FunckyListType(type.getEngine(),
+                    new FunckyLiteral(find((FunckyType) lt.getElement().eval(type.getEngine().getContext()))));
         } else if (type instanceof FunckyRecordType rt) {
             final List<FunckyType> components = new ArrayList<>();
             for (FunckyList list = (FunckyList) rt.getComponents().eval(type.getEngine().getContext());
@@ -86,13 +84,12 @@ public class TypeInferenceContext {
         } else if (type instanceof FunckyTypeVariable) {
             final FunckyType found = findRepresentative(findSet(type));
             if (found instanceof FunckyFunctionType ft) {
-                return new FunckyFunctionType(type.getEngine(), new FunckyLiteral(type.getEngine(),
-                        find((FunckyType) ft.getDomain().eval(found.getEngine().getContext()))),
-                        new FunckyLiteral(type.getEngine(), find((FunckyType) ft.getRange()
-                                .eval(found.getEngine().getContext()))));
+                return new FunckyFunctionType(type.getEngine(),
+                        new FunckyLiteral(find((FunckyType) ft.getDomain().eval(found.getEngine().getContext()))),
+                        new FunckyLiteral(find((FunckyType) ft.getRange().eval(found.getEngine().getContext()))));
             } else if (found instanceof FunckyListType lt) {
-                return new FunckyListType(type.getEngine(), new FunckyLiteral(type.getEngine(),
-                        find((FunckyType) lt.getElement().eval(found.getEngine().getContext()))));
+                return new FunckyListType(type.getEngine(),
+                        new FunckyLiteral(find((FunckyType) lt.getElement().eval(found.getEngine().getContext()))));
             } else if (found instanceof FunckyRecordType rt) {
                 final List<FunckyType> components = new ArrayList<>();
                 for (FunckyList list =

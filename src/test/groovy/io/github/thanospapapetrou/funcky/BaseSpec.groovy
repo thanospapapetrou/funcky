@@ -148,8 +148,8 @@ abstract class BaseSpec extends Specification {
     protected FunckyList toFuncky(final List<?> list) {
         new FunckyList(engine,
                 FunckyListType.LIST { list.isEmpty() ? new FunckyTypeVariable(engine) : toFuncky(list.first).type }.apply(engine),
-                list.isEmpty() ? null : new FunckyLiteral(engine, toFuncky(list.first)),
-                list.isEmpty() ? null : new FunckyLiteral(engine, toFuncky(list.subList(1, list.size()))))
+                list.isEmpty() ? null : new FunckyLiteral(toFuncky(list.first)),
+                list.isEmpty() ? null : new FunckyLiteral(toFuncky(list.subList(1, list.size()))))
     }
 
     protected FunckyList toFuncky(final String string) {

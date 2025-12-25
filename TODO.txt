@@ -17,8 +17,6 @@ transpile
 generics
 new methods and tests for records
 monads
-java monad
-
 remove engine from values and expressions
 transpiler
 rewrite preprocessor
@@ -28,11 +26,9 @@ static imports no in java, only in groovy
 use static methods for literal types and etc
 record does not need type, it is just the list of component types
 cleanup linker
+remove scopes when script compilation fails
 preprocessor error tests
 record tests
-use separate scopes in context
-no global context
-validate context copying
 expressions and values need at least context to perform type checking
 
 -Funcky> exit

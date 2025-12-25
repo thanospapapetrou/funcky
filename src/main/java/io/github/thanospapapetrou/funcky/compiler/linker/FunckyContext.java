@@ -50,6 +50,14 @@ public class FunckyContext implements ScriptContext {
         this.bindings = bindings;
     }
 
+    public FunckyEngine getEngine() {
+        return (FunckyEngine) getAttribute(FunckyEngine.class.getName(), ENGINE_SCOPE);
+    }
+
+    public void setEngine(final FunckyEngine engine) {
+        setAttribute(FunckyEngine.class.getName(), engine, ENGINE_SCOPE);
+    }
+
     public URI getFile() throws IOException {
         return new File((String) getAttribute(FunckyEngine.FILENAME, ENGINE_SCOPE)).getCanonicalFile().toURI();
     }
@@ -186,35 +194,6 @@ public class FunckyContext implements ScriptContext {
     @Override
     public void setErrorWriter(final Writer errrorWriter) {
         this.errorWriter = errrorWriter;
-    }
-
-    @Override
-    public String toString() { // TODO remove
-        final StringBuilder string = new StringBuilder();
-        string.append("Global (").append(GLOBAL_SCOPE).append(")\n");
-        for (final String name : getBindings(GLOBAL_SCOPE).keySet()) {
-            string.append("\t").append(name).append(" ").append(getBindings(GLOBAL_SCOPE).get(name)).append("\n");
-        }
-        string.append("Engine (").append(ENGINE_SCOPE).append(")\n");
-        for (final String name : getBindings(ENGINE_SCOPE).keySet()) {
-            string.append("\t").append(name).append(" ").append(getBindings(ENGINE_SCOPE).get(name)).append("\n");
-        }
-        string.append("Scripts (").append(SCRIPTS_SCOPE).append(")\n");
-        for (final String script : getBindings(SCRIPTS_SCOPE).keySet()) {
-            string.append("\t").append(script).append(" ").append(getBindings(SCRIPTS_SCOPE).get(script)).append("\n");
-        }
-        for (final String script : getBindings(SCRIPTS_SCOPE).keySet()) {
-            final int base = (int) getBindings(SCRIPTS_SCOPE).get(script);
-            for (final FunckyScope scope : FunckyScope.values()) {
-                string.append(script).append(" ").append(scope).append(" (").append(base - scope.ordinal())
-                        .append(")\n");
-                // TODO
-                //                for (final String name : getBindings(base - scope.ordinal()).keySet()) {
-                //                    string.append("\t").append(name).append(" ").append(getBindings(base - scope.ordinal()).get(name)).append("\n");
-                //                }
-            }
-        }
-        return string.toString();
     }
 
     private <T> T getAttribute(final URI script, final FunckyScope scope, final String name) {

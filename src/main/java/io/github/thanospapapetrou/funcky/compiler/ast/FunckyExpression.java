@@ -1,25 +1,18 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
-import java.util.Map;
 
-import javax.script.CompiledScript;
-import javax.script.ScriptContext;
-
-import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
-public abstract sealed class FunckyExpression extends CompiledScript
+public abstract sealed class FunckyExpression
         permits FunckyLiteral, FunckyReference, FunckyApplication {
-    protected final FunckyEngine engine;
     protected final URI file;
     protected final int line;
     protected final int column;
 
-    protected FunckyExpression(final FunckyEngine engine, final URI file, final int line, final int column) {
-        this.engine = engine;
+    protected FunckyExpression(final URI file, final int line, final int column) {
         this.file = file;
         this.line = line;
         this.column = column;
@@ -37,20 +30,13 @@ public abstract sealed class FunckyExpression extends CompiledScript
         return column;
     }
 
-    public abstract FunckyType getType();
+    public abstract FunckyType getType(final FunckyContext context);
 
-    @Override
-    public FunckyEngine getEngine() {
-        return engine;
-    }
+    public abstract FunckyValue eval(final FunckyContext context);
 
-    @Override
-    public abstract FunckyValue eval(final ScriptContext context);
+    public abstract String toString(final boolean canonical, final FunckyContext context);
 
-    public abstract String toString(final boolean canonical);
-
-    @Override
-    public String toString() {
-        return toString(false);
+    public String toString(final FunckyContext context) {
+        return toString(false, context);
     }
 }

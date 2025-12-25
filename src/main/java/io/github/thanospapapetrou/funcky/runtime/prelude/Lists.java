@@ -2,11 +2,10 @@ package io.github.thanospapapetrou.funcky.runtime.prelude;
 
 import java.util.List;
 
-import javax.script.ScriptContext;
-
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
@@ -22,10 +21,10 @@ public final class Lists extends FunckyLibrary {
     private final FunckyTypeVariable a = new FunckyTypeVariable(engine);
     public final HigherOrderFunction head = new HigherOrderFunction(engine, LIST(engine -> a), engine -> a) {
         @Override
-        public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyValue apply(final FunckyContext context, final List<FunckyExpression> arguments) {
             final FunckyExpression head = ((FunckyList) arguments.getFirst().eval(context)).getHead();
             if (head == null) {
-                throw new SneakyRuntimeException(ERROR_HEAD);
+                throw new SneakyRuntimeException(ERROR_HEAD, context);
             }
             return head.eval(context);
         }
@@ -33,10 +32,10 @@ public final class Lists extends FunckyLibrary {
     public final HigherOrderFunction tail = new HigherOrderFunction(engine,
             LIST(engine -> a), LIST(engine -> a)) {
         @Override
-        public FunckyList apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyList apply(final FunckyContext context, final List<FunckyExpression> arguments) {
             final FunckyExpression tail = ((FunckyList) arguments.getFirst().eval(context)).getTail();
             if (tail == null) {
-                throw new SneakyRuntimeException(ERROR_TAIL);
+                throw new SneakyRuntimeException(ERROR_TAIL, context);
             }
             return (FunckyList) tail.eval(context);
         }
@@ -44,9 +43,9 @@ public final class Lists extends FunckyLibrary {
     public final HigherOrderFunction prepend = new HigherOrderFunction(engine,
             LIST(engine -> a), engine -> a, LIST(engine -> a)) {
         @Override
-        public FunckyList apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-                return new FunckyList(engine, (FunckyListType) arguments.get(0).getType()
-                        .unify(new FunckyListType(engine, new FunckyLiteral(engine, arguments.get(1).getType()))),
+        public FunckyList apply(final FunckyContext context, final List<FunckyExpression> arguments) {
+            return new FunckyList(engine, (FunckyListType) arguments.get(0).getType(context)
+                    .unify(new FunckyListType(engine, new FunckyLiteral(arguments.get(1).getType(context)))),
                         arguments.get(1), arguments.get(0));
         }
     };

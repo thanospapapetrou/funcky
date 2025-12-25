@@ -22,7 +22,7 @@ public final class FunckyListType extends FunckyType {
 
     public static Function<FunckyEngine, FunckyListType> LIST(
             final Function<FunckyEngine, ? extends FunckyType> element) {
-        return engine -> new FunckyListType(engine, new FunckyLiteral(engine, element.apply(engine)));
+        return engine -> new FunckyListType(engine, new FunckyLiteral(element.apply(engine)));
     }
 
     public FunckyListType(final FunckyEngine engine, final FunckyExpression element) {
@@ -36,7 +36,7 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     public FunckyApplication toExpression() {
-        return new FunckyApplication(new FunckyReference(engine, FunckyLibrary.getNamespace(Types.class), "List"), element); // TODO reference list to constant
+        return new FunckyApplication(new FunckyReference(FunckyLibrary.getNamespace(Types.class), "List"), element); // TODO reference list to constant
     }
 
     @Override
@@ -57,6 +57,6 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     protected FunckyListType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return new FunckyListType(engine, new FunckyLiteral(engine, ((FunckyType) element.eval(engine.getContext())).bind(bindings)));
+        return new FunckyListType(engine, new FunckyLiteral(((FunckyType) element.eval(engine.getContext())).bind(bindings)));
     }
 }

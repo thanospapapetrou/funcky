@@ -3,9 +3,7 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 import java.net.URI;
 import java.util.ArrayList;
 
-import javax.script.ScriptContext;
-
-import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
@@ -22,28 +20,25 @@ public final class FunckyReference extends FunckyExpression {
     private final URI canonical;
     private final String name;
 
-    public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
-            final URI namespace, final String name) {
-        this(engine, file, line, column, namespace, null, null, name);
+    public FunckyReference(final URI file, final int line, final int column, final URI namespace, final String name) {
+        this(file, line, column, namespace, null, null, name);
     }
 
-    public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
-            final String prefix, final String name) {
-        this(engine, file, line, column, null, prefix, null, name);
+    public FunckyReference(final URI file, final int line, final int column, final String prefix, final String name) {
+        this(file, line, column, null, prefix, null, name);
     }
 
-    public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
-            final String name) {
-        this(engine, file, line, column, null, null, null, name);
+    public FunckyReference(final URI file, final int line, final int column, final String name) {
+        this(file, line, column, null, null, null, name);
     }
 
-    public FunckyReference(final FunckyEngine engine, final URI namespace, final String name) {
-        this(engine, null, -1, -1, namespace, null, namespace, name);
+    public FunckyReference(final URI namespace, final String name) {
+        this(null, -1, -1, namespace, null, namespace, name);
     }
 
-    public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
-            final URI namespace, final String prefix, final URI canonical, final String name) {
-        super(engine, file, line, column);
+    public FunckyReference(final URI file, final int line, final int column, final URI namespace, final String prefix,
+            final URI canonical, final String name) {
+        super(file, line, column);
         this.namespace = namespace;
         this.prefix = prefix;
         this.canonical = canonical;
@@ -67,37 +62,35 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     @Override
-    public FunckyType getType() {
-        if (engine.getContext().getType(canonical, name) == null) {
-            engine.getContext().setType(canonical, name, new FunckyTypeVariable(engine));
-            engine.getContext().setType(canonical, name,
-                    engine.getContext().getDefinition(canonical, name).expression().getType());
+    public FunckyType getType(final FunckyContext context) {
+        if (context.getType(canonical, name) == null) {
+            context.setType(canonical, name, new FunckyTypeVariable(context.getEngine()));
+            context.setType(canonical, name, context.getDefinition(canonical, name).expression().getType(context));
         }
-        return engine.getContext().getType(canonical, name);
+        return context.getType(canonical, name);
     }
 
     @Override
-    public FunckyValue eval(final ScriptContext context) {
-        final FunckyRuntimeException error = engine.getContext().getError(this);
+    public FunckyValue eval(final FunckyContext context) {
+        final FunckyRuntimeException error = context.getError(this);
         if (error != null) {
             throw new SneakyRuntimeException(new FunckyRuntimeException(error.getMessage(),
-                    new ArrayList<>(error.getStack())));
+                    context, new ArrayList<>(error.getStack())));
         }
-        if (engine.getContext().getValue(this) == null) {
+        if (context.getValue(this) == null) {
             try {
-                engine.getContext().setValue(canonical, name,
-                        engine.getContext().getDefinition(canonical, name).expression().eval(context));
+                context.setValue(canonical, name, context.getDefinition(canonical, name).expression().eval(context));
             } catch (final SneakyRuntimeException e) {
                 e.getCause().getStack().add(this);
-                engine.getContext().setError(canonical, name, e.getCause());
+                context.setError(canonical, name, e.getCause());
                 throw e;
             }
         }
-        return engine.getContext().getValue(this);
+        return context.getValue(this);
     }
 
     @Override
-    public String toString(final boolean canonical) {
+    public String toString(final boolean canonical, final FunckyContext context) {
         return ((!canonical) || (this.canonical == null)) ? ((namespace == null) ? ((prefix == null) ? name
                 : String.format(FORMAT_PREFIX, prefix, name))
                 : String.format(FORMAT_NAMESPACE, EscapeHelper.escape(namespace.toString()), name))

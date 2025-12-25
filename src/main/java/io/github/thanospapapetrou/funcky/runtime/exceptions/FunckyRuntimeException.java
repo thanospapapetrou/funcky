@@ -11,20 +11,25 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 
 public class FunckyRuntimeException extends ScriptException {
     private static final String APPLICATION = "%n    in `%1$s` in %2$s at line %3$d at column %4$d";
     private static final String DEFINITION = "%n  in `%1$s` in %2$s at line %3$d at column %4$d";
     private static final String ERROR_FORMATTING_STACK = "Error formatting stack for literal `%1$s`";
+
+    private final FunckyContext context;
     private final List<FunckyExpression> stack;
 
-    public FunckyRuntimeException(final String message, final List<FunckyExpression> stack) {
+    public FunckyRuntimeException(final String message, final FunckyContext context,
+            final List<FunckyExpression> stack) {
         super(message, null, -1, -1);
+        this.context = context;
         this.stack = stack;
     }
 
-    FunckyRuntimeException(final String message) {
-        this(message, new ArrayList<>());
+    FunckyRuntimeException(final String message, final FunckyContext context) {
+        this(message, context, new ArrayList<>());
     }
 
     public List<FunckyExpression> getStack() {
@@ -61,14 +66,13 @@ public class FunckyRuntimeException extends ScriptException {
     }
 
     private String formatStack(final FunckyApplication application) {
-        return String.format(APPLICATION, application, application.getFile(), application.getLine(),
+        return String.format(APPLICATION, application.toString(context), application.getFile(), application.getLine(),
                 application.getColumn());
     }
 
     private String formatStack(final FunckyReference reference) {
-            final FunckyDefinition definition = reference.getEngine().getContext()
-                    .getDefinition(reference.getCanonical(), reference.getName());
-            return String.format(DEFINITION, new FunckyDefinition(definition.file(), definition.line(),
-                    reference.getName(), definition.expression()), definition.file(), definition.line(), 1);
+        final FunckyDefinition definition = context.getDefinition(reference.getCanonical(), reference.getName());
+        return String.format(DEFINITION, new FunckyDefinition(definition.file(), definition.line(), // TODO do not create new definition
+                reference.getName(), definition.expression()), definition.file(), definition.line(), 1);
     }
 }
