@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -51,8 +50,9 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.N
 
 public class Linker {
     public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
-    public static final String PRELUDE_SCHEME =
+    public static final String SCHEME_FUNCKY =
             FunckyFactory.getParameters(FunckyEngine.LANGUAGE).getFirst().toLowerCase(Locale.ROOT);
+    public static final String SCHEME_JAVA = "java";
     public static final URI STDIN;
 
     private static final String DEFINITION = "  %1$s%n    %2$s";
@@ -65,14 +65,14 @@ public class Linker {
 
     static {
         try {
-            STDIN = new URI(PRELUDE_SCHEME, "stdin", null);
+            STDIN = new URI(SCHEME_FUNCKY, "stdin", null);
         } catch (final URISyntaxException e) {
             throw new ExceptionInInitializerError(e);
         }
     }
 
     public static URL getScript(final URI file) throws IOException {
-        if (file.getScheme().equals(PRELUDE_SCHEME)) {
+        if (file.getScheme().equals(SCHEME_FUNCKY)) {
             final Class<? extends FunckyLibrary> library = FunckyLibrary.getLibrary(file);
             if (library == null) {
                 // TOOD
@@ -147,45 +147,10 @@ public class Linker {
         if (other != null) {
             throw new SneakyCompilationException(new NameAlreadyDefinedException(definition, other));
         }
-        FunckyDefinition canonical = null; // TODO improve
-        if ((definition.expression() instanceof FunckyReference reference) && (reference.getNamespace() != null)
-                && reference.getNamespace().getScheme().equals("java")) { // TODO
-            try {
-                final Class<?> clazz = Class.forName(reference.getNamespace().getSchemeSpecificPart());
-                final Field field = clazz.getDeclaredField(reference.getName());
-                final Constructor<?> constructor = clazz.getDeclaredConstructor(FunckyEngine.class);
-                if (FunckyValue.class.isAssignableFrom(field.getType())) {
-                    if (HigherOrderFunction.class.isAssignableFrom(field.getType())) {
-                        final HigherOrderFunction function =
-                                (HigherOrderFunction) field.get(constructor.newInstance(engine));
-                        canonical = new FunckyDefinition(definition.file(),
-                                definition.line(), definition.name(), new FunckyLiteral(engine,
-                                reference.getFile(), reference.getLine(), reference.getColumn(),
-                                new HigherOrderFunction(engine, function.getType(), function.getOrder(),
-                                        new FunckyReference(engine, definition.file(), definition.name())) {
-                                    @Override
-                                    public FunckyValue apply(final ScriptContext context,
-                                            final List<FunckyExpression> arguments) {
-                                        return function.apply(context, arguments);
-                                    }
-                                }));
-                    } else {
-                        canonical = new FunckyDefinition(definition.file(),
-                                definition.line(), definition.name(), new FunckyLiteral(engine,
-                                reference.getFile(), reference.getLine(), reference.getColumn(),
-                                (FunckyValue) field.get(constructor.newInstance(engine))));
-                    }
-                } else {
-                    throw new RuntimeException("Not a FunckyValue");
-                }
-            } catch (final ClassNotFoundException | NoSuchFieldException | InstantiationException |
-                    IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            canonical = new FunckyDefinition(definition.file(), definition.line(), definition.name(),
-                    canonicalize(definition.expression())); // TODO
-        }
+        final FunckyDefinition canonical = new FunckyDefinition(definition.file(), definition.line(),
+                definition.name(), ((definition.expression() instanceof FunckyReference reference)
+                && (reference.getNamespace() != null) && reference.getNamespace().getScheme().equals(SCHEME_JAVA))
+                ? loadNative(definition, reference) : canonicalize(definition.expression()));
         engine.getContext().setDefinition(canonical);
         return canonical;
     }
@@ -244,6 +209,38 @@ public class Linker {
         return new FunckyRecord(engine, record.getType(), record.getComponents().stream()
                 .map(this::canonicalize)
                 .toList());
+    }
+
+    private FunckyExpression loadNative(final FunckyDefinition definition, final FunckyReference reference) {
+        try {
+            final Class<?> clazz = Class.forName(reference.getNamespace().getSchemeSpecificPart());
+            final Field field = clazz.getDeclaredField(reference.getName());
+            if (FunckyValue.class.isAssignableFrom(field.getType())) {
+                return new FunckyLiteral(engine, reference.getFile(), reference.getLine(), reference.getColumn(),
+                        loadNative(definition, (FunckyValue) field.get(clazz.getDeclaredConstructor(FunckyEngine.class).newInstance(engine))));
+            } else {
+                throw new RuntimeException("Not a FunckyValue"); // TODO
+            }
+        } catch (final ClassNotFoundException e) {
+            throw new RuntimeException("Class not found");
+        } catch (final NoSuchFieldException e) {
+            throw new RuntimeException("Field not found");
+        } catch (final NoSuchMethodException e) {
+            throw new RuntimeException("Constructor not found");
+        } catch (final ReflectiveOperationException e) {
+            throw new RuntimeException("Error instantiating class");
+        }
+    }
+
+    private FunckyValue loadNative(final FunckyDefinition definition, final FunckyValue value) {
+        return (value instanceof HigherOrderFunction function)
+                ? new HigherOrderFunction(engine, function.getType(), function.getOrder(),
+                new FunckyReference(engine, definition.file(), definition.name())) {
+            @Override
+            public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+                return function.apply(context, arguments);
+            }
+        } : value;
     }
 
     private FunckyScript checkTypes(final FunckyScript script, final boolean main) {

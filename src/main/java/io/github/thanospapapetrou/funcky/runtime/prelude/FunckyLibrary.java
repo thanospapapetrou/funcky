@@ -19,7 +19,7 @@ public sealed class FunckyLibrary permits Types, Numbers, Booleans, Characters, 
 
     public static URI getNamespace(final Class<? extends FunckyLibrary> library) {
         try {
-            return new URI(Linker.PRELUDE_SCHEME, library.getSimpleName().toLowerCase(Locale.ROOT), null); // TODO
+            return new URI(Linker.SCHEME_FUNCKY, library.getSimpleName().toLowerCase(Locale.ROOT), null); // TODO
         } catch (final URISyntaxException e) {
             throw new IllegalStateException(String.format(ERROR_RESOLVING_NAMESPACE, library.getName()), e);
         }
