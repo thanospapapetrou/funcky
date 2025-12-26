@@ -10,25 +10,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.tokenizer.exceptions.UnrecognizedInputException;
 
 public class Tokenizer {
     private static final Logger LOGGER = Logger.getLogger(Tokenizer.class.getName());
     private static final String TOKEN = "%1$s %2$s %3$d %4$d";
 
-    private final FunckyEngine engine;
-
-    public Tokenizer(final FunckyEngine engine) {
-        this.engine = engine;
-    }
-
     public List<Token> tokenize(final String expression) {
         final List<Token> tokens = new ArrayList<>();
-        tokenize(tokens, expression, engine.getLinker().getStdin(), 1);
-        addToken(tokens, TokenType.EOF, engine.getLinker().getStdin(), 2, 1);
+        tokenize(tokens, expression, Linker.STDIN, 1);
+        addToken(tokens, TokenType.EOF, Linker.STDIN, 2, 1);
         return tokens;
     }
 

@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
@@ -52,42 +53,34 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.N
 
 public class Linker {
     public static final Function<FunckyEngine, FunckyFunctionType> MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
+    public static final String PRELUDE_SCHEME =
+            FunckyFactory.getParameters(FunckyEngine.LANGUAGE).getFirst().toLowerCase(Locale.ROOT);
+    public static final URI STDIN;
 
     private static final String DEFINITION = "  %1$s%n    %2$s";
     private static final String ERROR_CANONICALIZING_NAMESPACE = "Error canonicalizing namespace %1$s";
-    private static final String ERROR_RESOLVING_NAMESPACE = "Error resolving namespace for library `%1$s`";
-    private static final String ERROR_RESOLVING_STDIN = "Error resolving stdin";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
     private static final String PRELUDE_SCRIPT = "/prelude/%1$s.%2$s";
-    private static final String STDIN = "stdin";
     private static final String USER_DIR = "user.dir";
 
     private final FunckyEngine engine;
+
+    static {
+        try {
+            STDIN = new URI(PRELUDE_SCHEME, "stdin", null);
+        } catch (final URISyntaxException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     public Linker(final FunckyEngine engine) {
         this.engine = engine;
     }
 
-    public URI getNamespace(final Class<? extends FunckyLibrary> library) {
-        try {
-            return new URI(getPreludeScheme(), library.getSimpleName().toLowerCase(Locale.ROOT), null);
-        } catch (final URISyntaxException e) {
-            throw new IllegalStateException(String.format(ERROR_RESOLVING_NAMESPACE, library.getName()), e);
-        }
-    }
-
-    public URI getStdin() {
-        try {
-            return new URI(getPreludeScheme(), STDIN, null);
-        } catch (final URISyntaxException e) {
-            throw new IllegalStateException(ERROR_RESOLVING_STDIN, e);
-        }
-    }
-
     public URI canonicalize(final URI base, final URI namespace) {
         try {
             return namespace.isAbsolute() ? namespace
-                    : (base.equals(getStdin()) ? new File(System.getProperty(USER_DIR)).getCanonicalFile().toURI()
+                    : (base.equals(STDIN) ? new File(System.getProperty(USER_DIR)).getCanonicalFile().toURI()
                             : base).resolve(namespace);
         } catch (final IOException e) {
             throw new IllegalStateException(String.format(ERROR_CANONICALIZING_NAMESPACE, namespace), e);
@@ -98,7 +91,7 @@ public class Linker {
         if (expression == null) {
             return null;
         }
-        engine.getContext().setScript(getStdin());
+        engine.getContext().setScript(STDIN);
         final FunckyExpression typed = checkTypes(canonicalize(expression));
         LOGGER.fine(typed.getType().toString());
         LOGGER.fine(engine.getContext().toString());
@@ -124,13 +117,9 @@ public class Linker {
     @SuppressWarnings("unchecked")
     private Class<? extends FunckyLibrary> getLibrary(final URI file) {
         return (Class<? extends FunckyLibrary>) Arrays.stream(FunckyLibrary.class.getPermittedSubclasses())
-                .filter(library -> getNamespace((Class<? extends FunckyLibrary>) library).equals(file))
+                .filter(library -> FunckyLibrary.getNamespace((Class<? extends FunckyLibrary>) library).equals(file))
                 .findFirst()
                 .orElse(null);
-    }
-
-    private String getPreludeScheme() {
-        return engine.getFactory().getLanguageName().toLowerCase(Locale.ROOT);
     }
 
     private FunckyScript canonicalize(final FunckyScript script) {

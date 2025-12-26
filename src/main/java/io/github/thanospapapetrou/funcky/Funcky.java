@@ -49,7 +49,7 @@ public class Funcky {
         logger.addHandler(handler);
     }
 
-    public Funcky() throws IOException {
+    public Funcky() {
         this(new FunckyFactory());
     }
 
@@ -76,13 +76,13 @@ public class Funcky {
                 System.out.printf(PROMPT, engine.getFactory().getLanguageName());
             }
         } catch (final IOException e) {
-            LOGGER.log(Level.SEVERE, String.format(ERROR_READING, engine.getLinker().getStdin()), e);
+            LOGGER.log(Level.SEVERE, String.format(ERROR_READING, Linker.STDIN), e);
         }
     }
 
     private void runScript(final String script, final String... arguments) {
-        try (final InputStreamReader reader = new InputStreamReader(engine.getLinker().canonicalize(engine.getLinker()
-                .getStdin(), new URI(script)).toURL().openStream())) {
+        try (final InputStreamReader reader = new InputStreamReader(engine.getLinker().canonicalize(Linker.STDIN,
+                new URI(script)).toURL().openStream())) {
             engine.getContext().setFile(script);
             engine.getContext().setArguments(arguments);
             System.exit(engine.eval(reader, engine.getContext()).getValue().intValue());

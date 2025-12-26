@@ -34,7 +34,7 @@ class CompilationErrorSpec extends BaseSpec {
         final UnrecognizedInputException e = thrown()
         e.message
         e.message.startsWith(String.format(UnrecognizedInputException.MESSAGE, unrecognized))
-        e.fileName == engine.linker.stdin.toString()
+        e.fileName == Linker.STDIN.toString()
         e.lineNumber == 1
         e.columnNumber == column
         where:
@@ -87,7 +87,7 @@ class CompilationErrorSpec extends BaseSpec {
         final UnexpectedTokenException e = thrown()
         e.message
         e.message.startsWith(String.format(UnexpectedTokenException.MESSAGE, (value == null) ? type : String.format(Token.FORMAT, type, value), expected*.toString().join(UnexpectedTokenException.DELIMITER)))
-        e.fileName == engine.linker.stdin.toString()
+        e.fileName == Linker.STDIN.toString()
         e.lineNumber == 1
         e.columnNumber == column
         where:
@@ -144,7 +144,7 @@ class CompilationErrorSpec extends BaseSpec {
         final InvalidUriException e = thrown()
         e.message
         e.message.startsWith(String.format(InvalidUriException.MESSAGE, invalid))
-        e.fileName == engine.linker.stdin.toString()
+        e.fileName == Linker.STDIN.toString()
         e.lineNumber == 1
         e.columnNumber == column
         where:
@@ -182,7 +182,7 @@ class CompilationErrorSpec extends BaseSpec {
         final InvalidListLiteralException e = thrown()
         e.message
         e.message.startsWith(String.format(InvalidListLiteralException.MESSAGE, head, headType, tail, tailType))
-        e.fileName == engine.linker.stdin.toString()
+        e.fileName == Linker.STDIN.toString()
         e.lineNumber == 1
         e.columnNumber == column
         where:
@@ -262,7 +262,7 @@ class CompilationErrorSpec extends BaseSpec {
         final UnboundPrefixException e = thrown()
         e.message
         e.message.startsWith(String.format(UnboundPrefixException.MESSAGE, prefix))
-        e.fileName == engine.linker.stdin.toString()
+        e.fileName == Linker.STDIN.toString()
         e.lineNumber == 1
         e.columnNumber == column
         where:
@@ -300,13 +300,13 @@ class CompilationErrorSpec extends BaseSpec {
         final UndefinedNameException e = thrown()
         e.message
         e.message.startsWith(String.format(UndefinedNameException.MESSAGE, name, namespace))
-        e.fileName == engine.linker.stdin.toString()
+        e.fileName == Linker.STDIN.toString()
         e.lineNumber == 1
         e.columnNumber == column
         where:
-        expression                 || name  | namespace               | column
-        '"funcky:numbers".foo'     || 'foo' | 'funcky:numbers'        | 1
-        '"funcky:numbers".add foo' || 'foo' | engine.linker.stdin     | 22
+        expression                 || name  | namespace        | column
+        '"funcky:numbers".foo'     || 'foo' | 'funcky:numbers' | 1
+        '"funcky:numbers".add foo' || 'foo' | Linker.STDIN     | 22
     }
 
     @Unroll('Test undefined name error in script (script: #script)')
@@ -338,7 +338,7 @@ class CompilationErrorSpec extends BaseSpec {
         final IllegalApplicationException e = thrown()
         e.message
         e.message.startsWith(String.format(IllegalApplicationException.MESSAGE, function, functionType, argument, argumentType))
-        e.fileName == engine.linker.stdin.toString()
+        e.fileName == Linker.STDIN.toString()
         e.lineNumber == 1
         e.columnNumber == column
         where:

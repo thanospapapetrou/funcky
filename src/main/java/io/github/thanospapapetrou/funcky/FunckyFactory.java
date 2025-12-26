@@ -18,15 +18,22 @@ public class FunckyFactory implements ScriptEngineFactory {
     private static final String DELIMITER_PARAMETER = ",";
     private static final String DELIMITER_STATEMENT = "\n";
     private static final Logger LOGGER = Logger.getLogger(FunckyFactory.class.getName());
-    private static final String PARAMETERS = "/funcky.properties";
+    private static final Properties PARAMETERS = new Properties();
 
-    private final Properties parameters;
-
-    public FunckyFactory() throws IOException {
-        this(new Properties());
-        try (final InputStream parameters = FunckyFactory.class.getResourceAsStream(PARAMETERS)) {
-            this.parameters.load(parameters);
+    static {
+        try (final InputStream parameters = FunckyFactory.class.getResourceAsStream("/funcky.properties")) {
+            PARAMETERS.load(parameters);
+        } catch (final IOException e) {
+            throw new ExceptionInInitializerError(e);
         }
+    }
+
+    public static List<String> getParameters(final String key) {
+        final String parameters = PARAMETERS.getProperty(key);
+        return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
+    }
+
+    public FunckyFactory() {
         LOGGER.config(String.format(CONFIG_LANGUAGE_NAME_VERSION, getLanguageName(), getLanguageVersion()));
         LOGGER.config(String.format(CONFIG_ENGINE_NAME_VERSION, getEngineName(), getEngineVersion()));
         LOGGER.config(String.format(CONFIG_NAMES, getNames()));
@@ -34,10 +41,6 @@ public class FunckyFactory implements ScriptEngineFactory {
         LOGGER.config(String.format(CONFIG_EXTENSIONS, getExtensions()));
         LOGGER.config(String.format(CONFIG_THREADING, getParameter(FunckyEngine.PARAMETER_THREADING)));
         LOGGER.config("");
-    }
-
-    private FunckyFactory(final Properties parameters) {
-        this.parameters = parameters;
     }
 
     @Override
@@ -102,10 +105,5 @@ public class FunckyFactory implements ScriptEngineFactory {
     public FunckyEngine getScriptEngine() {
         return new FunckyEngine(this);
 
-    }
-
-    private List<String> getParameters(final String key) {
-        final String parameters = this.parameters.getProperty(key);
-        return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
     }
 }

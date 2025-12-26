@@ -16,6 +16,7 @@ import io.github.thanospapapetrou.funcky.compiler.preprocessor.exceptions.Invali
 import io.github.thanospapapetrou.funcky.compiler.preprocessor.exceptions.InvalidArgumentIndexException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
+import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 
 public class Preprocessor {
     private static final String COMBINATOR_I = "i"; // TODO replace with references
@@ -118,19 +119,19 @@ public class Preprocessor {
 
     private FunckyReference i(final FunckyExpression expression) {
         return new FunckyReference(expression.getEngine(), expression.getFile(), expression.getLine(),
-                expression.getColumn(), engine.getLinker().getNamespace(Combinators.class), COMBINATOR_I);
+                expression.getColumn(), FunckyLibrary.getNamespace(Combinators.class), COMBINATOR_I);
     }
 
     private FunckyApplication k(final FunckyExpression expression) {
         return new FunckyApplication(new FunckyReference(expression.getEngine(), expression.getFile(),
-                expression.getLine(), expression.getColumn(), engine.getLinker().getNamespace(Combinators.class),
+                expression.getLine(), expression.getColumn(), FunckyLibrary.getNamespace(Combinators.class),
                 COMBINATOR_K), expression);
     }
 
     private FunckyApplication s(final int argument, final FunckyExpression expression) {
         return new FunckyApplication(new FunckyApplication(new FunckyReference(expression.getEngine(),
                 expression.getFile(), expression.getLine(), expression.getColumn(),
-                engine.getLinker().getNamespace(Combinators.class), COMBINATOR_S),
+                FunckyLibrary.getNamespace(Combinators.class), COMBINATOR_S),
                 transform(argument, ((FunckyApplication) expression).getFunction())),
                 transform(argument, ((FunckyApplication) expression).getArgument()));
     }

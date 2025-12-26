@@ -62,7 +62,7 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     FunckyEngine(final FunckyFactory factory) {
         this.factory = factory;
         this.context = new FunckyContext();
-        tokenizer = new Tokenizer(this);
+        tokenizer = new Tokenizer();
         parser = new Parser(this);
         preprocessor = new Preprocessor(this);
         linker = new Linker(this);
