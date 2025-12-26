@@ -2,16 +2,14 @@ package io.github.thanospapapetrou.funcky.compiler.linker;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
+import java.net.URL;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -73,6 +71,19 @@ public class Linker {
         }
     }
 
+    public static URL getScript(final URI file) throws IOException {
+        if (file.getScheme().equals(PRELUDE_SCHEME)) {
+            final Class<? extends FunckyLibrary> library = FunckyLibrary.getLibrary(file);
+            if (library == null) {
+                // TOOD
+                throw new IOException(String.format("No prelude library found for %1$s", file));
+            }
+            return Linker.class.getResource(String.format(PRELUDE_SCRIPT, file.getSchemeSpecificPart(),
+                    FunckyFactory.getParameters(FunckyEngine.PARAMETER_EXTENSIONS).getFirst()));
+        }
+        return file.toURL();
+    }
+
     public Linker(final FunckyEngine engine) {
         this.engine = engine;
     }
@@ -106,20 +117,6 @@ public class Linker {
                 .forEach(LOGGER::fine);
         LOGGER.fine(engine.getContext().toString());
         return checked;
-    }
-
-    public InputStream getScript(final URI file) throws IOException {
-        return Objects.requireNonNull((getLibrary(file) != null) ? Linker.class.getResource(
-                String.format(PRELUDE_SCRIPT, file.getSchemeSpecificPart(),
-                        engine.getFactory().getExtensions().getFirst())) : file.toURL()).openStream();
-    }
-
-    @SuppressWarnings("unchecked")
-    private Class<? extends FunckyLibrary> getLibrary(final URI file) {
-        return (Class<? extends FunckyLibrary>) Arrays.stream(FunckyLibrary.class.getPermittedSubclasses())
-                .filter(library -> FunckyLibrary.getNamespace((Class<? extends FunckyLibrary>) library).equals(file))
-                .findFirst()
-                .orElse(null);
     }
 
     private FunckyScript canonicalize(final FunckyScript script) {

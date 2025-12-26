@@ -176,7 +176,7 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     }
 
     public void compile(final URI file) throws FunckyCompilationException {
-        try (final InputStreamReader input = new InputStreamReader(linker.getScript(file))) {
+        try (final InputStreamReader input = new InputStreamReader(Linker.getScript(file).openStream())) {
             compile(input, file, false);
         } catch (final IOException e) {
             throw new FunckyCompilationException(e);

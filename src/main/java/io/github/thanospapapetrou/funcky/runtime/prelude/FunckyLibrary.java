@@ -3,6 +3,7 @@ package io.github.thanospapapetrou.funcky.runtime.prelude;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Locale;
 
@@ -22,6 +23,13 @@ public sealed class FunckyLibrary permits Types, Numbers, Booleans, Characters, 
         } catch (final URISyntaxException e) {
             throw new IllegalStateException(String.format(ERROR_RESOLVING_NAMESPACE, library.getName()), e);
         }
+    }
+
+    public static Class<? extends FunckyLibrary> getLibrary(final URI namespace) {
+        return (Class<? extends FunckyLibrary>) Arrays.stream(FunckyLibrary.class.getPermittedSubclasses())
+                .filter(library -> getNamespace((Class<? extends FunckyLibrary>) library).equals(namespace))
+                .findFirst()
+                .orElse(null);
     }
 
     protected static int requireInt(final FunckyNumber number, final String message) {

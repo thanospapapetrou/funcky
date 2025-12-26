@@ -18,3 +18,8 @@ preprocessor error tests
 record tests
 expressions and values need at least context to perform type checking
 evaluate expressions in FunckyContext instead of ScriptContext
+do not set arguments and file to STDIN, use defaults when null
+replace java literal with system property
+format logging
+set system properties in context
+replace engine.getFactory with static access
