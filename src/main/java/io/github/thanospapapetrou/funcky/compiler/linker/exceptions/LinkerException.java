@@ -5,9 +5,10 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.nativ.NativeCodeException;
 
 public abstract sealed class LinkerException extends FunckyCompilationException
-        permits PrefixAlreadyBoundException, NameAlreadyDefinedException, UnboundPrefixException,
+        permits PrefixAlreadyBoundException, NameAlreadyDefinedException, UnboundPrefixException, NativeCodeException,
         UndefinedNameException, InvalidListLiteralException, IllegalApplicationException, UndefinedMainException,
         InvalidMainException {
     protected LinkerException(final String message, final FunckyImport inport) {
