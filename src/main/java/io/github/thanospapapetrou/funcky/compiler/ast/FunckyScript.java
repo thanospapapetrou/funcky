@@ -51,7 +51,7 @@ public class FunckyScript extends CompiledScript {
     @Override
     public FunckyNumber eval(final ScriptContext context) {
         return (FunckyNumber) new FunckyApplication(
-                new FunckyReference(engine, getFile(), -1, -1, getFile(), MAIN),
+                new FunckyReference(engine, getFile(), MAIN),
                 new FunckyLiteral(engine, engine.toFuncky(Arrays.asList(engine.getContext().getArguments())))
         ).eval(context);
     }
