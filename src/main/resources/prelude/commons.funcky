@@ -41,6 +41,10 @@ string = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".string
 # "funcky:types".Function ("funcky:types".List "funcky:types".Character) "funcky:types".Number
 number = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".number
 
+# Exit program with given exit code
+# "funcky:types".Function "funcky:types".Number ("funcky:types".IO ("funcky:types".Record []))
+exit = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Commons".exit
+
 # Throw error with given message
 #   throws error
 # "funcky:types".Function ("funcky:types".List "funcky:types".Character) $_7

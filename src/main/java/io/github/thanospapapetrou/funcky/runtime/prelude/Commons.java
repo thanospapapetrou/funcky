@@ -7,11 +7,16 @@ import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
+import io.github.thanospapapetrou.funcky.runtime.FunckyMonad;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
+import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyMonadicType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
@@ -67,6 +72,16 @@ public final class Commons extends FunckyLibrary {
                 } catch (final NumberFormatException e) {
                     throw new SneakyRuntimeException(String.format(ERROR_INVALID_NUMBER, value));
                 }
+        }
+    };
+    public final HigherOrderFunction exit = new HigherOrderFunction(engine, NUMBER,
+            engine -> FunckyMonadicType.io(engine, new FunckyLiteral(engine, FunckyRecordType.UNIT.apply(engine)))) {
+        @Override
+        public FunckyMonad apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+            System.exit(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue());
+            return new FunckyMonad(engine, FunckyMonadicType.io(engine, new FunckyLiteral(engine,
+                    FunckyRecordType.UNIT.apply(engine))), () -> new FunckyLiteral(engine, new FunckyRecord(engine,
+                    FunckyRecordType.UNIT.apply(engine), List.of())));
         }
     };
     public final HigherOrderFunction error = new HigherOrderFunction(engine, STRING, engine -> a) {

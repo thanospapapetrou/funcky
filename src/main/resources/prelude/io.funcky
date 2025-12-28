@@ -1,8 +1,8 @@
-# Construct a new IO monad with the given base.
+# Construct a new IO monad with given base
 # "funcky:types".Function $_3b ("funcky:types".IO $_3b)
 return = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO"._return
 
-# Bind given IO monad to the given function.
+# Bind given IO monad to given function
 # "funcky:types".Function ("funcky:types".IO $_3d) ("funcky:types".Function ("funcky:types".Function $_3d ("funcky:types".IO $_3e)) ("funcky:types".IO $_3e))
 bind = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".bind
 
