@@ -14,7 +14,7 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
-public final class FunckyLiteral extends FunckyExpression {
+public non-sealed class FunckyLiteral extends FunckyExpression {
     private static final String FORMAT_CHARACTER = "'%1$s'";
     private static final String FORMAT_STRING = "\"%1$s\"";
 

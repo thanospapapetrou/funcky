@@ -1,0 +1,16 @@
+# Construct a new IO monad with the given base.
+# "funcky:types".Function $_3b ("funcky:types".IO $_3b)
+return = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO"._return
+
+# Bind given IO monad to the given function.
+# "funcky:types".Function ("funcky:types".IO $_3d) ("funcky:types".Function ("funcky:types".Function $_3d ("funcky:types".IO $_3e)) ("funcky:types".IO $_3e))
+bind = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".bind
+
+# TODO get reader and encoding as argument
+readCharacter = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".readCharacter
+
+# TODO get writer and encoding as argument
+writeCharacter = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".writeCharacter
+
+# TODO
+# "funcky:io".bind ("funcky:io".bind "funcky:io".readCharacter ("funcky:combinators".b "funcky:io".return "funcky:characters".uppercase)) "funcky:io".writeCharacter

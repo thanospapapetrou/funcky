@@ -13,6 +13,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyMonadicType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
@@ -56,6 +57,10 @@ public class TypeInferenceContext {
                 tbComponents = (FunckyList) tbComponents.getTail().eval(tbComponents.getEngine().getContext());
             }
             return ((taComponents.getHead() == null) && (tbComponents.getHead() == null));
+        } else if ((ta instanceof FunckyMonadicType mta) && (tb instanceof FunckyMonadicType mtb)) {
+            return mta.getName().equals(mtb.getName()) && unify(
+                    (FunckyType) mta.getBase().eval(ta.getEngine().getContext()),
+                    (FunckyType) mtb.getBase().eval(tb.getEngine().getContext()));
         } else if ((ta instanceof FunckyTypeVariable) || (tb instanceof FunckyTypeVariable)) {
             return union(ta, tb);
         }
@@ -75,6 +80,9 @@ public class TypeInferenceContext {
                     find((FunckyType) lt.getElement().eval(type.getEngine().getContext()))));
         } else if (type instanceof FunckyRecordType rt) {
             return find(rt);
+        } else if (type instanceof FunckyMonadicType mt) {
+            return new FunckyMonadicType(type.getEngine(), mt.getName(), new FunckyLiteral(type.getEngine(),
+                    find((FunckyType) mt.getBase().eval(type.getEngine().getContext()))));
         } else if (type instanceof FunckyTypeVariable) {
             final FunckyType found = findRepresentative(findSet(type));
             if (found instanceof FunckyFunctionType ft) {
@@ -87,6 +95,9 @@ public class TypeInferenceContext {
                         find((FunckyType) lt.getElement().eval(found.getEngine().getContext()))));
             } else if (found instanceof FunckyRecordType rt) {
                 return find(rt);
+            } else if (found instanceof FunckyMonadicType mt) {
+                return new FunckyMonadicType(type.getEngine(), mt.getName(), new FunckyLiteral(type.getEngine(),
+                        find((FunckyType) mt.getBase().eval(found.getEngine().getContext()))));
             }
             return found;
         }

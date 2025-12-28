@@ -106,7 +106,6 @@ public class Linker {
         engine.getContext().setScript(STDIN);
         final FunckyExpression typed = checkTypes(canonicalize(expression));
         LOGGER.fine(typed.getType().toString());
-        LOGGER.fine(engine.getContext().toString());
         return typed;
     }
 
@@ -116,7 +115,6 @@ public class Linker {
         checked.getDefinitions().stream()
                 .map(definition -> String.format(DEFINITION, definition.name(), definition.expression().getType()))
                 .forEach(LOGGER::fine);
-        LOGGER.fine(engine.getContext().toString());
         return checked;
     }
 

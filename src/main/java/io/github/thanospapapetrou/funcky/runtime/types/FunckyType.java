@@ -13,7 +13,8 @@ import io.github.thanospapapetrou.funcky.compiler.linker.TypeInferenceContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public sealed abstract class FunckyType extends FunckyValue
-        permits FunckySimpleType, FunckyFunctionType, FunckyListType, FunckyRecordType, FunckyTypeVariable {
+        permits FunckySimpleType, FunckyFunctionType, FunckyListType, FunckyRecordType, FunckyMonadicType,
+        FunckyTypeVariable {
     private static final List<Class<? extends FunckyType>> ORDERING = List.of(
             FunckySimpleType.class,
             FunckyFunctionType.class,

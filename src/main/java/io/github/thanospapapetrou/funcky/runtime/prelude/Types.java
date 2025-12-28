@@ -11,6 +11,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyMonadicType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
@@ -21,6 +22,7 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.B
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.TYPE;
 
 public final class Types extends FunckyLibrary {
+    private static final String ERROR_BASE = "Can not get base of non-monad type `%1$s`";
     private static final String ERROR_COMPONENTS = "Can not get components of non-record type `%1$s`";
     private static final String ERROR_DOMAIN = "Can not get domain of non-function type `%1$s`";
     private static final String ERROR_ELEMENT = "Can not get element of non-list type `%1$s`";
@@ -89,6 +91,28 @@ public final class Types extends FunckyLibrary {
                 return (FunckyList) record.getComponents().eval(context);
             }
             throw new SneakyRuntimeException(String.format(ERROR_COMPONENTS, type));
+        }
+    };
+    public final HigherOrderFunction Maybe = new HigherOrderFunction(engine, TYPE, TYPE) {
+        @Override
+        public FunckyMonadicType apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+            return FunckyMonadicType.maybe(engine, arguments.getFirst());
+        }
+    };
+    public final HigherOrderFunction IO = new HigherOrderFunction(engine, TYPE, TYPE) {
+        @Override
+        public FunckyMonadicType apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+            return FunckyMonadicType.io(engine, arguments.getFirst());
+        }
+    };
+    public final HigherOrderFunction base = new HigherOrderFunction(engine, TYPE, TYPE) {
+        @Override
+        public FunckyType apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+            final FunckyType type = (FunckyType) arguments.getFirst().eval(context);
+            if (type instanceof FunckyMonadicType monad) {
+                return (FunckyType) monad.getBase().eval(context);
+            }
+            throw new SneakyRuntimeException(String.format(ERROR_BASE, type));
         }
     };
     public HigherOrderFunction type = new HigherOrderFunction(engine, FunckyTypeVariable::new, TYPE) {

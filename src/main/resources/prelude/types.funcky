@@ -54,6 +54,19 @@ components = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Types".comp
 # "funcky:types".Type
 Unit = Record []
 
+# Construct a new Maybe monad type with given base
+# "funcky:types".Function "funcky:types".Type "funcky:types".Type
+Maybe = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Types".Maybe
+
+# Construct a new IO monad type with given base
+# "funcky:types".Function "funcky:types".Type "funcky:types".Type
+IO = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Types".IO
+
+# Get base of a monad type
+#   throws error if argument is not a monad type
+# "funcky:types".Function "funcky:types".Type "funcky:types".Type
+base = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Types".base
+
 # Get type of a value
 # "funcky:types".Function $_0 "funcky:types".Type
 type = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Types".type
@@ -73,6 +86,8 @@ listType = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Types".listTy
 # Check if given type is a record type
 # "funcky:types".Function "funcky:types".Type "funcky:types".Boolean
 recordType = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Types".recordType
+
+# TODO io, maybe, monad
 
 # Free given type by replacing any type variables it contains with fresh instances
 # "funcky:types".Function "funcky:types".Type "funcky:types".Type
