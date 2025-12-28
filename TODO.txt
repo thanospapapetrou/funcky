@@ -1,10 +1,7 @@
 test with URLs from CLI
 add description when throwing IOException as compilation exception?
 run tests with http and https scripts
-monads
 thread safety
-Funcky> "funcky:records".unit
-java.net.MalformedURLException: unknown protocol: funcky
 generics
 new methods and tests for records
 remove engine from values and expressions
@@ -18,7 +15,7 @@ preprocessor error tests
 record tests
 expressions and values need at least context to perform type checking
 evaluate expressions in FunckyContext instead of ScriptContext
-do not set arguments and file to STDIN, use defaults when nullm
+do not set arguments and file to STDIN, use defaults when null
 set system properties in context
 base should be property in factory
 main should have type Function (List String) (IO {})
