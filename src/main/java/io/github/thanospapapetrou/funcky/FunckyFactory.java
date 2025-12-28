@@ -2,6 +2,7 @@ package io.github.thanospapapetrou.funcky;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Clock;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -40,7 +41,6 @@ public class FunckyFactory implements ScriptEngineFactory {
         LOGGER.config(String.format(CONFIG_MIME_TYPES, getMimeTypes()));
         LOGGER.config(String.format(CONFIG_EXTENSIONS, getExtensions()));
         LOGGER.config(String.format(CONFIG_THREADING, getParameter(FunckyEngine.PARAMETER_THREADING)));
-        LOGGER.config("");
     }
 
     @Override
@@ -104,6 +104,5 @@ public class FunckyFactory implements ScriptEngineFactory {
     @Override
     public FunckyEngine getScriptEngine() {
         return new FunckyEngine(this);
-
     }
 }

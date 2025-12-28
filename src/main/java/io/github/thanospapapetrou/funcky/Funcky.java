@@ -32,6 +32,7 @@ public class Funcky {
             configureLogger(Tokenizer.class, Level.FINEST);
             configureLogger(Parser.class, Level.FINER);
             configureLogger(Linker.class, Level.FINE);
+            configureLogger(FunckyEngine.class, Level.INFO);
             configureLogger(FunckyFactory.class, Level.CONFIG);
             configureLogger(Funcky.class, Level.INFO);
             new Funcky().readEvalPrintLoop();

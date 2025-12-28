@@ -6,6 +6,9 @@ import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -56,13 +59,16 @@ public class Linker {
     public static final String SCHEME_JAVA = "java";
     public static final URI STDIN;
 
-    private static final String DEFINITION = "  %1$s%n    %2$s";
+    private static final String DEFINITION = "%1$s\t%2$s";
     private static final String ERROR_CANONICALIZING_NAMESPACE = "Error canonicalizing namespace %1$s";
     private static final Logger LOGGER = Logger.getLogger(Linker.class.getName());
+    private static final String MESSAGE_END = "Linked `%1$s` in %2$d ms";
+    private static final String MESSAGE_START = "Linking `%1$s`...";
     private static final String PRELUDE_SCRIPT = "/prelude/%1$s.%2$s";
     private static final String USER_DIR = "user.dir";
 
     private final FunckyEngine engine;
+    private final Clock clock;
 
     static {
         try {
@@ -85,8 +91,9 @@ public class Linker {
         return file.toURL();
     }
 
-    public Linker(final FunckyEngine engine) {
+    public Linker(final FunckyEngine engine, final Clock clock) {
         this.engine = engine;
+        this.clock = clock;
     }
 
     // TODO is this required public here?
@@ -100,21 +107,28 @@ public class Linker {
     }
 
     public FunckyExpression link(final FunckyExpression expression) {
+        LOGGER.fine(String.format(MESSAGE_START, Linker.STDIN));
+        final Instant start = clock.instant();
         if (expression == null) {
             return null;
         }
         engine.getContext().setScript(STDIN);
         final FunckyExpression typed = checkTypes(canonicalize(expression));
         LOGGER.fine(typed.getType().toString());
+        LOGGER.fine(String.format(MESSAGE_END, Linker.STDIN, Duration.between(start, clock.instant()).toMillis()));
+        LOGGER.fine("");
         return typed;
     }
 
     public FunckyScript link(final FunckyScript script, final boolean main) {
+        LOGGER.fine(String.format(MESSAGE_START, script.getFile()));
+        final Instant start = clock.instant();
         final FunckyScript checked = checkTypes(canonicalize(script), main);
-        LOGGER.fine(checked.getFile().toString());
         checked.getDefinitions().stream()
                 .map(definition -> String.format(DEFINITION, definition.name(), definition.expression().getType()))
                 .forEach(LOGGER::fine);
+        LOGGER.fine(String.format(MESSAGE_END, script.getFile(), Duration.between(start, clock.instant()).toMillis()));
+        LOGGER.fine("");
         return checked;
     }
 

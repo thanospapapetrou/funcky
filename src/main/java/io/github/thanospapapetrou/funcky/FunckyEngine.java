@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.script.Bindings;
@@ -39,6 +43,9 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     public static final String PARAMETER_EXTENSIONS = "io.github.thanospapapetrou.funcky.extensions";
     public static final String PARAMETER_MIME_TYPES = "io.github.thanospapapetrou.funcky.mime_types";
     public static final String PARAMETER_THREADING = "THREADING";
+    private static final Logger LOGGER = Logger.getLogger(FunckyEngine.class.getName());
+    private static final String MESSAGE_COMPILATION = "Compilation finished in %1$d ms";
+    private static final String MESSAGE_EVALUATION = "Evaluation finished in %1$d ms";
 
     private final FunckyFactory factory;
     private final FunckyContext context;
@@ -46,6 +53,7 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     private final Parser parser;
     private final Preprocessor preprocessor;
     private final Linker linker;
+    private final Clock clock;
 
     public FunckyList toFuncky(final List<String> list) {
         return new FunckyList(this, FunckyListType.LIST(FunckyListType.STRING).apply(this),
@@ -60,12 +68,17 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     }
 
     FunckyEngine(final FunckyFactory factory) {
+        this(factory, Clock.systemUTC());
+    }
+
+    private FunckyEngine(final FunckyFactory factory, final Clock clock) {
         this.factory = factory;
-        this.context = new FunckyContext();
-        tokenizer = new Tokenizer();
-        parser = new Parser(this);
+        context = new FunckyContext();
+        tokenizer = new Tokenizer(clock);
+        parser = new Parser(this, clock);
         preprocessor = new Preprocessor(this);
-        linker = new Linker(this);
+        linker = new Linker(this, clock);
+        this.clock = clock;
         setBindings(createBindings(), FunckyContext.GLOBAL_SCOPE);
         setBindings(createBindings(), FunckyContext.ENGINE_SCOPE);
         setBindings(createBindings(), FunckyContext.SCRIPTS_SCOPE);
@@ -124,8 +137,14 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     public FunckyValue eval(final String expression, final ScriptContext context) throws FunckyCompilationException,
             FunckyRuntimeException {
         final FunckyExpression compiled = compile(expression);
+        if (compiled == null) {
+            return null;
+        }
         try {
-            return (compiled == null) ? null : compiled.eval(context);
+            final Instant start = clock.instant();
+            final FunckyValue result = compiled.eval(context);
+            LOGGER.info(String.format(MESSAGE_EVALUATION, Duration.between(start, clock.instant()).toMillis()));
+            return result;
         } catch (final SneakyRuntimeException e) {
             throw e.getCause();
         }
@@ -152,7 +171,10 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     public FunckyNumber eval(final Reader script, final ScriptContext context) throws FunckyCompilationException,
             FunckyRuntimeException {
         try {
-            return compile(script).eval(context);
+            final Instant start = clock.instant();
+            final FunckyNumber result = compile(script).eval(context);
+            LOGGER.info(String.format(MESSAGE_EVALUATION, Duration.between(start, clock.instant()).toMillis()));
+            return result;
         } catch (final SneakyRuntimeException e) {
             throw e.getCause();
         }
@@ -186,9 +208,13 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     @Override
     public FunckyExpression compile(final String expression) throws FunckyCompilationException {
         try {
-            return linker.link(preprocessor.preprocess(parser.parse(tokenizer.tokenize(expression).stream()
-                    .filter(token -> token.type() != TokenType.COMMENT)
-                    .collect(Collectors.toCollection(ArrayDeque::new)))));
+            final Instant start = clock.instant();
+            final FunckyExpression linked = linker.link(preprocessor.preprocess(parser.parse(
+                    tokenizer.tokenize(expression).stream()
+                            .filter(token -> token.type() != TokenType.COMMENT)
+                            .collect(Collectors.toCollection(ArrayDeque::new)))));
+            LOGGER.info(String.format(MESSAGE_COMPILATION, Duration.between(start, clock.instant()).toMillis()));
+            return linked;
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }
@@ -197,7 +223,10 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     @Override
     public FunckyScript compile(final Reader script) throws FunckyCompilationException {
         try {
-            return compile(script, context.getFile(), true);
+            final Instant start = clock.instant();
+            final FunckyScript compiled = compile(script, context.getFile(), true);
+            LOGGER.info(String.format(MESSAGE_COMPILATION, Duration.between(start, clock.instant()).toMillis()));
+            return compiled;
         } catch (final IOException e) {
             throw new FunckyCompilationException(e);
         }
