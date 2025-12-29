@@ -17,8 +17,7 @@ public final class Combinators extends FunckyLibrary {
     private final FunckyTypeVariable b = new FunckyTypeVariable(engine);
     private final FunckyTypeVariable c = new FunckyTypeVariable(engine);
     public final HigherOrderFunction s =
-            new HigherOrderFunction(engine,
-                    FUNCTION(engine -> a, engine -> b, engine -> c),
+            new HigherOrderFunction(engine, FUNCTION(engine -> a, engine -> b, engine -> c),
                     FUNCTION(engine -> a, engine -> b), engine -> a, engine -> c) {
         @Override
         public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {

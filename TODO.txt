@@ -7,8 +7,6 @@ new methods and tests for records
 remove engine from values and expressions
 transpiler
 rewrite preprocessor
-static imports no in java, only in groovy
-use static methods for literal types and etc
 record does not need type, it is just the list of component types
 cleanup linker
 preprocessor error tests

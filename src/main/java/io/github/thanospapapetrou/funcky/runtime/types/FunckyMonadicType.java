@@ -25,7 +25,7 @@ public final class FunckyMonadicType extends FunckyType {
         return engine -> maybe(engine, new FunckyLiteral(engine, base.apply(engine)));
     }
 
-    public static Function<FunckyEngine, FunckyMonadicType> IO( // TODO static imports
+    public static Function<FunckyEngine, FunckyMonadicType> IO(
             final Function<FunckyEngine, ? extends FunckyType> base) {
         return engine -> io(engine, new FunckyLiteral(engine, base.apply(engine)));
     }
