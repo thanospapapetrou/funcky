@@ -12,6 +12,8 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.linker.TypeInferenceContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.TYPE;
+
 public sealed abstract class FunckyType extends FunckyValue
         permits FunckySimpleType, FunckyFunctionType, FunckyListType, FunckyRecordType, FunckyMonadicType,
         FunckyTypeVariable {
@@ -54,7 +56,7 @@ public sealed abstract class FunckyType extends FunckyValue
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.TYPE.apply(engine);
+        return TYPE.apply(engine);
     }
 
     @Override

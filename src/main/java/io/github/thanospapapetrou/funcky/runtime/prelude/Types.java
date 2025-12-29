@@ -19,6 +19,8 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.BOOLEAN;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.TYPE;
 
 public final class Types extends FunckyLibrary {
@@ -29,10 +31,10 @@ public final class Types extends FunckyLibrary {
     private static final String ERROR_RANGE = "Can not get range of non-function type `%1$s`";
     private static final String ERROR_UNIFY = "Can not unify `%1$s` with `%2$s`";
 
-    public final FunckySimpleType Type = FunckySimpleType.TYPE.apply(engine);
-    public final FunckySimpleType Number = FunckySimpleType.NUMBER.apply(engine);
-    public final FunckySimpleType Boolean = FunckySimpleType.BOOLEAN.apply(engine);
-    public final FunckySimpleType Character = FunckySimpleType.CHARACTER.apply(engine);
+    public final FunckySimpleType Type = TYPE.apply(engine);
+    public final FunckySimpleType Number = NUMBER.apply(engine);
+    public final FunckySimpleType Boolean = BOOLEAN.apply(engine);
+    public final FunckySimpleType Character = CHARACTER.apply(engine);
     public final HigherOrderFunction Function = new HigherOrderFunction(engine, TYPE, TYPE, TYPE) {
         @Override
         public FunckyFunctionType apply(final List<FunckyExpression> arguments, final ScriptContext context) {

@@ -45,7 +45,7 @@ public final class Lists extends FunckyLibrary {
         @Override
         public FunckyList apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return new FunckyList(engine, (FunckyListType) arguments.get(0).getType()
-                    .unify(FunckyListType.LIST(engine -> arguments.get(1).getType()).apply(engine)), arguments.get(1),
+                    .unify(LIST(engine -> arguments.get(1).getType()).apply(engine)), arguments.get(1),
                     arguments.get(0));
         }
     };

@@ -11,6 +11,8 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
+
 public final class FunckyApplication extends FunckyExpression {
     private static final String FORMAT_APPLICATION = "%1$s %2$s";
     private static final String NESTED_APPLICATION = "%1$s (%2$s)";
@@ -35,8 +37,7 @@ public final class FunckyApplication extends FunckyExpression {
     @Override
     public FunckyType getType() {
         final FunckyFunctionType type = (FunckyFunctionType) function.getType()
-                .unify(FunckyFunctionType.FUNCTION(engine -> argument.getType(),
-                        FunckyTypeVariable::new).apply(engine));
+                .unify(FUNCTION(engine -> argument.getType(), FunckyTypeVariable::new).apply(engine));
         if (type == null) {
             throw new SneakyCompilationException(new IllegalApplicationException(this));
         }

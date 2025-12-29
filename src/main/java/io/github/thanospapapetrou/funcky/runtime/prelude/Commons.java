@@ -20,6 +20,7 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType.UNIT;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.BOOLEAN;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
 
@@ -75,12 +76,12 @@ public final class Commons extends FunckyLibrary {
         }
     };
     public final HigherOrderFunction exit = new HigherOrderFunction(engine,
-            NUMBER, FunckyMonadicType.io(FunckyRecordType.UNIT)) {
+            NUMBER, FunckyMonadicType.IO(UNIT)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             System.exit(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue());
-            return new FunckyMonad(engine, FunckyMonadicType.io(FunckyRecordType.UNIT).apply(engine),
-                    () -> new FunckyLiteral(engine, new FunckyRecord(engine, FunckyRecordType.UNIT.apply(engine),
+            return new FunckyMonad(engine, FunckyMonadicType.IO(UNIT).apply(engine),
+                    () -> new FunckyLiteral(engine, new FunckyRecord(engine, UNIT.apply(engine),
                             List.of())));
         }
     };

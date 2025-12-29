@@ -46,9 +46,9 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     @Override
     public FunckyValue apply(final FunckyExpression argument, final ScriptContext context) {
         final HigherOrderFunction that = this;
-        final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(FunckyFunctionType.FUNCTION(
-                engine -> argument.getType(), FunckyTypeVariable::new
-        ).apply(engine))).getRange().eval(engine.getContext());
+        final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type
+                .unify(FUNCTION(engine -> argument.getType(), FunckyTypeVariable::new).apply(engine)))
+                .getRange().eval(engine.getContext());
         final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
         arguments.add(argument);
         return (order > 1) ? new HigherOrderFunction(engine, (FunckyFunctionType) range, order - 1,

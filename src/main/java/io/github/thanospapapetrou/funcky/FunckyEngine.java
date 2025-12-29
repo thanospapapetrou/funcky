@@ -37,7 +37,9 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
+
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
 
 public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     public static final String PARAMETER_EXTENSIONS = "io.github.thanospapapetrou.funcky.extensions";
@@ -56,13 +58,13 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     private final Clock clock;
 
     public FunckyList toFuncky(final List<String> list) {
-        return new FunckyList(this, FunckyListType.LIST(FunckyListType.STRING).apply(this),
+        return new FunckyList(this, LIST(STRING).apply(this),
                 list.isEmpty() ? null : new FunckyLiteral(this, toFuncky(list.getFirst())),
                 list.isEmpty() ? null : new FunckyLiteral(this, toFuncky(list.subList(1, list.size()))));
     }
 
     public FunckyList toFuncky(final String string) {
-        return new FunckyList(this, FunckyListType.STRING.apply(this),
+        return new FunckyList(this, STRING.apply(this),
                 string.isEmpty() ? null : new FunckyLiteral(this, new FunckyCharacter(this, string.charAt(0))),
                 string.isEmpty() ? null : new FunckyLiteral(this, toFuncky(string.substring(1))));
     }

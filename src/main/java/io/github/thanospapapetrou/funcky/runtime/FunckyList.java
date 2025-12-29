@@ -5,6 +5,8 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
 
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
+
 public final class FunckyList extends FunckyValue {
     public static final String DELIMITER = ", ";
     public static final String PREFIX = "[";
@@ -59,7 +61,7 @@ public final class FunckyList extends FunckyValue {
 
     @Override
     public String toString() {
-        final boolean isString = type.equals(FunckyListType.STRING.apply(engine));
+        final boolean isString = type.equals(STRING.apply(engine));
         final StringBuilder string = new StringBuilder(isString ? "" : PREFIX);
         for (FunckyList list = this; list.tail != null; list = (FunckyList) list.tail.eval(engine.getContext())) {
             string.append(list.head.eval(engine.getContext()).toString()).append(isString ? "" : DELIMITER);

@@ -6,6 +6,8 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
+
 public final class FunckyNumber extends FunckyValue {
     private final BigDecimal value;
 
@@ -20,7 +22,7 @@ public final class FunckyNumber extends FunckyValue {
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.NUMBER.apply(engine);
+        return NUMBER.apply(engine);
     }
 
     @Override

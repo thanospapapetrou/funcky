@@ -35,11 +35,13 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
+
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType.RECORD;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
 
 public class Parser {
     private static final String DEFINITION = "%1$sDefinition `%2$s` %3$s %4$d 1";
@@ -240,7 +242,7 @@ public class Parser {
 
     private FunckyLiteral parseString(final String string, final Token token) {
         return new FunckyLiteral(engine, token.file(), token.line(), token.column(), new FunckyList(engine,
-                FunckyListType.LIST(FunckySimpleType.CHARACTER).apply(engine), string.isEmpty() ? null
+                LIST(CHARACTER).apply(engine), string.isEmpty() ? null
                 : new FunckyLiteral(engine, token.file(), token.line(), token.column(),
                         new FunckyCharacter(engine, string.charAt(0))),
                 string.isEmpty() ? null : parseString(string.substring(1), token)));
@@ -259,7 +261,7 @@ public class Parser {
         final FunckyLiteral tail = elements.isEmpty() ? null
                 : parseList(elements.subList(1, elements.size()), leftSquareBracket);
         return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(), leftSquareBracket.column(),
-                new FunckyList(engine, FunckyListType.LIST(FunckyTypeVariable::new).apply(engine), head, tail));
+                new FunckyList(engine, LIST(FunckyTypeVariable::new).apply(engine), head, tail));
     }
 
     private FunckyLiteral parseRecord(final List<FunckyExpression> components, final Token leftCurlyBracket) {
@@ -267,7 +269,7 @@ public class Parser {
         for (final FunckyExpression component : components) {
             types.add(component.getType());
         }
-        final FunckyRecordType recordType = (FunckyRecordType) FunckyRecordType.RECORD(types.stream()
+        final FunckyRecordType recordType = (FunckyRecordType) RECORD(types.stream()
                 .map(t -> (Function<FunckyEngine, FunckyType>) (e -> t))
                 .toList().toArray(new Function[0])).apply(engine);
         return new FunckyLiteral(engine, leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),

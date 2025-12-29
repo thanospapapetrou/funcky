@@ -6,7 +6,6 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter
 import io.github.thanospapapetrou.funcky.runtime.FunckyList
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable
 import spock.lang.Shared
 import spock.lang.Specification
@@ -14,6 +13,8 @@ import spock.lang.Specification
 import javax.script.ScriptContext
 import java.util.logging.Level
 import java.util.logging.Logger
+
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST
 
 abstract class BaseSpec extends Specification {
     protected static final Map<String, BigDecimal> BINARY_NUMBERS = [
@@ -150,7 +151,7 @@ abstract class BaseSpec extends Specification {
 
     protected FunckyList toFuncky(final List<?> list) {
         new FunckyList(engine,
-                FunckyListType.LIST { list.isEmpty() ? new FunckyTypeVariable(engine) : toFuncky(list.first).type }.apply(engine),
+                LIST { list.isEmpty() ? new FunckyTypeVariable(engine) : toFuncky(list.first).type }.apply(engine),
                 list.isEmpty() ? null : new FunckyLiteral(engine, toFuncky(list.first)),
                 list.isEmpty() ? null : new FunckyLiteral(engine, toFuncky(list.subList(1, list.size()))))
     }

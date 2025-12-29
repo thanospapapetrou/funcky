@@ -57,7 +57,7 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     protected FunckyListType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return FunckyListType.LIST(engine -> ((FunckyType) element.eval(engine.getContext())).bind(bindings))
+        return LIST(engine -> ((FunckyType) element.eval(engine.getContext())).bind(bindings))
                 .apply(engine);
     }
 }

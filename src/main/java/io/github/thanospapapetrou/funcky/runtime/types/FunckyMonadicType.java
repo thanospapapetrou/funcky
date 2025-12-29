@@ -20,18 +20,18 @@ public final class FunckyMonadicType extends FunckyType {
     private final String name;
     private final FunckyExpression base;
 
-    public static Function<FunckyEngine, FunckyMonadicType> maybe(
+    public static Function<FunckyEngine, FunckyMonadicType> MAYBE(
             final Function<FunckyEngine, ? extends FunckyType> base) {
         return engine -> maybe(engine, new FunckyLiteral(engine, base.apply(engine)));
     }
 
-    public static FunckyMonadicType maybe(final FunckyEngine engine, final FunckyExpression base) {
-        return new FunckyMonadicType(engine, MAYBE, base);
-    }
-
-    public static Function<FunckyEngine, FunckyMonadicType> io(
+    public static Function<FunckyEngine, FunckyMonadicType> IO( // TODO static imports
             final Function<FunckyEngine, ? extends FunckyType> base) {
         return engine -> io(engine, new FunckyLiteral(engine, base.apply(engine)));
+    }
+
+    public static FunckyMonadicType maybe(final FunckyEngine engine, final FunckyExpression base) {
+        return new FunckyMonadicType(engine, MAYBE, base);
     }
 
     public static FunckyMonadicType io(final FunckyEngine engine, final FunckyExpression base) {

@@ -4,6 +4,8 @@ import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
+
 public final class FunckyCharacter extends FunckyValue {
     private final char value;
 
@@ -18,7 +20,7 @@ public final class FunckyCharacter extends FunckyValue {
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.CHARACTER.apply(engine);
+        return CHARACTER.apply(engine);
     }
 
     @Override

@@ -8,6 +8,8 @@ import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.BOOLEAN;
+
 public final class FunckyBoolean extends FunckyValue {
     public static final Function<FunckyEngine, FunckyBoolean> FALSE = engine -> new FunckyBoolean(engine, false);
     public static final Function<FunckyEngine, FunckyBoolean> TRUE = engine -> new FunckyBoolean(engine, true);
@@ -25,7 +27,7 @@ public final class FunckyBoolean extends FunckyValue {
 
     @Override
     public FunckySimpleType getType() {
-        return FunckySimpleType.BOOLEAN.apply(engine);
+        return BOOLEAN.apply(engine);
     }
 
     @Override

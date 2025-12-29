@@ -71,7 +71,7 @@ public final class FunckyFunctionType extends FunckyType {
 
     @Override
     protected FunckyFunctionType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return FunckyFunctionType.FUNCTION(engine -> ((FunckyType) domain.eval(engine.getContext())).bind(bindings),
+        return FUNCTION(engine -> ((FunckyType) domain.eval(engine.getContext())).bind(bindings),
                 engine -> ((FunckyType) range.eval(engine.getContext())).bind(bindings)).apply(engine);
     }
 }

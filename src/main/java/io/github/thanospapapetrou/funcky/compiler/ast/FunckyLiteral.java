@@ -10,9 +10,10 @@ import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
+
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
 
 public non-sealed class FunckyLiteral extends FunckyExpression {
     private static final String FORMAT_CHARACTER = "'%1$s'";
@@ -42,9 +43,9 @@ public non-sealed class FunckyLiteral extends FunckyExpression {
 
     @Override
     public String toString(final boolean canonical) {
-        if (value.getType().equals(FunckySimpleType.CHARACTER.apply(engine))) {
+        if (value.getType().equals(CHARACTER.apply(engine))) {
             return String.format(FORMAT_CHARACTER, EscapeHelper.escape(value.toString()));
-        } else if (value.getType().equals(FunckyListType.STRING.apply(engine))) {
+        } else if (value.getType().equals(STRING.apply(engine))) {
             return String.format(FORMAT_STRING, EscapeHelper.escape(value.toString()));
         } else if (value instanceof FunckyList list) {
             final StringBuilder string = new StringBuilder(FunckyList.PREFIX);
