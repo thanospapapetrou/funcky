@@ -6,7 +6,6 @@ import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
@@ -45,9 +44,9 @@ public final class Lists extends FunckyLibrary {
             LIST(engine -> a), engine -> a, LIST(engine -> a)) {
         @Override
         public FunckyList apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-                return new FunckyList(engine, (FunckyListType) arguments.get(0).getType()
-                        .unify(new FunckyListType(engine, new FunckyLiteral(engine, arguments.get(1).getType()))),
-                        arguments.get(1), arguments.get(0));
+            return new FunckyList(engine, (FunckyListType) arguments.get(0).getType()
+                    .unify(FunckyListType.LIST(engine -> arguments.get(1).getType()).apply(engine)), arguments.get(1),
+                    arguments.get(0));
         }
     };
 

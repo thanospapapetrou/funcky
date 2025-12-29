@@ -23,26 +23,25 @@ public final class IO extends FunckyLibrary {
     private final FunckyTypeVariable a = new FunckyTypeVariable(engine);
     private final FunckyTypeVariable b = new FunckyTypeVariable(engine);
     public final HigherOrderFunction _return = new HigherOrderFunction(engine,
-            engine -> a, engine -> FunckyMonadicType.io(engine, new FunckyLiteral(engine, a))) {
+            engine -> a, FunckyMonadicType.io(engine -> a)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return new FunckyMonad(engine,
-                    FunckyMonadicType.io(engine, new FunckyLiteral(engine, arguments.getFirst().getType())),
+            return new FunckyMonad(engine, FunckyMonadicType.io(engine -> arguments.getFirst().getType()).apply(engine),
                     () -> arguments.getFirst());
         }
     };
     public final HigherOrderFunction bind = new HigherOrderFunction(engine,
-            engine -> FunckyMonadicType.io(engine, new FunckyLiteral(engine, a)),
-            FunckyFunctionType.FUNCTION(engine -> a, engine -> FunckyMonadicType.io(engine, new FunckyLiteral(engine,
-                    b))), engine -> FunckyMonadicType.io(engine, new FunckyLiteral(engine, b))) {
+            FunckyMonadicType.io(engine -> a),
+            FunckyFunctionType.FUNCTION(engine -> a, FunckyMonadicType.io(engine -> b)),
+            FunckyMonadicType.io(engine -> b)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return (FunckyMonad) ((FunckyFunction) arguments.get(1).eval(context))
                     .apply(((FunckyMonad) arguments.getFirst().eval(context)).getBase(), context);
         }
     };
-    public final FunckyMonad readCharacter = new FunckyMonad(engine, FunckyMonadicType.io(engine,
-            new FunckyLiteral(engine, FunckySimpleType.CHARACTER.apply(engine))), () -> {
+    public final FunckyMonad readCharacter = new FunckyMonad(engine,
+            FunckyMonadicType.io(FunckySimpleType.CHARACTER).apply(engine), () -> {
         try { // TODO do not close stdin
             return new FunckyLiteral(engine, new FunckyCharacter(engine, (char) new InputStreamReader(System.in).read()));
         } catch (final IOException e) {
@@ -50,17 +49,14 @@ public final class IO extends FunckyLibrary {
         }
     });
     public final HigherOrderFunction writeCharacter = new HigherOrderFunction(engine,
-            FunckySimpleType.CHARACTER, engine -> FunckyMonadicType.io(engine,
-            new FunckyLiteral(engine, FunckyRecordType.UNIT.apply(engine)))) {
+            FunckySimpleType.CHARACTER, FunckyMonadicType.io(FunckyRecordType.UNIT)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return new FunckyMonad(engine, FunckyMonadicType.io(engine,
-                    new FunckyLiteral(engine, FunckyRecordType.UNIT.apply(engine))),
-                    () -> {
-                        System.out.println(((FunckyCharacter) arguments.getFirst().eval(context)).getValue());
-                        return new FunckyLiteral(engine, new FunckyRecord(engine,
-                                FunckyRecordType.UNIT.apply(engine), List.of()));
-                    });
+            return new FunckyMonad(engine, FunckyMonadicType.io(FunckyRecordType.UNIT).apply(engine), () -> {
+                System.out.println(((FunckyCharacter) arguments.getFirst().eval(context)).getValue());
+                return new FunckyLiteral(engine, new FunckyRecord(engine, FunckyRecordType.UNIT.apply(engine),
+                        List.of()));
+            });
         }
     };
 

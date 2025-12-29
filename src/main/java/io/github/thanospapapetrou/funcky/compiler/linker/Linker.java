@@ -284,7 +284,7 @@ public class Linker {
             final FunckyType headType = (head == null) ? new FunckyTypeVariable(engine) : head.getType();
             final FunckyListType tailType = (tail == null) ? FunckyListType.LIST(FunckyTypeVariable::new).apply(engine)
                     : (FunckyListType) tail.getType();
-            final FunckyListType type = (FunckyListType) new FunckyListType(engine, new FunckyLiteral(engine, headType))
+            final FunckyListType type = (FunckyListType) FunckyListType.LIST(engine -> headType).apply(engine)
                     .unify(tailType);
             if (type == null) {
                 throw new SneakyCompilationException(new InvalidListLiteralException(head, headType, tail, tailType));

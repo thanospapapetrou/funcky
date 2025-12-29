@@ -9,7 +9,6 @@ import javax.script.ScriptContext;
 import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
@@ -46,12 +45,12 @@ public abstract class HigherOrderFunction extends FunckyFunction {
 
     @Override
     public FunckyValue apply(final FunckyExpression argument, final ScriptContext context) {
-            final HigherOrderFunction that = this;
-            final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(
-                    new FunckyFunctionType(engine, new FunckyLiteral(engine, argument.getType()), new FunckyLiteral(engine, new FunckyTypeVariable(engine))))).getRange()
-                    .eval(engine.getContext());
-            final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
-            arguments.add(argument);
+        final HigherOrderFunction that = this;
+        final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(FunckyFunctionType.FUNCTION(
+                engine -> argument.getType(), FunckyTypeVariable::new
+        ).apply(engine))).getRange().eval(engine.getContext());
+        final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
+        arguments.add(argument);
         return (order > 1) ? new HigherOrderFunction(engine, (FunckyFunctionType) range, order - 1,
                 new FunckyApplication(that.toExpression(), argument), arguments) {
                 @Override

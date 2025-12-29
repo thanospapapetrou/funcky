@@ -240,8 +240,7 @@ public class Parser {
 
     private FunckyLiteral parseString(final String string, final Token token) {
         return new FunckyLiteral(engine, token.file(), token.line(), token.column(), new FunckyList(engine,
-                new FunckyListType(engine, new FunckyLiteral(engine, token.file(), token.line(), token.column(),
-                        FunckySimpleType.CHARACTER.apply(engine))), string.isEmpty() ? null
+                FunckyListType.LIST(FunckySimpleType.CHARACTER).apply(engine), string.isEmpty() ? null
                 : new FunckyLiteral(engine, token.file(), token.line(), token.column(),
                         new FunckyCharacter(engine, string.charAt(0))),
                 string.isEmpty() ? null : parseString(string.substring(1), token)));
@@ -256,12 +255,11 @@ public class Parser {
     }
 
     private FunckyLiteral parseList(final List<FunckyExpression> elements, final Token leftSquareBracket) {
-            final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
-            final FunckyLiteral tail = elements.isEmpty() ? null
-                    : parseList(elements.subList(1, elements.size()), leftSquareBracket);
-            return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(),
-                    leftSquareBracket.column(), new FunckyList(engine, new FunckyListType(engine,
-                    new FunckyLiteral(engine, new FunckyTypeVariable(engine))), head, tail));
+        final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
+        final FunckyLiteral tail = elements.isEmpty() ? null
+                : parseList(elements.subList(1, elements.size()), leftSquareBracket);
+        return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(), leftSquareBracket.column(),
+                new FunckyList(engine, FunckyListType.LIST(FunckyTypeVariable::new).apply(engine), head, tail));
     }
 
     private FunckyLiteral parseRecord(final List<FunckyExpression> components, final Token leftCurlyBracket) {
