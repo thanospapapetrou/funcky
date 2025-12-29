@@ -321,8 +321,8 @@ public class Linker {
                 ? new HigherOrderFunction(engine, function.getType(), function.getOrder(),
                 new FunckyReference(engine, definition.file(), definition.name())) {
             @Override
-            public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-                return function.apply(context, arguments);
+            public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+                return function.apply(arguments, context);
             }
         } : value;
     }

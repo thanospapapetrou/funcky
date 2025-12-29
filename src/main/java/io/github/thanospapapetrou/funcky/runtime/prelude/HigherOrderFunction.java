@@ -55,13 +55,13 @@ public abstract class HigherOrderFunction extends FunckyFunction {
         return (order > 1) ? new HigherOrderFunction(engine, (FunckyFunctionType) range, order - 1,
                 new FunckyApplication(that.toExpression(), argument), arguments) {
                 @Override
-                public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
-                    return that.apply(context, arguments);
+                public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+                    return that.apply(arguments, context);
                 }
-            } : apply(context, arguments);
+        } : apply(arguments, context);
     }
 
-    public abstract FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments);
+    public abstract FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context);
 
     @Override
     public FunckyExpression toExpression() {

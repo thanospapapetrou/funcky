@@ -21,14 +21,14 @@ public final class Combinators extends FunckyLibrary {
                     FUNCTION(engine -> a, engine -> b, engine -> c),
                     FUNCTION(engine -> a, engine -> b), engine -> a, engine -> c) {
         @Override
-        public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return new FunckyApplication(new FunckyApplication(arguments.get(0), arguments.get(2)),
                     new FunckyApplication(arguments.get(1), arguments.get(2))).eval(context);
         }
     };
     public final HigherOrderFunction k = new HigherOrderFunction(engine, engine -> a, engine -> b, engine -> a) {
         @Override
-        public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return arguments.getFirst().eval(context);
         }
     };

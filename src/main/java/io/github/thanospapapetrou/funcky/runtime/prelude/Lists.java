@@ -22,7 +22,7 @@ public final class Lists extends FunckyLibrary {
     private final FunckyTypeVariable a = new FunckyTypeVariable(engine);
     public final HigherOrderFunction head = new HigherOrderFunction(engine, LIST(engine -> a), engine -> a) {
         @Override
-        public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             final FunckyExpression head = ((FunckyList) arguments.getFirst().eval(context)).getHead();
             if (head == null) {
                 throw new SneakyRuntimeException(ERROR_HEAD);
@@ -33,7 +33,7 @@ public final class Lists extends FunckyLibrary {
     public final HigherOrderFunction tail = new HigherOrderFunction(engine,
             LIST(engine -> a), LIST(engine -> a)) {
         @Override
-        public FunckyList apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyList apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             final FunckyExpression tail = ((FunckyList) arguments.getFirst().eval(context)).getTail();
             if (tail == null) {
                 throw new SneakyRuntimeException(ERROR_TAIL);
@@ -44,7 +44,7 @@ public final class Lists extends FunckyLibrary {
     public final HigherOrderFunction prepend = new HigherOrderFunction(engine,
             LIST(engine -> a), engine -> a, LIST(engine -> a)) {
         @Override
-        public FunckyList apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyList apply(final List<FunckyExpression> arguments, final ScriptContext context) {
                 return new FunckyList(engine, (FunckyListType) arguments.get(0).getType()
                         .unify(new FunckyListType(engine, new FunckyLiteral(engine, arguments.get(1).getType()))),
                         arguments.get(1), arguments.get(0));

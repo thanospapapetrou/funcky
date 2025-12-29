@@ -25,7 +25,7 @@ public final class IO extends FunckyLibrary {
     public final HigherOrderFunction _return = new HigherOrderFunction(engine,
             engine -> a, engine -> FunckyMonadicType.io(engine, new FunckyLiteral(engine, a))) {
         @Override
-        public FunckyMonad apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return new FunckyMonad(engine,
                     FunckyMonadicType.io(engine, new FunckyLiteral(engine, arguments.getFirst().getType())),
                     () -> arguments.getFirst());
@@ -36,7 +36,7 @@ public final class IO extends FunckyLibrary {
             FunckyFunctionType.FUNCTION(engine -> a, engine -> FunckyMonadicType.io(engine, new FunckyLiteral(engine,
                     b))), engine -> FunckyMonadicType.io(engine, new FunckyLiteral(engine, b))) {
         @Override
-        public FunckyMonad apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return (FunckyMonad) ((FunckyFunction) arguments.get(1).eval(context))
                     .apply(((FunckyMonad) arguments.getFirst().eval(context)).getBase(), context);
         }
@@ -53,7 +53,7 @@ public final class IO extends FunckyLibrary {
             FunckySimpleType.CHARACTER, engine -> FunckyMonadicType.io(engine,
             new FunckyLiteral(engine, FunckyRecordType.UNIT.apply(engine)))) {
         @Override
-        public FunckyMonad apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return new FunckyMonad(engine, FunckyMonadicType.io(engine,
                     new FunckyLiteral(engine, FunckyRecordType.UNIT.apply(engine))),
                     () -> {

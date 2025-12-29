@@ -12,6 +12,8 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 import javax.script.ScriptContext
+import java.util.logging.Level
+import java.util.logging.Logger
 
 abstract class BaseSpec extends Specification {
     protected static final Map<String, BigDecimal> BINARY_NUMBERS = [
@@ -102,6 +104,7 @@ abstract class BaseSpec extends Specification {
 
     def setupSpec() {
         engine = new FunckyFactory().scriptEngine
+        Logger.getLogger(FunckyEngine.class.getName()).setLevel(Level.WARNING)
     }
 
     protected Reader setScript(final String script, final String... arguments) {

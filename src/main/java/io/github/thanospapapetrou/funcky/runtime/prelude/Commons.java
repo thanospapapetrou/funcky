@@ -30,14 +30,14 @@ public final class Commons extends FunckyLibrary {
     private final FunckyTypeVariable b = new FunckyTypeVariable(engine);
     public final HigherOrderFunction equal = new HigherOrderFunction(engine, engine -> a, engine -> a, BOOLEAN) {
         @Override
-        public FunckyBoolean apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyBoolean apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return (arguments.get(0).eval(context).equals(arguments.get(1).eval(context)) ? FunckyBoolean.TRUE
                     : FunckyBoolean.FALSE).apply(engine);
                 }
     };
     public final HigherOrderFunction compare = new HigherOrderFunction(engine, engine -> a, engine -> a, NUMBER) {
         @Override
-        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return new FunckyNumber(engine, new BigDecimal(Integer.compare(
                     ((Comparable<FunckyValue>) arguments.get(0).eval(context))
                             .compareTo(arguments.get(1).eval(context)), 0)));
@@ -45,27 +45,27 @@ public final class Commons extends FunckyLibrary {
     };
     public final HigherOrderFunction hash = new HigherOrderFunction(engine, engine -> a, NUMBER) {
         @Override
-        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return new FunckyNumber(engine, new BigDecimal(arguments.getFirst().eval(context).hashCode()));
         }
     };
     public final HigherOrderFunction _if = new HigherOrderFunction(engine,
             BOOLEAN, engine -> a, engine -> a, engine -> a) {
         @Override
-        public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return (((FunckyBoolean) arguments.get(0).eval(context)).getValue()
                     ? arguments.get(1) : arguments.get(2)).eval(context);
         }
     };
     public final HigherOrderFunction string = new HigherOrderFunction(engine, engine -> a, STRING) {
         @Override
-        public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return engine.toFuncky(arguments.getFirst().eval(context).toString());
         }
     };
     public final HigherOrderFunction number = new HigherOrderFunction(engine, STRING, NUMBER) {
         @Override
-        public FunckyNumber apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyNumber apply(final List<FunckyExpression> arguments, final ScriptContext context) {
                 final FunckyList value = (FunckyList) arguments.getFirst().eval(context);
                 try {
                     return new FunckyNumber(engine, new BigDecimal(value.toString()));
@@ -77,7 +77,7 @@ public final class Commons extends FunckyLibrary {
     public final HigherOrderFunction exit = new HigherOrderFunction(engine, NUMBER,
             engine -> FunckyMonadicType.io(engine, new FunckyLiteral(engine, FunckyRecordType.UNIT.apply(engine)))) {
         @Override
-        public FunckyMonad apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             System.exit(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue());
             return new FunckyMonad(engine, FunckyMonadicType.io(engine, new FunckyLiteral(engine,
                     FunckyRecordType.UNIT.apply(engine))), () -> new FunckyLiteral(engine, new FunckyRecord(engine,
@@ -86,13 +86,13 @@ public final class Commons extends FunckyLibrary {
     };
     public final HigherOrderFunction error = new HigherOrderFunction(engine, STRING, engine -> a) {
         @Override
-        public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             throw new SneakyRuntimeException(arguments.getFirst().eval(context).toString());
         }
     };
     public final HigherOrderFunction bottom = new HigherOrderFunction(engine, engine -> a, engine -> b) {
         @Override
-        public FunckyValue apply(final ScriptContext context, final List<FunckyExpression> arguments) {
+        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
             return apply(arguments.getFirst(), context);
         }
     };
