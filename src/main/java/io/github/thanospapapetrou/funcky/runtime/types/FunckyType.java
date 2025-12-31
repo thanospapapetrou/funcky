@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.compiler.linker.TypeInferenceContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
@@ -32,13 +32,13 @@ public sealed abstract class FunckyType extends FunckyValue
                 .orElse(-1);
     }
 
-    protected FunckyType(final FunckyEngine engine) {
-        super(engine);
+    protected FunckyType(final FunckyContext context) {
+        super(context);
     }
 
     public FunckyType free() {
         return bind(getTypeVariables().stream()
-                .collect(Collectors.toMap(Function.identity(), typeVariable -> new FunckyTypeVariable(engine))));
+                .collect(Collectors.toMap(Function.identity(), typeVariable -> new FunckyTypeVariable(context))));
     }
 
     public FunckyType unify(final FunckyType type) {
@@ -56,7 +56,7 @@ public sealed abstract class FunckyType extends FunckyValue
 
     @Override
     public FunckySimpleType getType() {
-        return TYPE.apply(engine);
+        return TYPE.apply(context);
     }
 
     @Override

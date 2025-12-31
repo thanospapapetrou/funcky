@@ -3,9 +3,8 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 import java.net.URI;
 import java.util.ArrayList;
 
-import javax.script.ScriptContext;
-
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeException;
@@ -69,7 +68,7 @@ public final class FunckyReference extends FunckyExpression {
     @Override
     public FunckyType getType() {
         if (engine.getContext().getType(canonical, name) == null) {
-            engine.getContext().setType(canonical, name, new FunckyTypeVariable(engine));
+            engine.getContext().setType(canonical, name, new FunckyTypeVariable(engine.getContext()));
             engine.getContext().setType(canonical, name,
                     engine.getContext().getDefinition(canonical, name).expression().getType());
         }
@@ -77,7 +76,7 @@ public final class FunckyReference extends FunckyExpression {
     }
 
     @Override
-    public FunckyValue eval(final ScriptContext context) {
+    public FunckyValue eval(final FunckyContext context) {
         final FunckyRuntimeException error = engine.getContext().getError(this);
         if (error != null) {
             throw new SneakyRuntimeException(new FunckyRuntimeException(error.getMessage(),

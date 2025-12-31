@@ -2,10 +2,8 @@ package io.github.thanospapapetrou.funcky.runtime.prelude;
 
 import java.util.List;
 
-import javax.script.ScriptContext;
-
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
@@ -31,19 +29,19 @@ public final class Types extends FunckyLibrary {
     private static final String ERROR_RANGE = "Can not get range of non-function type `%1$s`";
     private static final String ERROR_UNIFY = "Can not unify `%1$s` with `%2$s`";
 
-    public final FunckySimpleType Type = TYPE.apply(engine);
-    public final FunckySimpleType Number = NUMBER.apply(engine);
-    public final FunckySimpleType Boolean = BOOLEAN.apply(engine);
-    public final FunckySimpleType Character = CHARACTER.apply(engine);
-    public final HigherOrderFunction Function = new HigherOrderFunction(engine, TYPE, TYPE, TYPE) {
+    public final FunckySimpleType Type = TYPE.apply(context);
+    public final FunckySimpleType Number = NUMBER.apply(context);
+    public final FunckySimpleType Boolean = BOOLEAN.apply(context);
+    public final FunckySimpleType Character = CHARACTER.apply(context);
+    public final HigherOrderFunction Function = new HigherOrderFunction(context, TYPE, TYPE, TYPE) {
         @Override
-        public FunckyFunctionType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return new FunckyFunctionType(engine, arguments.get(0), arguments.get(1));
+        public FunckyFunctionType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return new FunckyFunctionType(context, arguments.get(0), arguments.get(1));
         }
     };
-    public final HigherOrderFunction domain = new HigherOrderFunction(engine, TYPE, TYPE) {
+    public final HigherOrderFunction domain = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
-        public FunckyType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             final FunckyType type = (FunckyType) arguments.getFirst().eval(context);
             if (type instanceof FunckyFunctionType function) {
                 return (FunckyType) function.getDomain().eval(context);
@@ -51,9 +49,9 @@ public final class Types extends FunckyLibrary {
             throw new SneakyRuntimeException(String.format(ERROR_DOMAIN, type));
         }
     };
-    public final HigherOrderFunction range = new HigherOrderFunction(engine, TYPE, TYPE) {
+    public final HigherOrderFunction range = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
-        public FunckyType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             final FunckyType type = (FunckyType) arguments.getFirst().eval(context);
             if (type instanceof FunckyFunctionType function) {
                 return (FunckyType) function.getRange().eval(context);
@@ -61,15 +59,15 @@ public final class Types extends FunckyLibrary {
             throw new SneakyRuntimeException(String.format(ERROR_RANGE, type));
         }
     };
-    public final HigherOrderFunction List = new HigherOrderFunction(engine, TYPE, TYPE) {
+    public final HigherOrderFunction List = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
-        public FunckyListType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return new FunckyListType(engine, arguments.getFirst());
+        public FunckyListType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return new FunckyListType(context, arguments.getFirst());
         }
     };
-    public final HigherOrderFunction element = new HigherOrderFunction(engine, TYPE, TYPE) {
+    public final HigherOrderFunction element = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
-        public FunckyType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             final FunckyType type = (FunckyType) arguments.getFirst().eval(context);
             if (type instanceof FunckyListType list) {
                 return (FunckyType) list.getElement().eval(context);
@@ -77,17 +75,17 @@ public final class Types extends FunckyLibrary {
             throw new SneakyRuntimeException(String.format(ERROR_ELEMENT, type));
         }
     };
-    public final HigherOrderFunction Record = new HigherOrderFunction(engine,
+    public final HigherOrderFunction Record = new HigherOrderFunction(context,
             LIST(TYPE), TYPE) {
         @Override
-        public FunckyRecordType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return new FunckyRecordType(engine, arguments.getFirst());
+        public FunckyRecordType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return new FunckyRecordType(context, arguments.getFirst());
         }
     };
-    public final HigherOrderFunction components = new HigherOrderFunction(engine, TYPE,
+    public final HigherOrderFunction components = new HigherOrderFunction(context, TYPE,
             LIST(TYPE)) {
         @Override
-        public FunckyList apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyList apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             final FunckyType type = (FunckyType) arguments.getFirst().eval(context);
             if (type instanceof FunckyRecordType record) {
                 return (FunckyList) record.getComponents().eval(context);
@@ -95,21 +93,21 @@ public final class Types extends FunckyLibrary {
             throw new SneakyRuntimeException(String.format(ERROR_COMPONENTS, type));
         }
     };
-    public final HigherOrderFunction Maybe = new HigherOrderFunction(engine, TYPE, TYPE) {
+    public final HigherOrderFunction Maybe = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
-        public FunckyMonadicType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return FunckyMonadicType.maybe(engine, arguments.getFirst());
+        public FunckyMonadicType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return FunckyMonadicType.maybe(context, arguments.getFirst());
         }
     };
-    public final HigherOrderFunction IO = new HigherOrderFunction(engine, TYPE, TYPE) {
+    public final HigherOrderFunction IO = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
-        public FunckyMonadicType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return FunckyMonadicType.io(engine, arguments.getFirst());
+        public FunckyMonadicType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return FunckyMonadicType.io(context, arguments.getFirst());
         }
     };
-    public final HigherOrderFunction base = new HigherOrderFunction(engine, TYPE, TYPE) {
+    public final HigherOrderFunction base = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
-        public FunckyType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             final FunckyType type = (FunckyType) arguments.getFirst().eval(context);
             if (type instanceof FunckyMonadicType monad) {
                 return (FunckyType) monad.getBase().eval(context);
@@ -117,49 +115,49 @@ public final class Types extends FunckyLibrary {
             throw new SneakyRuntimeException(String.format(ERROR_BASE, type));
         }
     };
-    public HigherOrderFunction type = new HigherOrderFunction(engine, FunckyTypeVariable::new, TYPE) {
+    public HigherOrderFunction type = new HigherOrderFunction(context, FunckyTypeVariable::new, TYPE) {
         @Override
-        public FunckyType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return arguments.getFirst().getType();
         }
     };
-    public final HigherOrderFunction typeVariable = new HigherOrderFunction(engine, TYPE, BOOLEAN) {
+    public final HigherOrderFunction typeVariable = new HigherOrderFunction(context, TYPE, BOOLEAN) {
         @Override
-        public FunckyBoolean apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyBoolean apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return ((arguments.getFirst().eval(context) instanceof FunckyTypeVariable) ? FunckyBoolean.TRUE
-                    : FunckyBoolean.FALSE).apply(engine);
+                    : FunckyBoolean.FALSE).apply(context);
                 }
     };
-    public final HigherOrderFunction functionType = new HigherOrderFunction(engine, TYPE, BOOLEAN) {
+    public final HigherOrderFunction functionType = new HigherOrderFunction(context, TYPE, BOOLEAN) {
         @Override
-        public FunckyBoolean apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyBoolean apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return ((arguments.getFirst().eval(context) instanceof FunckyFunctionType) ? FunckyBoolean.TRUE
-                    : FunckyBoolean.FALSE).apply(engine);
+                    : FunckyBoolean.FALSE).apply(context);
         }
     };
-    public final HigherOrderFunction listType = new HigherOrderFunction(engine, TYPE, BOOLEAN) {
+    public final HigherOrderFunction listType = new HigherOrderFunction(context, TYPE, BOOLEAN) {
         @Override
-        public FunckyBoolean apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyBoolean apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return ((arguments.getFirst().eval(context) instanceof FunckyListType) ? FunckyBoolean.TRUE
-                    : FunckyBoolean.FALSE).apply(engine);
+                    : FunckyBoolean.FALSE).apply(context);
         }
     };
-    public final HigherOrderFunction recordType = new HigherOrderFunction(engine, TYPE, BOOLEAN) {
+    public final HigherOrderFunction recordType = new HigherOrderFunction(context, TYPE, BOOLEAN) {
         @Override
-        public FunckyBoolean apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyBoolean apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return ((arguments.getFirst().eval(context) instanceof FunckyRecordType) ? FunckyBoolean.TRUE
-                    : FunckyBoolean.FALSE).apply(engine);
+                    : FunckyBoolean.FALSE).apply(context);
         }
     };
-    public final HigherOrderFunction free = new HigherOrderFunction(engine, TYPE, TYPE) {
+    public final HigherOrderFunction free = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
-        public FunckyType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return ((FunckyType) arguments.getFirst().eval(context)).free();
         }
     };
-    public final HigherOrderFunction unify = new HigherOrderFunction(engine, TYPE, TYPE, TYPE) {
+    public final HigherOrderFunction unify = new HigherOrderFunction(context, TYPE, TYPE, TYPE) {
         @Override
-        public FunckyType apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             final FunckyType type = (FunckyType) arguments.get(0).eval(context);
             final FunckyType otherType = (FunckyType) arguments.get(1).eval(context);
             final FunckyType result = type.unify(otherType);
@@ -170,7 +168,7 @@ public final class Types extends FunckyLibrary {
         }
     };
 
-    public Types(final FunckyEngine engine) {
-        super(engine);
+    public Types(final FunckyContext context) {
+        super(context);
     }
 }

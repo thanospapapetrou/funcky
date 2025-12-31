@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 
 public final class FunckyTypeVariable extends FunckyType {
@@ -14,22 +14,22 @@ public final class FunckyTypeVariable extends FunckyType {
 
     private final int hash;
 
-    public FunckyTypeVariable(final FunckyEngine engine) {
-        this(engine, HASH.getAndIncrement());
+    public FunckyTypeVariable(final FunckyContext context) {
+        this(context, HASH.getAndIncrement());
     }
 
-    private FunckyTypeVariable(final FunckyEngine engine, final int hash) {
-        super(engine);
+    private FunckyTypeVariable(final FunckyContext context, final int hash) {
+        super(context);
         this.hash = hash;
     }
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
+        return new FunckyLiteral(context.getEngine(), this);
     }
 
     @Override
-    public int compareTo(FunckyValue value) {
+    public int compareTo(final FunckyValue value) {
         return (value instanceof FunckyTypeVariable variable) ? Integer.compare(hash, variable.hash)
                 : super.compareTo(value);
     }

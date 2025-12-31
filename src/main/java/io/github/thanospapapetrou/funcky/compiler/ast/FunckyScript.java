@@ -9,9 +9,11 @@ import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 
 public class FunckyScript extends CompiledScript {
+    public static final String IT = "it";
     public static final String MAIN = "main";
 
     protected final FunckyEngine engine;
@@ -50,9 +52,12 @@ public class FunckyScript extends CompiledScript {
 
     @Override
     public FunckyNumber eval(final ScriptContext context) {
-        return (FunckyNumber) new FunckyApplication(
-                new FunckyReference(engine, getFile(), MAIN),
-                new FunckyLiteral(engine, engine.toFuncky(Arrays.asList(engine.getContext().getArguments())))
+        return eval(FunckyContext.toFuncky(context));
+    }
+
+    public FunckyNumber eval(final FunckyContext context) {
+        return (FunckyNumber) new FunckyApplication(new FunckyReference(engine, getFile(), MAIN),
+                new FunckyLiteral(engine, engine.toFuncky(Arrays.asList(context.getArguments())))
         ).eval(context);
     }
 }

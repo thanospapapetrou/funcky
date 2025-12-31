@@ -3,11 +3,9 @@ package io.github.thanospapapetrou.funcky.runtime.prelude;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.script.ScriptContext;
-
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyBoolean;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyMonad;
@@ -26,78 +24,78 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.N
 public final class Commons extends FunckyLibrary {
     private static final String ERROR_INVALID_NUMBER = "Invalid number `%1$s`";
 
-    private final FunckyTypeVariable a = new FunckyTypeVariable(engine);
-    private final FunckyTypeVariable b = new FunckyTypeVariable(engine);
-    public final HigherOrderFunction equal = new HigherOrderFunction(engine, engine -> a, engine -> a, BOOLEAN) {
+    private final FunckyTypeVariable a = new FunckyTypeVariable(context);
+    private final FunckyTypeVariable b = new FunckyTypeVariable(context);
+    public final HigherOrderFunction equal = new HigherOrderFunction(context, context -> a, context -> a, BOOLEAN) {
         @Override
-        public FunckyBoolean apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyBoolean apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return (arguments.get(0).eval(context).equals(arguments.get(1).eval(context)) ? FunckyBoolean.TRUE
-                    : FunckyBoolean.FALSE).apply(engine);
+                    : FunckyBoolean.FALSE).apply(context);
                 }
     };
-    public final HigherOrderFunction compare = new HigherOrderFunction(engine, engine -> a, engine -> a, NUMBER) {
+    public final HigherOrderFunction compare = new HigherOrderFunction(context, context -> a, context -> a, NUMBER) {
         @Override
-        public FunckyNumber apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return new FunckyNumber(engine, new BigDecimal(Integer.compare(
+        public FunckyNumber apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return new FunckyNumber(context, new BigDecimal(Integer.compare(
                     ((Comparable<FunckyValue>) arguments.get(0).eval(context))
                             .compareTo(arguments.get(1).eval(context)), 0)));
                 }
     };
-    public final HigherOrderFunction hash = new HigherOrderFunction(engine, engine -> a, NUMBER) {
+    public final HigherOrderFunction hash = new HigherOrderFunction(context, context -> a, NUMBER) {
         @Override
-        public FunckyNumber apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return new FunckyNumber(engine, new BigDecimal(arguments.getFirst().eval(context).hashCode()));
+        public FunckyNumber apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return new FunckyNumber(context, new BigDecimal(arguments.getFirst().eval(context).hashCode()));
         }
     };
-    public final HigherOrderFunction _if = new HigherOrderFunction(engine,
-            BOOLEAN, engine -> a, engine -> a, engine -> a) {
+    public final HigherOrderFunction _if = new HigherOrderFunction(context,
+            BOOLEAN, context -> a, context -> a, context -> a) {
         @Override
-        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return (((FunckyBoolean) arguments.get(0).eval(context)).getValue()
                     ? arguments.get(1) : arguments.get(2)).eval(context);
         }
     };
-    public final HigherOrderFunction string = new HigherOrderFunction(engine, engine -> a, STRING) {
+    public final HigherOrderFunction string = new HigherOrderFunction(context, context -> a, STRING) {
         @Override
-        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return engine.toFuncky(arguments.getFirst().eval(context).toString());
+        public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return context.getEngine().toFuncky(arguments.getFirst().eval(context).toString());
         }
     };
-    public final HigherOrderFunction number = new HigherOrderFunction(engine, STRING, NUMBER) {
+    public final HigherOrderFunction number = new HigherOrderFunction(context, STRING, NUMBER) {
         @Override
-        public FunckyNumber apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyNumber apply(final List<FunckyExpression> arguments, final FunckyContext context) {
                 final FunckyList value = (FunckyList) arguments.getFirst().eval(context);
                 try {
-                    return new FunckyNumber(engine, new BigDecimal(value.toString()));
+                    return new FunckyNumber(context, new BigDecimal(value.toString()));
                 } catch (final NumberFormatException e) {
                     throw new SneakyRuntimeException(String.format(ERROR_INVALID_NUMBER, value));
                 }
         }
     };
-    public final HigherOrderFunction exit = new HigherOrderFunction(engine,
+    public final HigherOrderFunction exit = new HigherOrderFunction(context,
             NUMBER, IO(UNIT)) {
         @Override
-        public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             System.exit(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue());
-            return new FunckyMonad(engine, IO(UNIT).apply(engine),
-                    () -> new FunckyLiteral(engine, new FunckyRecord(engine, UNIT.apply(engine),
+            return new FunckyMonad(context, IO(UNIT).apply(context),
+                    () -> new FunckyLiteral(context.getEngine(), new FunckyRecord(context, UNIT.apply(context),
                             List.of())));
         }
     };
-    public final HigherOrderFunction error = new HigherOrderFunction(engine, STRING, engine -> a) {
+    public final HigherOrderFunction error = new HigherOrderFunction(context, STRING, context -> a) {
         @Override
-        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             throw new SneakyRuntimeException(arguments.getFirst().eval(context).toString());
         }
     };
-    public final HigherOrderFunction bottom = new HigherOrderFunction(engine, engine -> a, engine -> b) {
+    public final HigherOrderFunction bottom = new HigherOrderFunction(context, context -> a, context -> b) {
         @Override
-        public FunckyValue apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return apply(arguments.getFirst(), context);
         }
     };
 
-    public Commons(final FunckyEngine engine) {
-        super(engine);
+    public Commons(final FunckyContext context) {
+        super(context);
     }
 }

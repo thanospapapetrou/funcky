@@ -116,12 +116,12 @@ abstract class BaseSpec extends Specification {
 
     protected Map<String, FunckyNumber> getNumbers() {
         (BINARY_NUMBERS + OCTAL_NUMBERS + DECIMAL_NUMBERS + HEXADECIMAL_NUMBERS)
-                .collectEntries { [(it.key): new FunckyNumber(engine, it.value)] }
+                .collectEntries { [(it.key): new FunckyNumber(engine.context, it.value)] }
     }
 
     protected Map<String, FunckyCharacter> getCharacters() {
         (LITERAL_CHARACTERS + OCTAL_CHARACTERS + HEXADECIMAL_CHARACTERS)
-                .collectEntries { [(it.key): new FunckyCharacter(engine, it.value)] }
+                .collectEntries { [(it.key): new FunckyCharacter(engine.context, it.value)] }
     }
 
     protected Map<String, FunckyList> getStrings() {
@@ -142,16 +142,16 @@ abstract class BaseSpec extends Specification {
     }
 
     protected FunckyNumber toFuncky(final BigDecimal number) {
-        new FunckyNumber(engine, number)
+        new FunckyNumber(engine.context, number)
     }
 
     protected FunckyCharacter toFuncky(final char character) {
-        new FunckyCharacter(engine, character)
+        new FunckyCharacter(engine.context, character)
     }
 
     protected FunckyList toFuncky(final List<?> list) {
-        new FunckyList(engine,
-                LIST { list.isEmpty() ? new FunckyTypeVariable(engine) : toFuncky(list.first).type }.apply(engine),
+        new FunckyList(engine.context,
+                LIST { list.isEmpty() ? new FunckyTypeVariable(engine.context) : toFuncky(list.first).type }.apply(engine.context),
                 list.isEmpty() ? null : new FunckyLiteral(engine, toFuncky(list.first)),
                 list.isEmpty() ? null : new FunckyLiteral(engine, toFuncky(list.subList(1, list.size()))))
     }

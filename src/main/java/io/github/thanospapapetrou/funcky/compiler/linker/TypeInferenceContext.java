@@ -40,31 +40,31 @@ public class TypeInferenceContext {
         if ((ta instanceof FunckySimpleType) && (tb instanceof FunckySimpleType) && ta.equals(tb)) {
             return true;
         } else if ((ta instanceof FunckyFunctionType fta) && (tb instanceof FunckyFunctionType ftb)) {
-            return unify((FunckyType) fta.getDomain().eval(fta.getEngine().getContext()),
-                    (FunckyType) ftb.getDomain().eval(ftb.getEngine().getContext()))
-                    && unify((FunckyType) fta.getRange().eval(fta.getEngine().getContext()),
-                    (FunckyType) ftb.getRange().eval(ftb.getEngine().getContext()));
+            return unify((FunckyType) fta.getDomain().eval(fta.getContext()),
+                    (FunckyType) ftb.getDomain().eval(ftb.getContext()))
+                    && unify((FunckyType) fta.getRange().eval(fta.getContext()),
+                    (FunckyType) ftb.getRange().eval(ftb.getContext()));
         } else if ((ta instanceof FunckyListType lta) && (tb instanceof FunckyListType ltb)) {
-            return unify((FunckyType) lta.getElement().eval(lta.getEngine().getContext()),
-                    (FunckyType) ltb.getElement().eval(ltb.getEngine().getContext()));
+            return unify((FunckyType) lta.getElement().eval(lta.getContext()),
+                    (FunckyType) ltb.getElement().eval(ltb.getContext()));
         } else if ((ta instanceof FunckyRecordType rta) && (tb instanceof FunckyRecordType rtb)) {
-            FunckyList rtaComponents = (FunckyList) rta.getComponents().eval(rta.getEngine().getContext());
-            FunckyList rtbComponents = (FunckyList) rtb.getComponents().eval(rtb.getEngine().getContext());
+            FunckyList rtaComponents = (FunckyList) rta.getComponents().eval(rta.getContext());
+            FunckyList rtbComponents = (FunckyList) rtb.getComponents().eval(rtb.getContext());
             while ((rtaComponents.getHead() != null) && (rtbComponents.getHead() != null)) {
                 final boolean unify = unify(
-                        (FunckyType) rtaComponents.getHead().eval(rtaComponents.getEngine().getContext()),
-                        (FunckyType) rtbComponents.getHead().eval(rtbComponents.getEngine().getContext()));
+                        (FunckyType) rtaComponents.getHead().eval(rtaComponents.getContext()),
+                        (FunckyType) rtbComponents.getHead().eval(rtbComponents.getContext()));
                 if (!unify) {
                     return false;
                 }
-                rtaComponents = (FunckyList) rtaComponents.getTail().eval(rtaComponents.getEngine().getContext());
-                rtbComponents = (FunckyList) rtbComponents.getTail().eval(rtbComponents.getEngine().getContext());
+                rtaComponents = (FunckyList) rtaComponents.getTail().eval(rtaComponents.getContext());
+                rtbComponents = (FunckyList) rtbComponents.getTail().eval(rtbComponents.getContext());
             }
             return ((rtaComponents.getHead() == null) && (rtbComponents.getHead() == null));
         } else if ((ta instanceof FunckyMonadicType mta) && (tb instanceof FunckyMonadicType mtb)) {
             return mta.getName().equals(mtb.getName()) && unify(
-                    (FunckyType) mta.getBase().eval(mta.getEngine().getContext()),
-                    (FunckyType) mtb.getBase().eval(mtb.getEngine().getContext()));
+                    (FunckyType) mta.getBase().eval(mta.getContext()),
+                    (FunckyType) mtb.getBase().eval(mtb.getContext()));
         } else if ((ta instanceof FunckyTypeVariable) || (tb instanceof FunckyTypeVariable)) {
             return union(ta, tb);
         }
@@ -76,32 +76,33 @@ public class TypeInferenceContext {
             return type;
         } else if (type instanceof FunckyFunctionType ft) {
             return FUNCTION(
-                    engine -> find((FunckyType) ft.getDomain().eval(ft.getEngine().getContext())),
-                    engine -> find((FunckyType) ft.getRange().eval(ft.getEngine().getContext()))
-            ).apply(ft.getEngine());
+                    engine -> find((FunckyType) ft.getDomain().eval(ft.getContext())),
+                    engine -> find((FunckyType) ft.getRange().eval(ft.getContext()))
+            ).apply(ft.getContext());
         } else if (type instanceof FunckyListType lt) {
-            return LIST(engine -> find((FunckyType) lt.getElement().eval(lt.getEngine().getContext())))
-                    .apply(lt.getEngine());
+            return LIST(engine -> find((FunckyType) lt.getElement().eval(lt.getContext())))
+                    .apply(lt.getContext());
         } else if (type instanceof FunckyRecordType rt) {
             return find(rt);
         } else if (type instanceof FunckyMonadicType mt) {
-            return new FunckyMonadicType(mt.getEngine(), mt.getName(), new FunckyLiteral(mt.getEngine(),
-                    find((FunckyType) mt.getBase().eval(mt.getEngine().getContext()))));
+            return new FunckyMonadicType(mt.getContext(), mt.getName(), new FunckyLiteral(mt.getContext().getEngine(),
+                    find((FunckyType) mt.getBase().eval(mt.getContext()))));
         } else if (type instanceof FunckyTypeVariable) {
             final FunckyType found = findRepresentative(findSet(type));
             if (found instanceof FunckyFunctionType ft) {
                 return FUNCTION(
-                        engine -> find((FunckyType) ft.getDomain().eval(ft.getEngine().getContext())),
-                        engine -> find((FunckyType) ft.getRange().eval(ft.getEngine().getContext()))
-                ).apply(ft.getEngine());
+                        engine -> find((FunckyType) ft.getDomain().eval(ft.getContext())),
+                        engine -> find((FunckyType) ft.getRange().eval(ft.getContext()))
+                ).apply(ft.getContext());
             } else if (found instanceof FunckyListType lt) {
-                return LIST(engine -> find((FunckyType) lt.getElement().eval(lt.getEngine().getContext())))
-                        .apply(lt.getEngine());
+                return LIST(engine -> find((FunckyType) lt.getElement().eval(lt.getContext())))
+                        .apply(lt.getContext());
             } else if (found instanceof FunckyRecordType rt) {
                 return find(rt);
             } else if (found instanceof FunckyMonadicType mt) {
-                return new FunckyMonadicType(mt.getEngine(), mt.getName(), new FunckyLiteral(mt.getEngine(),
-                        find((FunckyType) mt.getBase().eval(mt.getEngine().getContext()))));
+                return new FunckyMonadicType(mt.getContext(), mt.getName(),
+                        new FunckyLiteral(mt.getContext().getEngine(),
+                                find((FunckyType) mt.getBase().eval(mt.getContext()))));
             }
             return found;
         }
@@ -110,13 +111,13 @@ public class TypeInferenceContext {
 
     private FunckyRecordType find(final FunckyRecordType type) {
         final List<FunckyType> components = new ArrayList<>();
-        for (FunckyList list = (FunckyList) type.getComponents().eval(type.getEngine().getContext());
-                list.getTail() != null; list = (FunckyList) list.getTail().eval(type.getEngine().getContext())) {
-            components.add(find((FunckyType) list.getHead().eval(type.getEngine().getContext())));
+        for (FunckyList list = (FunckyList) type.getComponents().eval(type.getContext());
+                list.getTail() != null; list = (FunckyList) list.getTail().eval(type.getContext())) {
+            components.add(find((FunckyType) list.getHead().eval(type.getContext())));
         }
         return (FunckyRecordType) RECORD(components.stream()
-                .map(t -> (Function<FunckyEngine, FunckyType>) (e -> t))
-                .toList().toArray(new Function[0])).apply(type.getEngine());
+                .map(t -> (Function<FunckyContext, FunckyType>) (c -> t))
+                .toList().toArray(new Function[0])).apply(type.getContext());
     }
 
     private boolean union(final FunckyType a, final FunckyType b) {

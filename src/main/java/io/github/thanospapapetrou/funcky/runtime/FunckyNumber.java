@@ -2,8 +2,8 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.math.BigDecimal;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
@@ -11,8 +11,8 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.N
 public final class FunckyNumber extends FunckyValue {
     private final BigDecimal value;
 
-    public FunckyNumber(final FunckyEngine engine, final BigDecimal value) {
-        super(engine);
+    public FunckyNumber(final FunckyContext context, final BigDecimal value) {
+        super(context);
         this.value = value;
     }
 
@@ -22,12 +22,12 @@ public final class FunckyNumber extends FunckyValue {
 
     @Override
     public FunckySimpleType getType() {
-        return NUMBER.apply(engine);
+        return NUMBER.apply(context);
     }
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
+        return new FunckyLiteral(context.getEngine(), this);
     }
 
     @Override

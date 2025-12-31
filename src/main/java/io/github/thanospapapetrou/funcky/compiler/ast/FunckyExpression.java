@@ -2,15 +2,12 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 
 import java.net.URI;
 
-import javax.script.CompiledScript;
-import javax.script.ScriptContext;
-
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
-public abstract sealed class FunckyExpression extends CompiledScript
-        permits FunckyLiteral, FunckyReference, FunckyApplication {
+public abstract sealed class FunckyExpression permits FunckyLiteral, FunckyReference, FunckyApplication {
     protected final FunckyEngine engine;
     protected final URI file;
     protected final int line;
@@ -21,6 +18,10 @@ public abstract sealed class FunckyExpression extends CompiledScript
         this.file = file;
         this.line = line;
         this.column = column;
+    }
+
+    public FunckyEngine getEngine() {
+        return engine;
     }
 
     public URI getFile() {
@@ -37,13 +38,7 @@ public abstract sealed class FunckyExpression extends CompiledScript
 
     public abstract FunckyType getType();
 
-    @Override
-    public FunckyEngine getEngine() {
-        return engine;
-    }
-
-    @Override
-    public abstract FunckyValue eval(final ScriptContext context);
+    public abstract FunckyValue eval(final FunckyContext context);
 
     public abstract String toString(final boolean canonical);
 

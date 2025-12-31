@@ -1,20 +1,20 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
 public sealed abstract class FunckyValue implements Comparable<FunckyValue>
         permits FunckyType, FunckyNumber, FunckyBoolean, FunckyCharacter, FunckyFunction, FunckyList, FunckyRecord,
         FunckyMonad {
-    protected final FunckyEngine engine;
+    protected final FunckyContext context;
 
-    protected FunckyValue(final FunckyEngine engine) {
-        this.engine = engine;
+    protected FunckyValue(final FunckyContext context) {
+        this.context = context;
     }
 
-    public FunckyEngine getEngine() {
-        return engine;
+    public FunckyContext getContext() {
+        return context;
     }
 
     public abstract FunckyType getType();

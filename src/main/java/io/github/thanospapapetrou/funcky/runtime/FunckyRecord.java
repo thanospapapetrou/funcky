@@ -3,9 +3,9 @@ package io.github.thanospapapetrou.funcky.runtime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
 
 public final class FunckyRecord extends FunckyValue {
@@ -16,9 +16,9 @@ public final class FunckyRecord extends FunckyValue {
     private final FunckyRecordType type;
     private final List<FunckyExpression> components;
 
-    public FunckyRecord(final FunckyEngine engine, final FunckyRecordType type,
+    public FunckyRecord(final FunckyContext context, final FunckyRecordType type,
             final List<FunckyExpression> components) {
-        super(engine);
+        super(context);
         this.type = type;
         this.components = components;
     }
@@ -34,15 +34,15 @@ public final class FunckyRecord extends FunckyValue {
 
     @Override
     public FunckyLiteral toExpression() {
-        return new FunckyLiteral(engine, this);
+        return new FunckyLiteral(context.getEngine(), this);
     }
 
     @Override
     public int compareTo(final FunckyValue value) {
         if (value instanceof FunckyRecord record) {
             for (int i = 0; (i < components.size()) && (i < record.components.size()); i++) {
-                final int comparison = components.get(i).eval(engine.getContext())
-                        .compareTo(record.components.get(i).eval(engine.getContext()));
+                final int comparison = components.get(i).eval(context)
+                        .compareTo(record.components.get(i).eval(context));
                 if (comparison != 0) {
                     return comparison;
                 }
@@ -55,7 +55,7 @@ public final class FunckyRecord extends FunckyValue {
     @Override
     public int hashCode() {
         return components.stream()
-                .map(component -> component.eval(engine.getContext()))
+                .map(component -> component.eval(context))
                 .mapToInt(FunckyValue::hashCode)
                 .sum();
     }
@@ -63,7 +63,7 @@ public final class FunckyRecord extends FunckyValue {
     @Override
     public String toString() {
         return PREFIX + components.stream()
-                .map(component -> component.eval(engine.getContext()))
+                .map(component -> component.eval(context))
                 .map(FunckyValue::toString)
                 .collect(Collectors.joining(DELIMITER)) + SUFFIX;
     }

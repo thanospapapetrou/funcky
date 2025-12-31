@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import javax.script.ScriptContext;
-
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyMonad;
@@ -21,47 +19,48 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType.U
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
 
 public final class IO extends FunckyLibrary {
-    private final FunckyTypeVariable a = new FunckyTypeVariable(engine);
-    private final FunckyTypeVariable b = new FunckyTypeVariable(engine);
-    public final HigherOrderFunction _return = new HigherOrderFunction(engine,
-            engine -> a, IO(engine -> a)) {
+    private final FunckyTypeVariable a = new FunckyTypeVariable(context);
+    private final FunckyTypeVariable b = new FunckyTypeVariable(context);
+    public final HigherOrderFunction _return = new HigherOrderFunction(context,
+            context -> a, IO(context -> a)) {
         @Override
-        public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return new FunckyMonad(engine, IO(engine -> arguments.getFirst().getType()).apply(engine),
+        public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return new FunckyMonad(context, IO(ctx -> arguments.getFirst().getType()).apply(context),
                     () -> arguments.getFirst());
         }
     };
-    public final HigherOrderFunction bind = new HigherOrderFunction(engine,
-            IO(engine -> a),
-            FUNCTION(engine -> a, IO(engine -> b)),
-            IO(engine -> b)) {
+    public final HigherOrderFunction bind = new HigherOrderFunction(context,
+            IO(context -> a),
+            FUNCTION(context -> a, IO(context -> b)),
+            IO(context -> b)) {
         @Override
-        public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
+        public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return (FunckyMonad) ((FunckyFunction) arguments.get(1).eval(context))
                     .apply(((FunckyMonad) arguments.getFirst().eval(context)).getBase(), context);
         }
     };
-    public final FunckyMonad readCharacter = new FunckyMonad(engine,
-            IO(CHARACTER).apply(engine), () -> {
+    public final FunckyMonad readCharacter = new FunckyMonad(context,
+            IO(CHARACTER).apply(context), () -> {
         try { // TODO do not close stdin
-            return new FunckyLiteral(engine, new FunckyCharacter(engine, (char) new InputStreamReader(System.in).read()));
+            return new FunckyLiteral(context.getEngine(), new FunckyCharacter(context,
+                    (char) new InputStreamReader(System.in).read()));
         } catch (final IOException e) {
             throw new RuntimeException(e); // TODO
         }
     });
-    public final HigherOrderFunction writeCharacter = new HigherOrderFunction(engine,
+    public final HigherOrderFunction writeCharacter = new HigherOrderFunction(context,
             CHARACTER, IO(UNIT)) {
         @Override
-        public FunckyMonad apply(final List<FunckyExpression> arguments, final ScriptContext context) {
-            return new FunckyMonad(engine, IO(UNIT).apply(engine), () -> {
+        public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
                 System.out.println(((FunckyCharacter) arguments.getFirst().eval(context)).getValue());
-                return new FunckyLiteral(engine, new FunckyRecord(engine, UNIT.apply(engine),
+                return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, UNIT.apply(context),
                         List.of()));
             });
         }
     };
 
-    public IO(final FunckyEngine engine) {
-        super(engine);
+    public IO(final FunckyContext context) {
+        super(context);
     }
 }

@@ -3,9 +3,8 @@ package io.github.thanospapapetrou.funcky.compiler.ast;
 import java.net.URI;
 import java.util.stream.Collectors;
 
-import javax.script.ScriptContext;
-
 import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
@@ -37,15 +36,15 @@ public non-sealed class FunckyLiteral extends FunckyExpression {
     }
 
     @Override
-    public FunckyValue eval(final ScriptContext context) {
+    public FunckyValue eval(final FunckyContext context) {
         return value;
     }
 
     @Override
     public String toString(final boolean canonical) {
-        if (value.getType().equals(CHARACTER.apply(engine))) {
+        if (value.getType().equals(CHARACTER.apply(engine.getContext()))) {
             return String.format(FORMAT_CHARACTER, EscapeHelper.escape(value.toString()));
-        } else if (value.getType().equals(STRING.apply(engine))) {
+        } else if (value.getType().equals(STRING.apply(engine.getContext()))) {
             return String.format(FORMAT_STRING, EscapeHelper.escape(value.toString()));
         } else if (value instanceof FunckyList list) {
             final StringBuilder string = new StringBuilder(FunckyList.PREFIX);

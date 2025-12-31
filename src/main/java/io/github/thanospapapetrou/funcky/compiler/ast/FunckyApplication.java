@@ -1,8 +1,7 @@
 package io.github.thanospapapetrou.funcky.compiler.ast;
 
-import javax.script.ScriptContext;
-
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.IllegalApplicationException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -37,7 +36,7 @@ public final class FunckyApplication extends FunckyExpression {
     @Override
     public FunckyType getType() {
         final FunckyFunctionType type = (FunckyFunctionType) function.getType()
-                .unify(FUNCTION(engine -> argument.getType(), FunckyTypeVariable::new).apply(engine));
+                .unify(FUNCTION(engine -> argument.getType(), FunckyTypeVariable::new).apply(engine.getContext()));
         if (type == null) {
             throw new SneakyCompilationException(new IllegalApplicationException(this));
         }
@@ -45,7 +44,7 @@ public final class FunckyApplication extends FunckyExpression {
     }
 
     @Override
-    public FunckyValue eval(final ScriptContext context) {
+    public FunckyValue eval(final FunckyContext context) {
         try {
             return ((FunckyFunction) function.eval(context)).apply(argument, context);
         } catch (final SneakyRuntimeException e) {

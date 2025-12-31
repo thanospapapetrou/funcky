@@ -8,6 +8,6 @@ public final class InvalidMainException extends LinkerException {
 
     public InvalidMainException(final FunckyDefinition main) {
         super(String.format(MESSAGE, main.expression().getType(),
-                Linker.MAIN_TYPE.apply(main.expression().getEngine())), main);
+                Linker.MAIN_TYPE.apply(main.expression().getEngine().getContext())), main);
     }
 }

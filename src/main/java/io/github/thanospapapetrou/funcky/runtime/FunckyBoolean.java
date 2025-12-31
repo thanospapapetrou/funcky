@@ -2,8 +2,8 @@ package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.function.Function;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Booleans;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
@@ -11,13 +11,13 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.BOOLEAN;
 
 public final class FunckyBoolean extends FunckyValue {
-    public static final Function<FunckyEngine, FunckyBoolean> FALSE = engine -> new FunckyBoolean(engine, false);
-    public static final Function<FunckyEngine, FunckyBoolean> TRUE = engine -> new FunckyBoolean(engine, true);
+    public static final Function<FunckyContext, FunckyBoolean> FALSE = context -> new FunckyBoolean(context, false);
+    public static final Function<FunckyContext, FunckyBoolean> TRUE = context -> new FunckyBoolean(context, true);
 
     private final boolean value;
 
-    private FunckyBoolean(final FunckyEngine engine, final boolean value) {
-        super(engine);
+    private FunckyBoolean(final FunckyContext context, final boolean value) {
+        super(context);
         this.value = value;
     }
 
@@ -27,12 +27,13 @@ public final class FunckyBoolean extends FunckyValue {
 
     @Override
     public FunckySimpleType getType() {
-        return BOOLEAN.apply(engine);
+        return BOOLEAN.apply(context);
     }
 
     @Override
     public FunckyReference toExpression() {
-        return new FunckyReference(engine, FunckyLibrary.getNamespace(Booleans.class), Boolean.toString(value));
+        return new FunckyReference(context.getEngine(), FunckyLibrary.getNamespace(Booleans.class),
+                Boolean.toString(value));
     }
 
     @Override

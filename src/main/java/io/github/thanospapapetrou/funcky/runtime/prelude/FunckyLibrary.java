@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Locale;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
@@ -15,7 +15,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 public sealed class FunckyLibrary permits Types, Numbers, Booleans, Characters, Lists, Commons, Combinators, IO {
     private static final String ERROR_RESOLVING_NAMESPACE = "Error resolving namespace for library `%1$s`";
 
-    protected final FunckyEngine engine;
+    protected final FunckyContext context;
 
     public static URI getNamespace(final Class<? extends FunckyLibrary> library) {
         try {
@@ -48,7 +48,7 @@ public sealed class FunckyLibrary permits Types, Numbers, Booleans, Characters, 
                 .orElseThrow(() -> new SneakyRuntimeException(message));
     }
 
-    protected FunckyLibrary(final FunckyEngine engine) {
-        this.engine = engine;
+    protected FunckyLibrary(final FunckyContext context) {
+        this.context = context;
     }
 }

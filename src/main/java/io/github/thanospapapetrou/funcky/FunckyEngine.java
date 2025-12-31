@@ -22,7 +22,7 @@ import javax.script.SimpleBindings;
 
 import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyDefinition;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
@@ -58,14 +58,14 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     private final Clock clock;
 
     public FunckyList toFuncky(final List<String> list) {
-        return new FunckyList(this, LIST(STRING).apply(this),
+        return new FunckyList(context, LIST(STRING).apply(context),
                 list.isEmpty() ? null : new FunckyLiteral(this, toFuncky(list.getFirst())),
                 list.isEmpty() ? null : new FunckyLiteral(this, toFuncky(list.subList(1, list.size()))));
     }
 
     public FunckyList toFuncky(final String string) {
-        return new FunckyList(this, STRING.apply(this),
-                string.isEmpty() ? null : new FunckyLiteral(this, new FunckyCharacter(this, string.charAt(0))),
+        return new FunckyList(context, STRING.apply(context),
+                string.isEmpty() ? null : new FunckyLiteral(this, new FunckyCharacter(context, string.charAt(0))),
                 string.isEmpty() ? null : new FunckyLiteral(this, toFuncky(string.substring(1))));
     }
 
@@ -84,6 +84,7 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
         setBindings(createBindings(), FunckyContext.GLOBAL_SCOPE);
         setBindings(createBindings(), FunckyContext.ENGINE_SCOPE);
         setBindings(createBindings(), FunckyContext.SCRIPTS_SCOPE);
+        context.setEngine(this);
     }
 
     public Linker getLinker() {
@@ -138,13 +139,18 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     @Override
     public FunckyValue eval(final String expression, final ScriptContext context) throws FunckyCompilationException,
             FunckyRuntimeException {
-        final FunckyExpression compiled = compile(expression);
-        if (compiled == null) {
+        final FunckyScript script = compile(expression);
+        if (script == null) {
             return null;
         }
         try {
             final Instant start = clock.instant();
-            final FunckyValue result = compiled.eval(context);
+            final FunckyValue result = script.getDefinitions().stream()
+                    .filter(definition -> definition.name().equals(FunckyScript.IT))
+                    .map(FunckyDefinition::expression)
+                    .findFirst()
+                    .get()
+                    .eval(FunckyContext.toFuncky(context)); // TODO eval script via main
             LOGGER.info(String.format(MESSAGE_EVALUATION, Duration.between(start, clock.instant()).toMillis()));
             return result;
         } catch (final SneakyRuntimeException e) {
@@ -208,15 +214,15 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     }
 
     @Override
-    public FunckyExpression compile(final String expression) throws FunckyCompilationException {
+    public FunckyScript compile(final String expression) throws FunckyCompilationException {
         try {
             final Instant start = clock.instant();
-            final FunckyExpression linked = linker.link(preprocessor.preprocess(parser.parse(
+            final FunckyScript script = linker.link(preprocessor.preprocess(parser.parse(
                     tokenizer.tokenize(expression).stream()
                             .filter(token -> token.type() != TokenType.COMMENT)
                             .collect(Collectors.toCollection(ArrayDeque::new)))));
             LOGGER.info(String.format(MESSAGE_COMPILATION, Duration.between(start, clock.instant()).toMillis()));
-            return linked;
+            return script;
         } catch (final SneakyCompilationException e) {
             throw e.getCause();
         }

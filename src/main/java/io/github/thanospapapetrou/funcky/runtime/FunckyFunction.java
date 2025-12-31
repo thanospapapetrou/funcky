@@ -1,20 +1,18 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
-import javax.script.ScriptContext;
-
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 
 public non-sealed abstract class FunckyFunction extends FunckyValue {
     protected final FunckyFunctionType type;
 
-    protected FunckyFunction(final FunckyEngine engine, final FunckyFunctionType type) {
-        super(engine);
+    protected FunckyFunction(final FunckyContext context, final FunckyFunctionType type) {
+        super(context);
         this.type = type;
     }
 
-    public abstract FunckyValue apply(final FunckyExpression argument, final ScriptContext context);
+    public abstract FunckyValue apply(final FunckyExpression argument, final FunckyContext context);
 
     @Override
     public FunckyFunctionType getType() {

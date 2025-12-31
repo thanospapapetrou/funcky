@@ -32,6 +32,20 @@ public class FunckyContext implements ScriptContext {
     private Writer writer;
     private Writer errorWriter;
 
+    public static FunckyContext toFuncky(final ScriptContext context) {
+        if (context instanceof FunckyContext funcky) {
+            return funcky;
+        }
+        final FunckyContext funcky = new FunckyContext();
+        for (int scope : context.getScopes()) {
+            funcky.setBindings(context.getBindings(scope), scope);
+        }
+        funcky.setReader(context.getReader());
+        funcky.setWriter(context.getWriter());
+        funcky.setErrorWriter(context.getErrorWriter());
+        return funcky;
+    }
+
     public FunckyContext() {
         this(new HashMap<>());
         setReader(new InputStreamReader(System.in));
@@ -41,6 +55,14 @@ public class FunckyContext implements ScriptContext {
 
     private FunckyContext(final Map<Integer, Bindings> bindings) {
         this.bindings = bindings;
+    }
+
+    public FunckyEngine getEngine() {
+        return (FunckyEngine) getAttribute(FunckyEngine.class.getName(), ENGINE_SCOPE);
+    }
+
+    public void setEngine(final FunckyEngine engine) {
+        setAttribute(FunckyEngine.class.getName(), engine, ENGINE_SCOPE);
     }
 
     public URI getFile() throws IOException {

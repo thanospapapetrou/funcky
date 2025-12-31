@@ -27,14 +27,14 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                     || result
-        '"funcky:types".Type'                          || TYPE.apply(engine)
-        '"funcky:types".type "funcky:types".Type'      || TYPE.apply(engine)
-        '"funcky:types".Number'                        || NUMBER.apply(engine)
-        '"funcky:types".type "funcky:types".Number'    || TYPE.apply(engine)
-        '"funcky:types".Boolean'                       || BOOLEAN.apply(engine)
-        '"funcky:types".type "funcky:types".Boolean'   || TYPE.apply(engine)
-        '"funcky:types".Character'                     || CHARACTER.apply(engine)
-        '"funcky:types".type "funcky:types".Character' || TYPE.apply(engine)
+        '"funcky:types".Type'                          || TYPE.apply(engine.context)
+        '"funcky:types".type "funcky:types".Type'      || TYPE.apply(engine.context)
+        '"funcky:types".Number'                        || NUMBER.apply(engine.context)
+        '"funcky:types".type "funcky:types".Number'    || TYPE.apply(engine.context)
+        '"funcky:types".Boolean'                       || BOOLEAN.apply(engine.context)
+        '"funcky:types".type "funcky:types".Boolean'   || TYPE.apply(engine.context)
+        '"funcky:types".Character'                     || CHARACTER.apply(engine.context)
+        '"funcky:types".type "funcky:types".Character' || TYPE.apply(engine.context)
     }
 
     @Unroll('Test Function (expression: #expression)')
@@ -44,10 +44,10 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                                             || result
         '"funcky:commons".string "funcky:types".Function'                                                      || toFuncky('"funcky:types".Function')
-        '"funcky:types".type "funcky:types".Function'                                                          || FUNCTION(TYPE, TYPE, TYPE).apply(engine)
-        '"funcky:types".type ("funcky:types".Function "funcky:types".Type)'                                    || FUNCTION(TYPE, TYPE).apply(engine)
+        '"funcky:types".type "funcky:types".Function'                                                          || FUNCTION(TYPE, TYPE, TYPE).apply(engine.context)
+        '"funcky:types".type ("funcky:types".Function "funcky:types".Type)'                                    || FUNCTION(TYPE, TYPE).apply(engine.context)
         '"funcky:commons".string ("funcky:types".Function ("funcky:commons".error "foo"))'                     || toFuncky('"funcky:types".Function ("funcky:commons".error "foo")')
-        '"funcky:types".Function "funcky:types".Type "funcky:types".Number'                                    || FUNCTION(TYPE, NUMBER).apply(engine)
+        '"funcky:types".Function "funcky:types".Type "funcky:types".Number'                                    || FUNCTION(TYPE, NUMBER).apply(engine.context)
         '"funcky:commons".string ("funcky:types".Function "funcky:types".Type ("funcky:commons".error "foo"))' || toFuncky('"funcky:types".Function "funcky:types".Type ("funcky:commons".error "foo")')
     }
 
@@ -58,8 +58,8 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                                  || result
         '"funcky:commons".string "funcky:types".domain'                                             || toFuncky('"funcky:types".domain')
-        '"funcky:types".type "funcky:types".domain'                                                 || FUNCTION(TYPE, TYPE).apply(engine)
-        '"funcky:types".domain ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || TYPE.apply(engine)
+        '"funcky:types".type "funcky:types".domain'                                                 || FUNCTION(TYPE, TYPE).apply(engine.context)
+        '"funcky:types".domain ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || TYPE.apply(engine.context)
     }
 
     def 'Test domain (runtime error)'() {
@@ -68,7 +68,7 @@ class TypesSpec extends BaseSpec {
         then:
         final FunckyRuntimeException e = thrown()
         e.message
-        e.message.startsWith(String.format(Types.ERROR_DOMAIN, TYPE.apply(engine)))
+        e.message.startsWith(String.format(Types.ERROR_DOMAIN, TYPE.apply(engine.context)))
     }
 
     @Unroll('Test range (expression: #expression)')
@@ -78,8 +78,8 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                                 || result
         '"funcky:commons".string "funcky:types".range'                                             || toFuncky('"funcky:types".range')
-        '"funcky:types".type "funcky:types".range'                                                 || FUNCTION(TYPE, TYPE).apply(engine)
-        '"funcky:types".range ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || NUMBER.apply(engine)
+        '"funcky:types".type "funcky:types".range'                                                 || FUNCTION(TYPE, TYPE).apply(engine.context)
+        '"funcky:types".range ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || NUMBER.apply(engine.context)
     }
 
     def 'Test range (runtime error)'() {
@@ -88,7 +88,7 @@ class TypesSpec extends BaseSpec {
         then:
         final FunckyRuntimeException e = thrown()
         e.message
-        e.message.startsWith(String.format(Types.ERROR_RANGE, TYPE.apply(engine)))
+        e.message.startsWith(String.format(Types.ERROR_RANGE, TYPE.apply(engine.context)))
     }
 
     @Unroll('Test List (expression: #expression)')
@@ -98,8 +98,8 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                     || result
         '"funcky:commons".string "funcky:types".List'                                  || toFuncky('"funcky:types".List')
-        '"funcky:types".type "funcky:types".List'                                      || FUNCTION(TYPE, TYPE).apply(engine)
-        '"funcky:types".List "funcky:types".Type'                                      || LIST(TYPE).apply(engine)
+        '"funcky:types".type "funcky:types".List'                                      || FUNCTION(TYPE, TYPE).apply(engine.context)
+        '"funcky:types".List "funcky:types".Type'                                      || LIST(TYPE).apply(engine.context)
         '"funcky:commons".string ("funcky:types".List ("funcky:commons".error "foo"))' || toFuncky('"funcky:types".List ("funcky:commons".error "foo")')
     }
 
@@ -110,8 +110,8 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                         || result
         '"funcky:commons".string "funcky:types".element'                   || toFuncky('"funcky:types".element')
-        '"funcky:types".type "funcky:types".element'                       || FUNCTION(TYPE, TYPE).apply(engine)
-        '"funcky:types".element ("funcky:types".List "funcky:types".Type)' || TYPE.apply(engine)
+        '"funcky:types".type "funcky:types".element'                       || FUNCTION(TYPE, TYPE).apply(engine.context)
+        '"funcky:types".element ("funcky:types".List "funcky:types".Type)' || TYPE.apply(engine.context)
     }
 
     def 'Test element (runtime error)'() {
@@ -120,7 +120,7 @@ class TypesSpec extends BaseSpec {
         then:
         final FunckyRuntimeException e = thrown()
         e.message
-        e.message.startsWith(String.format(Types.ERROR_ELEMENT, TYPE.apply(engine)))
+        e.message.startsWith(String.format(Types.ERROR_ELEMENT, TYPE.apply(engine.context)))
     }
 
     @Unroll('Test String (expression: #expression)')
@@ -129,8 +129,8 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                  || result
-        '"funcky:types".String'                     || STRING.apply(engine)
-        '"funcky:types".type "funcky:types".String' || TYPE.apply(engine)
+        '"funcky:types".String'                     || STRING.apply(engine.context)
+        '"funcky:types".type "funcky:types".String' || TYPE.apply(engine.context)
 
     }
 
@@ -141,9 +141,9 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                      || result
         '"funcky:commons".string "funcky:types".Record' || toFuncky('"funcky:types".Record')
-        '"funcky:types".type "funcky:types".Record'     || FUNCTION(LIST(TYPE), TYPE).apply(engine)
-        '"funcky:types".Record []'                      || UNIT.apply(engine)
-        '"funcky:types".Record ["funcky:types".Type]'   || RECORD(TYPE).apply(engine)
+        '"funcky:types".type "funcky:types".Record'     || FUNCTION(LIST(TYPE), TYPE).apply(engine.context)
+        '"funcky:types".Record []'                      || UNIT.apply(engine.context)
+        '"funcky:types".Record ["funcky:types".Type]'   || RECORD(TYPE).apply(engine.context)
     }
 
     @Unroll('Test components (expression: #expression)')
@@ -153,9 +153,9 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                || result
         '"funcky:commons".string "funcky:types".components'                       || toFuncky('"funcky:types".components')
-        '"funcky:types".type "funcky:types".components'                           || FUNCTION(TYPE, LIST(TYPE)).apply(engine)
+        '"funcky:types".type "funcky:types".components'                           || FUNCTION(TYPE, LIST(TYPE)).apply(engine.context)
         '"funcky:types".components ("funcky:types".Record [])'                    || toFuncky([])
-        '"funcky:types".components ("funcky:types".Record ["funcky:types".Type])' || toFuncky([TYPE.apply(engine)])
+        '"funcky:types".components ("funcky:types".Record ["funcky:types".Type])' || toFuncky([TYPE.apply(engine.context)])
     }
 
     def 'Test components (runtime error)'() {
@@ -164,7 +164,7 @@ class TypesSpec extends BaseSpec {
         then:
         final FunckyRuntimeException e = thrown()
         e.message
-        e.message.startsWith(String.format(Types.ERROR_COMPONENTS, TYPE.apply(engine)))
+        e.message.startsWith(String.format(Types.ERROR_COMPONENTS, TYPE.apply(engine.context)))
     }
 
     @Unroll('Test Unit (expression: #expression)')
@@ -173,8 +173,8 @@ class TypesSpec extends BaseSpec {
         engine.eval(expression) == result
         where:
         expression                                || result
-        '"funcky:types".Unit'                     || UNIT.apply(engine)
-        '"funcky:types".type "funcky:types".Unit' || TYPE.apply(engine)
+        '"funcky:types".Unit'                     || UNIT.apply(engine.context)
+        '"funcky:types".type "funcky:types".Unit' || TYPE.apply(engine.context)
     }
 
     @Unroll('Test type (expression: #expression)')
@@ -184,19 +184,19 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                                      || result
         '"funcky:commons".string "funcky:types".type'                                                   || toFuncky('"funcky:types".type')
-        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".type "funcky:types".type))' || TRUE.apply(engine)
-        '"funcky:types".type "funcky:types".Type'                                                       || TYPE.apply(engine)
-        '"funcky:types".type 1'                                                                         || NUMBER.apply(engine)
-        '"funcky:types".type "funcky:booleans".false'                                                   || BOOLEAN.apply(engine)
-        '"funcky:types".type \'a\''                                                                     || CHARACTER.apply(engine)
-        '"funcky:types".type "funcky:types".free'                                                       || FUNCTION(TYPE, TYPE).apply(engine)
-        '"funcky:types".listType ("funcky:types".type [])'                                              || TRUE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".type []))'                 || TRUE.apply(engine)
-        '"funcky:types".type [1]'                                                                       || LIST(NUMBER).apply(engine)
-        '"funcky:types".type ""'                                                                        || STRING.apply(engine)
-        '"funcky:types".type {}'                                                                        || UNIT.apply(engine)
-        '"funcky:types".type {1}'                                                                       || RECORD(NUMBER).apply(engine)
-        '"funcky:types".type {1, \'a\'}'                                                                || RECORD(NUMBER, CHARACTER).apply(engine)
+        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".type "funcky:types".type))' || TRUE.apply(engine.context)
+        '"funcky:types".type "funcky:types".Type'                                                       || TYPE.apply(engine.context)
+        '"funcky:types".type 1'                                                                         || NUMBER.apply(engine.context)
+        '"funcky:types".type "funcky:booleans".false'                                                   || BOOLEAN.apply(engine.context)
+        '"funcky:types".type \'a\''                                                                     || CHARACTER.apply(engine.context)
+        '"funcky:types".type "funcky:types".free'                                                       || FUNCTION(TYPE, TYPE).apply(engine.context)
+        '"funcky:types".listType ("funcky:types".type [])'                                              || TRUE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".type []))'                 || TRUE.apply(engine.context)
+        '"funcky:types".type [1]'                                                                       || LIST(NUMBER).apply(engine.context)
+        '"funcky:types".type ""'                                                                        || STRING.apply(engine.context)
+        '"funcky:types".type {}'                                                                        || UNIT.apply(engine.context)
+        '"funcky:types".type {1}'                                                                       || RECORD(NUMBER).apply(engine.context)
+        '"funcky:types".type {1, \'a\'}'                                                                || RECORD(NUMBER, CHARACTER).apply(engine.context)
     }
 
     @Unroll('Test typeVariable (expression: #expression)')
@@ -206,18 +206,18 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                                        || result
         '"funcky:commons".string "funcky:types".typeVariable'                                             || toFuncky('"funcky:types".typeVariable')
-        '"funcky:types".type "funcky:types".typeVariable'                                                 || FUNCTION(TYPE, BOOLEAN).apply(engine)
-        '"funcky:types".typeVariable "funcky:types".Type'                                                 || FALSE.apply(engine)
-        '"funcky:types".typeVariable "funcky:types".Number'                                               || FALSE.apply(engine)
-        '"funcky:types".typeVariable "funcky:types".Boolean'                                              || FALSE.apply(engine)
-        '"funcky:types".typeVariable "funcky:types".Character'                                            || FALSE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || FALSE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".List "funcky:types".Type)'                           || FALSE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".String)'                                             || FALSE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".Record [])'                                          || FALSE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".Record ["funcky:types".Type])'                       || FALSE.apply(engine)
-        '"funcky:types".typeVariable "funcky:types".Unit'                                                 || FALSE.apply(engine)
-        '"funcky:types".typeVariable $_'                                                                  || TRUE.apply(engine)
+        '"funcky:types".type "funcky:types".typeVariable'                                                 || FUNCTION(TYPE, BOOLEAN).apply(engine.context)
+        '"funcky:types".typeVariable "funcky:types".Type'                                                 || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable "funcky:types".Number'                                               || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable "funcky:types".Boolean'                                              || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable "funcky:types".Character'                                            || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".List "funcky:types".Type)'                           || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".String)'                                             || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".Record [])'                                          || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".Record ["funcky:types".Type])'                       || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable "funcky:types".Unit'                                                 || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable $_'                                                                  || TRUE.apply(engine.context)
     }
 
     @Unroll('Test functionType (expression: #expression)')
@@ -227,18 +227,18 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                                        || result
         '"funcky:commons".string "funcky:types".functionType'                                             || toFuncky('"funcky:types".functionType')
-        '"funcky:types".type "funcky:types".functionType'                                                 || FUNCTION(TYPE, BOOLEAN).apply(engine)
-        '"funcky:types".functionType "funcky:types".Type'                                                 || FALSE.apply(engine)
-        '"funcky:types".functionType "funcky:types".Number'                                               || FALSE.apply(engine)
-        '"funcky:types".functionType "funcky:types".Boolean'                                              || FALSE.apply(engine)
-        '"funcky:types".functionType "funcky:types".Character'                                            || FALSE.apply(engine)
-        '"funcky:types".functionType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || TRUE.apply(engine)
-        '"funcky:types".functionType ("funcky:types".List "funcky:types".Type)'                           || FALSE.apply(engine)
-        '"funcky:types".functionType ("funcky:types".String)'                                             || FALSE.apply(engine)
-        '"funcky:types".functionType ("funcky:types".Record [])'                                          || FALSE.apply(engine)
-        '"funcky:types".functionType ("funcky:types".Record ["funcky:types".Type])'                       || FALSE.apply(engine)
-        '"funcky:types".functionType "funcky:types".Unit'                                                 || FALSE.apply(engine)
-        '"funcky:types".functionType $_'                                                                  || FALSE.apply(engine)
+        '"funcky:types".type "funcky:types".functionType'                                                 || FUNCTION(TYPE, BOOLEAN).apply(engine.context)
+        '"funcky:types".functionType "funcky:types".Type'                                                 || FALSE.apply(engine.context)
+        '"funcky:types".functionType "funcky:types".Number'                                               || FALSE.apply(engine.context)
+        '"funcky:types".functionType "funcky:types".Boolean'                                              || FALSE.apply(engine.context)
+        '"funcky:types".functionType "funcky:types".Character'                                            || FALSE.apply(engine.context)
+        '"funcky:types".functionType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || TRUE.apply(engine.context)
+        '"funcky:types".functionType ("funcky:types".List "funcky:types".Type)'                           || FALSE.apply(engine.context)
+        '"funcky:types".functionType ("funcky:types".String)'                                             || FALSE.apply(engine.context)
+        '"funcky:types".functionType ("funcky:types".Record [])'                                          || FALSE.apply(engine.context)
+        '"funcky:types".functionType ("funcky:types".Record ["funcky:types".Type])'                       || FALSE.apply(engine.context)
+        '"funcky:types".functionType "funcky:types".Unit'                                                 || FALSE.apply(engine.context)
+        '"funcky:types".functionType $_'                                                                  || FALSE.apply(engine.context)
     }
 
     @Unroll('Test listType (expression: #expression)')
@@ -248,18 +248,18 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                                    || result
         '"funcky:commons".string "funcky:types".listType'                                             || toFuncky('"funcky:types".listType')
-        '"funcky:types".type "funcky:types".listType'                                                 || FUNCTION(TYPE, BOOLEAN).apply(engine)
-        '"funcky:types".listType "funcky:types".Type'                                                 || FALSE.apply(engine)
-        '"funcky:types".listType "funcky:types".Number'                                               || FALSE.apply(engine)
-        '"funcky:types".listType "funcky:types".Boolean'                                              || FALSE.apply(engine)
-        '"funcky:types".listType "funcky:types".Character'                                            || FALSE.apply(engine)
-        '"funcky:types".listType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || FALSE.apply(engine)
-        '"funcky:types".listType ("funcky:types".List "funcky:types".Type)'                           || TRUE.apply(engine)
-        '"funcky:types".listType ("funcky:types".String)'                                             || TRUE.apply(engine)
-        '"funcky:types".listType ("funcky:types".Record [])'                                          || FALSE.apply(engine)
-        '"funcky:types".listType ("funcky:types".Record ["funcky:types".Type])'                       || FALSE.apply(engine)
-        '"funcky:types".listType "funcky:types".Unit'                                                 || FALSE.apply(engine)
-        '"funcky:types".listType $_'                                                                  || FALSE.apply(engine)
+        '"funcky:types".type "funcky:types".listType'                                                 || FUNCTION(TYPE, BOOLEAN).apply(engine.context)
+        '"funcky:types".listType "funcky:types".Type'                                                 || FALSE.apply(engine.context)
+        '"funcky:types".listType "funcky:types".Number'                                               || FALSE.apply(engine.context)
+        '"funcky:types".listType "funcky:types".Boolean'                                              || FALSE.apply(engine.context)
+        '"funcky:types".listType "funcky:types".Character'                                            || FALSE.apply(engine.context)
+        '"funcky:types".listType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || FALSE.apply(engine.context)
+        '"funcky:types".listType ("funcky:types".List "funcky:types".Type)'                           || TRUE.apply(engine.context)
+        '"funcky:types".listType ("funcky:types".String)'                                             || TRUE.apply(engine.context)
+        '"funcky:types".listType ("funcky:types".Record [])'                                          || FALSE.apply(engine.context)
+        '"funcky:types".listType ("funcky:types".Record ["funcky:types".Type])'                       || FALSE.apply(engine.context)
+        '"funcky:types".listType "funcky:types".Unit'                                                 || FALSE.apply(engine.context)
+        '"funcky:types".listType $_'                                                                  || FALSE.apply(engine.context)
     }
 
     @Unroll('Test recordType (expression: #expression)')
@@ -269,18 +269,18 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                                      || result
         '"funcky:commons".string "funcky:types".recordType'                                             || toFuncky('"funcky:types".recordType')
-        '"funcky:types".type "funcky:types".recordType'                                                 || FUNCTION(TYPE, BOOLEAN).apply(engine)
-        '"funcky:types".recordType "funcky:types".Type'                                                 || FALSE.apply(engine)
-        '"funcky:types".recordType "funcky:types".Number'                                               || FALSE.apply(engine)
-        '"funcky:types".recordType "funcky:types".Boolean'                                              || FALSE.apply(engine)
-        '"funcky:types".recordType "funcky:types".Character'                                            || FALSE.apply(engine)
-        '"funcky:types".recordType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || FALSE.apply(engine)
-        '"funcky:types".recordType ("funcky:types".List "funcky:types".Type)'                           || FALSE.apply(engine)
-        '"funcky:types".recordType ("funcky:types".String)'                                             || FALSE.apply(engine)
-        '"funcky:types".recordType ("funcky:types".Record [])'                                          || TRUE.apply(engine)
-        '"funcky:types".recordType ("funcky:types".Record ["funcky:types".Type])'                       || TRUE.apply(engine)
-        '"funcky:types".recordType "funcky:types".Unit'                                                 || TRUE.apply(engine)
-        '"funcky:types".recordType $_'                                                                  || FALSE.apply(engine)
+        '"funcky:types".type "funcky:types".recordType'                                                 || FUNCTION(TYPE, BOOLEAN).apply(engine.context)
+        '"funcky:types".recordType "funcky:types".Type'                                                 || FALSE.apply(engine.context)
+        '"funcky:types".recordType "funcky:types".Number'                                               || FALSE.apply(engine.context)
+        '"funcky:types".recordType "funcky:types".Boolean'                                              || FALSE.apply(engine.context)
+        '"funcky:types".recordType "funcky:types".Character'                                            || FALSE.apply(engine.context)
+        '"funcky:types".recordType ("funcky:types".Function "funcky:types".Type "funcky:types".Number)' || FALSE.apply(engine.context)
+        '"funcky:types".recordType ("funcky:types".List "funcky:types".Type)'                           || FALSE.apply(engine.context)
+        '"funcky:types".recordType ("funcky:types".String)'                                             || FALSE.apply(engine.context)
+        '"funcky:types".recordType ("funcky:types".Record [])'                                          || TRUE.apply(engine.context)
+        '"funcky:types".recordType ("funcky:types".Record ["funcky:types".Type])'                       || TRUE.apply(engine.context)
+        '"funcky:types".recordType "funcky:types".Unit'                                                 || TRUE.apply(engine.context)
+        '"funcky:types".recordType $_'                                                                  || FALSE.apply(engine.context)
     }
 
     @Unroll('Test free (expression: #expression')
@@ -290,29 +290,29 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                                                                                                                                       || result
         '"funcky:commons".string "funcky:types".free'                                                                                                                                                    || toFuncky('"funcky:types".free')
-        '"funcky:types".type "funcky:types".free'                                                                                                                                                        || FUNCTION(TYPE, TYPE).apply(engine)
-        '"funcky:types".free "funcky:types".Type'                                                                                                                                                        || TYPE.apply(engine)
-        '"funcky:types".free "funcky:types".Number'                                                                                                                                                      || NUMBER.apply(engine)
-        '"funcky:types".free "funcky:types".Boolean'                                                                                                                                                     || BOOLEAN.apply(engine)
-        '"funcky:types".free "funcky:types".Character'                                                                                                                                                   || CHARACTER.apply(engine)
-        '"funcky:types".free ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'                                                                                                        || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:types".domain ("funcky:types".free ("funcky:types".Function "funcky:types".Type $_))'                                                                                                   || TYPE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".free ("funcky:types".Function "funcky:types".Type $_)))'                                                                      || TRUE.apply(engine)
-        '"funcky:commons".equal ("funcky:types".range ("funcky:types".free ("funcky:types".Function "funcky:types".Type $_))) ("funcky:types".range ("funcky:types".Function "funcky:types".Type $_))'   || FALSE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".free ("funcky:types".Function $_ "funcky:types".Type)))'                                                                     || TRUE.apply(engine)
-        '"funcky:commons".equal ("funcky:types".domain ("funcky:types".free ("funcky:types".Function $_ "funcky:types".Type))) ("funcky:types".domain ("funcky:types".Function $_ "funcky:types".Type))' || FALSE.apply(engine)
-        '"funcky:types".range ("funcky:types".free ("funcky:types".Function $_ "funcky:types".Type))'                                                                                                    || TYPE.apply(engine)
-        '"funcky:types".free ("funcky:types".List "funcky:types".Type)'                                                                                                                                  || LIST(TYPE).apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".free ("funcky:types".List $_)))'                                                                                            || TRUE.apply(engine)
-        '"funcky:commons".equal ("funcky:types".element ("funcky:types".free ("funcky:types".List $_))) ("funcky:types".element ("funcky:types".List $_))'                                               || FALSE.apply(engine)
-        '"funcky:types".free "funcky:types".String'                                                                                                                                                      || STRING.apply(engine)
-        '"funcky:types".free ("funcky:types".Record [])'                                                                                                                                                 || UNIT.apply(engine)
-        '"funcky:types".free ("funcky:types".Record ["funcky:types".Type])'                                                                                                                              || RECORD(TYPE).apply(engine)
-        '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".free ("funcky:types".Record [$_]))))'                                                               || TRUE.apply(engine)
-        '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".free ("funcky:types".Record [$_]))))'                                                                      || TRUE.apply(engine)
-        '"funcky:types".free "funcky:types".Unit'                                                                                                                                                        || UNIT.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".free $_)'                                                                                                                                           || TRUE.apply(engine)
-        '"funcky:commons".equal ("funcky:types".free $_) $_'                                                                                                                                             || FALSE.apply(engine)
+        '"funcky:types".type "funcky:types".free'                                                                                                                                                        || FUNCTION(TYPE, TYPE).apply(engine.context)
+        '"funcky:types".free "funcky:types".Type'                                                                                                                                                        || TYPE.apply(engine.context)
+        '"funcky:types".free "funcky:types".Number'                                                                                                                                                      || NUMBER.apply(engine.context)
+        '"funcky:types".free "funcky:types".Boolean'                                                                                                                                                     || BOOLEAN.apply(engine.context)
+        '"funcky:types".free "funcky:types".Character'                                                                                                                                                   || CHARACTER.apply(engine.context)
+        '"funcky:types".free ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'                                                                                                        || FUNCTION(TYPE, NUMBER).apply(engine.context)
+        '"funcky:types".domain ("funcky:types".free ("funcky:types".Function "funcky:types".Type $_))'                                                                                                   || TYPE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".free ("funcky:types".Function "funcky:types".Type $_)))'                                                                      || TRUE.apply(engine.context)
+        '"funcky:commons".equal ("funcky:types".range ("funcky:types".free ("funcky:types".Function "funcky:types".Type $_))) ("funcky:types".range ("funcky:types".Function "funcky:types".Type $_))'   || FALSE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".free ("funcky:types".Function $_ "funcky:types".Type)))'                                                                     || TRUE.apply(engine.context)
+        '"funcky:commons".equal ("funcky:types".domain ("funcky:types".free ("funcky:types".Function $_ "funcky:types".Type))) ("funcky:types".domain ("funcky:types".Function $_ "funcky:types".Type))' || FALSE.apply(engine.context)
+        '"funcky:types".range ("funcky:types".free ("funcky:types".Function $_ "funcky:types".Type))'                                                                                                    || TYPE.apply(engine.context)
+        '"funcky:types".free ("funcky:types".List "funcky:types".Type)'                                                                                                                                  || LIST(TYPE).apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".free ("funcky:types".List $_)))'                                                                                            || TRUE.apply(engine.context)
+        '"funcky:commons".equal ("funcky:types".element ("funcky:types".free ("funcky:types".List $_))) ("funcky:types".element ("funcky:types".List $_))'                                               || FALSE.apply(engine.context)
+        '"funcky:types".free "funcky:types".String'                                                                                                                                                      || STRING.apply(engine.context)
+        '"funcky:types".free ("funcky:types".Record [])'                                                                                                                                                 || UNIT.apply(engine.context)
+        '"funcky:types".free ("funcky:types".Record ["funcky:types".Type])'                                                                                                                              || RECORD(TYPE).apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".free ("funcky:types".Record [$_]))))'                                                               || TRUE.apply(engine.context)
+        '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".free ("funcky:types".Record [$_]))))'                                                                      || TRUE.apply(engine.context)
+        '"funcky:types".free "funcky:types".Unit'                                                                                                                                                        || UNIT.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".free $_)'                                                                                                                                           || TRUE.apply(engine.context)
+        '"funcky:commons".equal ("funcky:types".free $_) $_'                                                                                                                                             || FALSE.apply(engine.context)
     }
 
     @Unroll('Test unify (expression: #expression')
@@ -322,89 +322,89 @@ class TypesSpec extends BaseSpec {
         where:
         expression                                                                                                                                                                         || result
         '"funcky:commons".string "funcky:types".unify'                                                                                                                                     || toFuncky('"funcky:types".unify')
-        '"funcky:types".type "funcky:types".unify'                                                                                                                                         || FUNCTION(TYPE, TYPE, TYPE).apply(engine)
-        '"funcky:types".type ("funcky:types".unify "funcky:types".Type)'                                                                                                                   || FUNCTION(TYPE, TYPE).apply(engine)
+        '"funcky:types".type "funcky:types".unify'                                                                                                                                         || FUNCTION(TYPE, TYPE, TYPE).apply(engine.context)
+        '"funcky:types".type ("funcky:types".unify "funcky:types".Type)'                                                                                                                   || FUNCTION(TYPE, TYPE).apply(engine.context)
         '"funcky:commons".string ("funcky:types".unify ("funcky:commons".error "foo"))'                                                                                                    || toFuncky('"funcky:types".unify ("funcky:commons".error "foo")')
-        '"funcky:types".unify "funcky:types".Type "funcky:types".Type'                                                                                                                     || TYPE.apply(engine)
-        '"funcky:types".unify "funcky:types".Type $_'                                                                                                                                      || TYPE.apply(engine)
-        '"funcky:types".unify "funcky:types".Number "funcky:types".Number'                                                                                                                 || NUMBER.apply(engine)
-        '"funcky:types".unify "funcky:types".Number $_'                                                                                                                                    || NUMBER.apply(engine)
-        '"funcky:types".unify "funcky:types".Boolean "funcky:types".Boolean'                                                                                                               || BOOLEAN.apply(engine)
-        '"funcky:types".unify "funcky:types".Boolean $_'                                                                                                                                   || BOOLEAN.apply(engine)
-        '"funcky:types".unify "funcky:types".Character "funcky:types".Character'                                                                                                           || CHARACTER.apply(engine)
-        '"funcky:types".unify "funcky:types".Character $_'                                                                                                                                 || CHARACTER.apply(engine)
-        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type "funcky:types".Number) ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'                     || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type "funcky:types".Number) ("funcky:types".Function "funcky:types".Type $_)'                                        || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type "funcky:types".Number) ("funcky:types".Function $_ "funcky:types".Number)'                                      || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type "funcky:types".Number) ("funcky:types".Function $_ $_)'                                                         || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type "funcky:types".Number) $_'                                                                                      || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'                                        || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:types".domain ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function "funcky:types".Type $_))'                                   || TYPE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function "funcky:types".Type $_)))'      || TRUE.apply(engine)
-        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function $_ "funcky:types".Number)'                                                         || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:types".domain ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function $_ $_))'                                                    || TYPE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function $_ $_)))'                       || TRUE.apply(engine)
-        '"funcky:types".domain ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) $_)'                                                                                 || TYPE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) $_))'                                                    || TRUE.apply(engine)
-        '"funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) ("funcky:types".Function "funcky:types".Type $_)'                                                         || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) ("funcky:types".Function $_ "funcky:types".Number)))' || TRUE.apply(engine)
-        '"funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) ("funcky:types".Function $_ "funcky:types".Number))'                                || NUMBER.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) ("funcky:types".Function $_ $_)))'                    || TRUE.apply(engine)
-        '"funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) ("funcky:types".Function $_ $_))'                                                   || NUMBER.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) $_))'                                                 || TRUE.apply(engine)
-        '"funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) $_)'                                                                                || NUMBER.apply(engine)
-        '"funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function "funcky:types".Type $_))'                                                    || TYPE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function "funcky:types".Type $_)))'                       || TRUE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function $_ "funcky:types".Number)))'                    || TRUE.apply(engine)
-        '"funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function $_ "funcky:types".Number))'                                                   || NUMBER.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function $_ $_)))'                                       || TRUE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function $_ $_)))'                                        || TRUE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ $_) $_))'                                                                    || TRUE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ $_) $_))'                                                                     || TRUE.apply(engine)
-        '"funcky:types".unify ("funcky:types".List "funcky:types".Type) ("funcky:types".List "funcky:types".Type)'                                                                         || LIST(TYPE).apply(engine)
-        '"funcky:types".unify ("funcky:types".List "funcky:types".Type) ("funcky:types".List $_)'                                                                                          || LIST(TYPE).apply(engine)
-        '"funcky:types".unify ("funcky:types".List "funcky:types".Type) $_'                                                                                                                || LIST(TYPE).apply(engine)
-        '"funcky:types".unify ("funcky:types".List $_) ("funcky:types".List "funcky:types".Type)'                                                                                          || LIST(TYPE).apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".unify ("funcky:types".List $_) ("funcky:types".List $_)))'                                                    || TRUE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".unify ("funcky:types".List $_) $_))'                                                                          || TRUE.apply(engine)
-        '"funcky:types".unify ("funcky:types".List "funcky:types".Character) "funcky:types".String'                                                                                        || STRING.apply(engine)
-        '"funcky:types".unify "funcky:types".String ("funcky:types".List "funcky:types".Character)'                                                                                        || STRING.apply(engine)
-        '"funcky:types".unify "funcky:types".String "funcky:types".String'                                                                                                                 || STRING.apply(engine)
-        '"funcky:types".unify "funcky:types".String $_'                                                                                                                                    || STRING.apply(engine)
-        '"funcky:types".unify ("funcky:types".Record []) ("funcky:types".Record [])'                                                                                                       || UNIT.apply(engine)
-        '"funcky:types".unify ("funcky:types".Record []) "funcky:types".Unit'                                                                                                              || UNIT.apply(engine)
-        '"funcky:types".unify ("funcky:types".Record []) $_'                                                                                                                               || UNIT.apply(engine)
-        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) ("funcky:types".Record ["funcky:types".Type])'                                                                 || RECORD(TYPE).apply(engine)
-        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) ("funcky:types".Record [$_])'                                                                                  || RECORD(TYPE).apply(engine)
-        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) $_'                                                                                                            || RECORD(TYPE).apply(engine)
-        '"funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record ["funcky:types".Type])'                                                                                  || RECORD(TYPE).apply(engine)
-        '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record [$_]))))'                   || TRUE.apply(engine)
-        '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record [$_]))))'                          || TRUE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) $_)))'                                             || TRUE.apply(engine)
-        '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) $_)))'                                                    || TRUE.apply(engine)
-        '"funcky:types".unify "funcky:types".Unit ("funcky:types".Record [])'                                                                                                              || UNIT.apply(engine)
-        '"funcky:types".unify "funcky:types".Unit "funcky:types".Unit'                                                                                                                     || UNIT.apply(engine)
-        '"funcky:types".unify "funcky:types".Unit $_'                                                                                                                                      || UNIT.apply(engine)
-        '"funcky:types".unify $_ "funcky:types".Type'                                                                                                                                      || TYPE.apply(engine)
-        '"funcky:types".unify $_ "funcky:types".Number'                                                                                                                                    || NUMBER.apply(engine)
-        '"funcky:types".unify $_ "funcky:types".Boolean'                                                                                                                                   || BOOLEAN.apply(engine)
-        '"funcky:types".unify $_ "funcky:types".Character'                                                                                                                                 || CHARACTER.apply(engine)
-        '"funcky:types".unify $_ ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'                                                                                      || FUNCTION(TYPE, NUMBER).apply(engine)
-        '"funcky:types".domain ("funcky:types".unify $_ ("funcky:types".Function "funcky:types".Type $_))'                                                                                 || TYPE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify $_ ("funcky:types".Function "funcky:types".Type $_)))'                                                    || TRUE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify $_ ("funcky:types".Function $_ "funcky:types".Type)))'                                                   || TRUE.apply(engine)
-        '"funcky:types".range ("funcky:types".unify $_ ("funcky:types".Function $_ "funcky:types".Type))'                                                                                  || TYPE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify $_ ("funcky:types".Function $_ $_)))'                                                                    || TRUE.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify $_ ("funcky:types".Function $_ $_)))'                                                                     || TRUE.apply(engine)
-        '"funcky:types".unify $_ ("funcky:types".List "funcky:types".Type)'                                                                                                                || LIST(TYPE).apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".unify $_ ("funcky:types".List $_)))'                                                                          || TRUE.apply(engine)
-        '"funcky:types".unify $_ "funcky:types".String'                                                                                                                                    || STRING.apply(engine)
-        '"funcky:types".unify $_ ("funcky:types".Record [])'                                                                                                                               || UNIT.apply(engine)
-        '"funcky:types".unify $_ ("funcky:types".Record ["funcky:types".Type])'                                                                                                            || RECORD(TYPE).apply(engine)
-        '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify $_ ("funcky:types".Record [$_]))))'                                             || TRUE.apply(engine)
-        '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify $_ ("funcky:types".Record [$_]))))'                                                    || TRUE.apply(engine)
-        '"funcky:types".unify $_ "funcky:types".Unit'                                                                                                                                      || UNIT.apply(engine)
-        '"funcky:types".typeVariable ("funcky:types".unify $_ $_)'                                                                                                                         || TRUE.apply(engine)
+        '"funcky:types".unify "funcky:types".Type "funcky:types".Type'                                                                                                                     || TYPE.apply(engine.context)
+        '"funcky:types".unify "funcky:types".Type $_'                                                                                                                                      || TYPE.apply(engine.context)
+        '"funcky:types".unify "funcky:types".Number "funcky:types".Number'                                                                                                                 || NUMBER.apply(engine.context)
+        '"funcky:types".unify "funcky:types".Number $_'                                                                                                                                    || NUMBER.apply(engine.context)
+        '"funcky:types".unify "funcky:types".Boolean "funcky:types".Boolean'                                                                                                               || BOOLEAN.apply(engine.context)
+        '"funcky:types".unify "funcky:types".Boolean $_'                                                                                                                                   || BOOLEAN.apply(engine.context)
+        '"funcky:types".unify "funcky:types".Character "funcky:types".Character'                                                                                                           || CHARACTER.apply(engine.context)
+        '"funcky:types".unify "funcky:types".Character $_'                                                                                                                                 || CHARACTER.apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type "funcky:types".Number) ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'                     || FUNCTION(TYPE, NUMBER).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type "funcky:types".Number) ("funcky:types".Function "funcky:types".Type $_)'                                        || FUNCTION(TYPE, NUMBER).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type "funcky:types".Number) ("funcky:types".Function $_ "funcky:types".Number)'                                      || FUNCTION(TYPE, NUMBER).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type "funcky:types".Number) ("funcky:types".Function $_ $_)'                                                         || FUNCTION(TYPE, NUMBER).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type "funcky:types".Number) $_'                                                                                      || FUNCTION(TYPE, NUMBER).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'                                        || FUNCTION(TYPE, NUMBER).apply(engine.context)
+        '"funcky:types".domain ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function "funcky:types".Type $_))'                                   || TYPE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function "funcky:types".Type $_)))'      || TRUE.apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function $_ "funcky:types".Number)'                                                         || FUNCTION(TYPE, NUMBER).apply(engine.context)
+        '"funcky:types".domain ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function $_ $_))'                                                    || TYPE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) ("funcky:types".Function $_ $_)))'                       || TRUE.apply(engine.context)
+        '"funcky:types".domain ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) $_)'                                                                                 || TYPE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function "funcky:types".Type $_) $_))'                                                    || TRUE.apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) ("funcky:types".Function "funcky:types".Type $_)'                                                         || FUNCTION(TYPE, NUMBER).apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) ("funcky:types".Function $_ "funcky:types".Number)))' || TRUE.apply(engine.context)
+        '"funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) ("funcky:types".Function $_ "funcky:types".Number))'                                || NUMBER.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) ("funcky:types".Function $_ $_)))'                    || TRUE.apply(engine.context)
+        '"funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) ("funcky:types".Function $_ $_))'                                                   || NUMBER.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) $_))'                                                 || TRUE.apply(engine.context)
+        '"funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ "funcky:types".Number) $_)'                                                                                || NUMBER.apply(engine.context)
+        '"funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function "funcky:types".Type $_))'                                                    || TYPE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function "funcky:types".Type $_)))'                       || TRUE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function $_ "funcky:types".Number)))'                    || TRUE.apply(engine.context)
+        '"funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function $_ "funcky:types".Number))'                                                   || NUMBER.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function $_ $_)))'                                       || TRUE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ $_) ("funcky:types".Function $_ $_)))'                                        || TRUE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify ("funcky:types".Function $_ $_) $_))'                                                                    || TRUE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify ("funcky:types".Function $_ $_) $_))'                                                                     || TRUE.apply(engine.context)
+        '"funcky:types".unify ("funcky:types".List "funcky:types".Type) ("funcky:types".List "funcky:types".Type)'                                                                         || LIST(TYPE).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".List "funcky:types".Type) ("funcky:types".List $_)'                                                                                          || LIST(TYPE).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".List "funcky:types".Type) $_'                                                                                                                || LIST(TYPE).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".List $_) ("funcky:types".List "funcky:types".Type)'                                                                                          || LIST(TYPE).apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".unify ("funcky:types".List $_) ("funcky:types".List $_)))'                                                    || TRUE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".unify ("funcky:types".List $_) $_))'                                                                          || TRUE.apply(engine.context)
+        '"funcky:types".unify ("funcky:types".List "funcky:types".Character) "funcky:types".String'                                                                                        || STRING.apply(engine.context)
+        '"funcky:types".unify "funcky:types".String ("funcky:types".List "funcky:types".Character)'                                                                                        || STRING.apply(engine.context)
+        '"funcky:types".unify "funcky:types".String "funcky:types".String'                                                                                                                 || STRING.apply(engine.context)
+        '"funcky:types".unify "funcky:types".String $_'                                                                                                                                    || STRING.apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Record []) ("funcky:types".Record [])'                                                                                                       || UNIT.apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Record []) "funcky:types".Unit'                                                                                                              || UNIT.apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Record []) $_'                                                                                                                               || UNIT.apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) ("funcky:types".Record ["funcky:types".Type])'                                                                 || RECORD(TYPE).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) ("funcky:types".Record [$_])'                                                                                  || RECORD(TYPE).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Record ["funcky:types".Type]) $_'                                                                                                            || RECORD(TYPE).apply(engine.context)
+        '"funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record ["funcky:types".Type])'                                                                                  || RECORD(TYPE).apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record [$_]))))'                   || TRUE.apply(engine.context)
+        '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) ("funcky:types".Record [$_]))))'                          || TRUE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) $_)))'                                             || TRUE.apply(engine.context)
+        '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify ("funcky:types".Record [$_]) $_)))'                                                    || TRUE.apply(engine.context)
+        '"funcky:types".unify "funcky:types".Unit ("funcky:types".Record [])'                                                                                                              || UNIT.apply(engine.context)
+        '"funcky:types".unify "funcky:types".Unit "funcky:types".Unit'                                                                                                                     || UNIT.apply(engine.context)
+        '"funcky:types".unify "funcky:types".Unit $_'                                                                                                                                      || UNIT.apply(engine.context)
+        '"funcky:types".unify $_ "funcky:types".Type'                                                                                                                                      || TYPE.apply(engine.context)
+        '"funcky:types".unify $_ "funcky:types".Number'                                                                                                                                    || NUMBER.apply(engine.context)
+        '"funcky:types".unify $_ "funcky:types".Boolean'                                                                                                                                   || BOOLEAN.apply(engine.context)
+        '"funcky:types".unify $_ "funcky:types".Character'                                                                                                                                 || CHARACTER.apply(engine.context)
+        '"funcky:types".unify $_ ("funcky:types".Function "funcky:types".Type "funcky:types".Number)'                                                                                      || FUNCTION(TYPE, NUMBER).apply(engine.context)
+        '"funcky:types".domain ("funcky:types".unify $_ ("funcky:types".Function "funcky:types".Type $_))'                                                                                 || TYPE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify $_ ("funcky:types".Function "funcky:types".Type $_)))'                                                    || TRUE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify $_ ("funcky:types".Function $_ "funcky:types".Type)))'                                                   || TRUE.apply(engine.context)
+        '"funcky:types".range ("funcky:types".unify $_ ("funcky:types".Function $_ "funcky:types".Type))'                                                                                  || TYPE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".domain ("funcky:types".unify $_ ("funcky:types".Function $_ $_)))'                                                                    || TRUE.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".range ("funcky:types".unify $_ ("funcky:types".Function $_ $_)))'                                                                     || TRUE.apply(engine.context)
+        '"funcky:types".unify $_ ("funcky:types".List "funcky:types".Type)'                                                                                                                || LIST(TYPE).apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".element ("funcky:types".unify $_ ("funcky:types".List $_)))'                                                                          || TRUE.apply(engine.context)
+        '"funcky:types".unify $_ "funcky:types".String'                                                                                                                                    || STRING.apply(engine.context)
+        '"funcky:types".unify $_ ("funcky:types".Record [])'                                                                                                                               || UNIT.apply(engine.context)
+        '"funcky:types".unify $_ ("funcky:types".Record ["funcky:types".Type])'                                                                                                            || RECORD(TYPE).apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:lists".head ("funcky:types".components ("funcky:types".unify $_ ("funcky:types".Record [$_]))))'                                             || TRUE.apply(engine.context)
+        '"funcky:lists".empty ("funcky:lists".tail ("funcky:types".components ("funcky:types".unify $_ ("funcky:types".Record [$_]))))'                                                    || TRUE.apply(engine.context)
+        '"funcky:types".unify $_ "funcky:types".Unit'                                                                                                                                      || UNIT.apply(engine.context)
+        '"funcky:types".typeVariable ("funcky:types".unify $_ $_)'                                                                                                                         || TRUE.apply(engine.context)
     }
 
     @Unroll('Test unify (runtime error, expression: #expression')

@@ -186,9 +186,9 @@ class CompilationErrorSpec extends BaseSpec {
         e.lineNumber == 1
         e.columnNumber == column
         where:
-        expression                       || head                      | headType | tail    | tailType                                | column
-        '[1, \'a\']'                     || '1'                       | NUMBER.apply(engine)  | '"a"'   | STRING.apply(engine)       | 2
-        '["funcky:booleans".false, "a"]' || '"funcky:booleans".false' | BOOLEAN.apply(engine) | '["a"]' | LIST(STRING).apply(engine) | 2
+        expression                       || head                      | headType                      | tail    | tailType                           | column
+        '[1, \'a\']'                     || '1'                       | NUMBER.apply(engine.context)  | '"a"'   | STRING.apply(engine.context)       | 2
+        '["funcky:booleans".false, "a"]' || '"funcky:booleans".false' | BOOLEAN.apply(engine.context) | '["a"]' | LIST(STRING).apply(engine.context) | 2
     }
 
     @Unroll('Test invalid list literal error in script (script: #script)')
@@ -207,9 +207,9 @@ class CompilationErrorSpec extends BaseSpec {
         cleanup:
         reader.close()
         where:
-        script                                                   || head                      | headType              | tail    | tailType                   | line | column
-        '/compilation_error/invalid_list_literal_error_1.funcky' || '1'                       | NUMBER.apply(engine)  | '"a"'   | STRING.apply(engine)       | 1    | 8
-        '/compilation_error/invalid_list_literal_error_2.funcky' || '"funcky:booleans".false' | BOOLEAN.apply(engine) | '["a"]' | LIST(STRING).apply(engine) | 2    | 8
+        script                                                   || head                      | headType                      | tail    | tailType                           | line | column
+        '/compilation_error/invalid_list_literal_error_1.funcky' || '1'                       | NUMBER.apply(engine.context)  | '"a"'   | STRING.apply(engine.context)       | 1    | 8
+        '/compilation_error/invalid_list_literal_error_2.funcky' || '"funcky:booleans".false' | BOOLEAN.apply(engine.context) | '["a"]' | LIST(STRING).apply(engine.context) | 2    | 8
     }
 
     @Unroll('Test prefix already bound error (script: #script)')
@@ -342,9 +342,9 @@ class CompilationErrorSpec extends BaseSpec {
         e.lineNumber == 1
         e.columnNumber == column
         where:
-        expression                                       || function                 | functionType                                   | argument                  | argumentType              | column
-        '"funcky:numbers".add "funcky:booleans".false'   || '"funcky:numbers".add'   | FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine) | '"funcky:booleans".false' | BOOLEAN.apply(engine)     | 1
-        '"funcky:numbers".add 1 "funcky:booleans".false' || '"funcky:numbers".add 1' | FUNCTION(NUMBER, NUMBER).apply(engine)         | '"funcky:booleans".false' | BOOLEAN.apply(engine)     | 1
+        expression                                       || function                 | functionType                                           | argument                  | argumentType                  | column
+        '"funcky:numbers".add "funcky:booleans".false'   || '"funcky:numbers".add'   | FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine.context) | '"funcky:booleans".false' | BOOLEAN.apply(engine.context) | 1
+        '"funcky:numbers".add 1 "funcky:booleans".false' || '"funcky:numbers".add 1' | FUNCTION(NUMBER, NUMBER).apply(engine.context)         | '"funcky:booleans".false' | BOOLEAN.apply(engine.context) | 1
     }
 
     @Unroll('Test illegal application error in script (script: #script)')
@@ -363,9 +363,9 @@ class CompilationErrorSpec extends BaseSpec {
         cleanup:
         reader.close()
         where:
-        script                                                  || function               | functionType                                   | argument                  | argumentType          | line | column
-        '/compilation_error/illegal_application_error_1.funcky' || '"funcky:numbers".add' | FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine) | '"funcky:booleans".false' | BOOLEAN.apply(engine) | 1    | 7
-        '/compilation_error/illegal_application_error_2.funcky' || 'numbers.add 1'        | FUNCTION(NUMBER, NUMBER).apply(engine)         | 'booleans.false'          | BOOLEAN.apply(engine) | 4    | 7
+        script                                                  || function               | functionType                                           | argument                  | argumentType                  | line | column
+        '/compilation_error/illegal_application_error_1.funcky' || '"funcky:numbers".add' | FUNCTION(NUMBER, NUMBER, NUMBER).apply(engine.context) | '"funcky:booleans".false' | BOOLEAN.apply(engine.context) | 1    | 7
+        '/compilation_error/illegal_application_error_2.funcky' || 'numbers.add 1'        | FUNCTION(NUMBER, NUMBER).apply(engine.context)         | 'booleans.false'          | BOOLEAN.apply(engine.context) | 4    | 7
     }
 
     @Unroll('Test undefined main error (script: #script)')
@@ -396,15 +396,15 @@ class CompilationErrorSpec extends BaseSpec {
         then:
         final InvalidMainException e = thrown()
         e.message
-        e.message.startsWith(String.format(InvalidMainException.MESSAGE, type, Linker.MAIN_TYPE.apply(engine)))
+        e.message.startsWith(String.format(InvalidMainException.MESSAGE, type, Linker.MAIN_TYPE.apply(engine.context)))
         e.fileName == CompilationErrorSpec.getResource(script).toURI().toString()
         e.lineNumber == line
         e.columnNumber == 1
         cleanup:
         reader.close()
         where:
-        script                                           || type                                   | line
-        '/compilation_error/invalid_main_error_1.funcky' || BOOLEAN.apply(engine)                  | 1
-        '/compilation_error/invalid_main_error_2.funcky' || FUNCTION(NUMBER, NUMBER).apply(engine) | 3
+        script                                           || type                                           | line
+        '/compilation_error/invalid_main_error_1.funcky' || BOOLEAN.apply(engine.context)                  | 1
+        '/compilation_error/invalid_main_error_2.funcky' || FUNCTION(NUMBER, NUMBER).apply(engine.context) | 3
     }
 }
