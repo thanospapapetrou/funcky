@@ -2,7 +2,9 @@ package io.github.thanospapapetrou.funcky.compiler.linker;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -34,7 +36,10 @@ import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UnboundPrefi
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedMainException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.UndefinedNameException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.nativ.NativeClassNotFoundException;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.nativ.NativeConstructorNotFoundException;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.nativ.NativeFieldInvalidTypeException;
 import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.nativ.NativeFieldNotFoundException;
+import io.github.thanospapapetrou.funcky.compiler.linker.exceptions.nativ.NativeInstantiationException;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -300,22 +305,30 @@ public class Linker {
     private FunckyExpression loadNative(final FunckyDefinition definition, final FunckyReference reference) {
         try {
             final Class<?> clazz = Class.forName(reference.getNamespace().getSchemeSpecificPart());
+            if (clazz.isInterface() || (!Modifier.isPublic(clazz.getModifiers())
+                    || Modifier.isAbstract(clazz.getModifiers()) || Modifier.isStatic(clazz.getModifiers()))) {
+                throw new RuntimeException("Invalid class");
+            }
             final Field field = clazz.getDeclaredField(reference.getName());
             if (FunckyValue.class.isAssignableFrom(field.getType())) {
+                final Constructor<?> constructor = clazz.getDeclaredConstructor(FunckyContext.class);
+                if (!constructor.canAccess(null)) {
+                    throw new SneakyCompilationException(new NativeConstructorNotFoundException(reference));
+                }
                 return new FunckyLiteral(engine, reference.getFile(), reference.getLine(), reference.getColumn(),
                         loadNative(definition, (FunckyValue) field.get(
                                 clazz.getDeclaredConstructor(FunckyContext.class).newInstance(engine.getContext()))));
             } else {
-                throw new RuntimeException("Not a FunckyValue"); // TODO
+                throw new SneakyCompilationException(new NativeFieldInvalidTypeException(reference));
             }
         } catch (final ClassNotFoundException e) {
             throw new SneakyCompilationException(new NativeClassNotFoundException(reference));
         } catch (final NoSuchFieldException e) {
             throw new SneakyCompilationException(new NativeFieldNotFoundException(reference));
         } catch (final NoSuchMethodException e) {
-            throw new RuntimeException("Constructor not found", e); // TODO
+            throw new SneakyCompilationException(new NativeConstructorNotFoundException(reference));
         } catch (final ReflectiveOperationException e) {
-            throw new RuntimeException("Error instantiating class", e); // TODO
+            throw new SneakyCompilationException(new NativeInstantiationException(reference, e.getMessage()));
         }
     }
 
