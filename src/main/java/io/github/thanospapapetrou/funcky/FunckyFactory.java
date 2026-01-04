@@ -21,6 +21,13 @@ public class FunckyFactory implements ScriptEngineFactory {
     private static final String DELIMITER_STATEMENT = "\n";
     private static final Logger LOGGER = Logger.getLogger(FunckyFactory.class.getName());
     private static final Properties PARAMETERS = new Properties();
+    private static final String PROPERTY_JVM_NAME = "java.vm.name";
+    private static final String PROPERTY_JVM_VERSION = "java.vm.version";
+    private static final String PROPERTY_JVM_VENDOR = "java.vm.vendor";
+    private static final String PROPERTY_OS_NAME = "os.name";
+    private static final String PROPERTY_OS_VERSION = "os.version";
+    private static final String PROPERTY_OS_ARCHITECTURE = "os.arch";
+    private static final String PROPERTY_USERNAME = "user.name";
 
     private final Properties parameters;
 
@@ -34,6 +41,13 @@ public class FunckyFactory implements ScriptEngineFactory {
 
     public FunckyFactory() {
         this(new Properties(PARAMETERS));
+        setParameter(FunckyEngine.PARAMETER_JVM_NAME, System.getProperty(PROPERTY_JVM_NAME));
+        setParameter(FunckyEngine.PARAMETER_JVM_VERSION, System.getProperty(PROPERTY_JVM_VERSION));
+        setParameter(FunckyEngine.PARAMETER_JVM_VENDOR, System.getProperty(PROPERTY_JVM_VENDOR));
+        setParameter(FunckyEngine.PARAMETER_OS_NAME, System.getProperty(PROPERTY_OS_NAME));
+        setParameter(FunckyEngine.PARAMETER_OS_VERSION, System.getProperty(PROPERTY_OS_VERSION));
+        setParameter(FunckyEngine.PARAMETER_OS_ARCHITECTURE, System.getProperty(PROPERTY_OS_ARCHITECTURE));
+        setParameter(FunckyEngine.PARAMETER_USERNAME, System.getProperty(PROPERTY_USERNAME));
         LOGGER.config(String.format(CONFIG_LANGUAGE, getLanguageName(), getLanguageVersion()));
         LOGGER.config(String.format(CONFIG_ENGINE, getEngineName(), getEngineVersion()));
         LOGGER.config(String.format(CONFIG_NAMES, getNames()));
@@ -114,28 +128,22 @@ public class FunckyFactory implements ScriptEngineFactory {
     @Override
     public FunckyEngine getScriptEngine() {
         final FunckyEngine engine = new FunckyEngine(this);
-        // TODO simplify the next two
-        PARAMETERS.keySet().stream()
-                .map(String.class::cast)
-                .forEach(parameter -> engine.getBindings(FunckyContext.GLOBAL_SCOPE).put(parameter,
-                        getParameters(parameter).size() > 1 ? engine.toFuncky(getParameters(parameter))
-                                : engine.toFuncky(getParameter(parameter))));
-        parameters.keySet().stream()
-                .map(String.class::cast)
-                .forEach(parameter -> engine.getBindings(FunckyContext.ENGINE_SCOPE).put(parameter,
-                        getParameter(parameter)));
-        // TODO
-        // PARAMETER_JVM_NAME
-        // PARAMETER_JVM_VERSION
-        // PARAMETER_JVM_VENDOR
-        // PARAMETER_OS_NAME
-        // PARAMETER_OS_VERSION
-        // PARAMETER_OS_ARCHITECTURE
+        setParameters(engine, FunckyContext.GLOBAL_SCOPE, PARAMETERS);
+        setParameters(engine, FunckyContext.ENGINE_SCOPE, parameters);
         return engine;
     }
 
     private List<String> getParameters(final String key) {
         final String parameters = this.parameters.getProperty(key);
         return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
+    }
+
+    private void setParameters(final FunckyEngine engine, final int scope, final Properties parameters) {
+        parameters.keySet().stream()
+                .map(String.class::cast)
+                .forEach(parameter -> engine.getBindings(scope).put(parameter, (getParameters(parameter).size() > 1)
+                        ? engine.toFuncky(getParameters(parameter))
+                        : engine.toFuncky(getParameter(parameter))));
+
     }
 }

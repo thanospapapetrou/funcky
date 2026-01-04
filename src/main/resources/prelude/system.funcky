@@ -1,0 +1,52 @@
+# JVM name
+# "funcky:types".String
+jvmName = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".jvmName
+
+# JVM version
+# "funcky:types".String
+jvmVersion = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".jvmVersion
+
+# JVM vendor
+# "funcky:types".String
+jvmVendor = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".jvmVendor
+
+# JVM name
+# "funcky:types".String
+osName = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".osName
+
+# OS version
+# "funcky:types".String
+osVersion = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".osVersion
+
+# OS architecture
+# "funcky:types".String
+osArchitecture = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".osArchitecture
+
+# Line separator
+# "funcky:types".String
+lineSeparator = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".lineSeparator
+
+# File separator
+# "funcky:types".String
+fileSeparator = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".fileSeparator
+
+# Path separator
+# "funcky:types".String
+pathSeparator = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".pathSeparator
+
+# Encoding
+# "funcky:types".String
+encoding = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".encoding
+
+# Locale
+# "funcky:types".String
+locale = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".locale
+
+# Time zone
+# "funcky:types".String
+timeZone = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".timeZone
+
+# Username
+# "funcky:types".String
+username = "java:io.github.thanospapapetrou.funcky.runtime.prelude.System".username
+

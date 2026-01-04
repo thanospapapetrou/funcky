@@ -51,6 +51,7 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     public static final String PARAMETER_OS_NAME = "io.github.thanospapapetrou.funcky.os.name";
     public static final String PARAMETER_OS_VERSION = "io.github.thanospapapetrou.funcky.os.version";
     public static final String PARAMETER_THREADING = "THREADING";
+    public static final String PARAMETER_USERNAME = "io.github.thanospapapetrou.funcky.username";
     private static final Logger LOGGER = Logger.getLogger(FunckyEngine.class.getName());
     private static final String MESSAGE_COMPILATION = "Compilation finished in %1$d ms";
     private static final String MESSAGE_EVALUATION = "Evaluation finished in %1$d ms";

@@ -76,7 +76,7 @@ public final class Commons extends FunckyLibrary {
             NUMBER, IO(UNIT)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            System.exit(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue());
+            java.lang.System.exit(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue());
             return new FunckyMonad(context, IO(UNIT).apply(context),
                     () -> new FunckyLiteral(context.getEngine(), new FunckyRecord(context, UNIT.apply(context),
                             List.of())));

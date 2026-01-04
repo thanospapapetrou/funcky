@@ -43,7 +43,7 @@ public final class IO extends FunckyLibrary {
             IO(CHARACTER).apply(context), () -> {
         try { // TODO do not close stdin
             return new FunckyLiteral(context.getEngine(), new FunckyCharacter(context,
-                    (char) new InputStreamReader(System.in).read()));
+                    (char) new InputStreamReader(java.lang.System.in).read()));
         } catch (final IOException e) {
             throw new RuntimeException(e); // TODO
         }
@@ -53,7 +53,7 @@ public final class IO extends FunckyLibrary {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
-                System.out.println(((FunckyCharacter) arguments.getFirst().eval(context)).getValue());
+                java.lang.System.out.println(((FunckyCharacter) arguments.getFirst().eval(context)).getValue());
                 return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, UNIT.apply(context),
                         List.of()));
             });
