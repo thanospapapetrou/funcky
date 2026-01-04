@@ -18,7 +18,6 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
-import io.github.thanospapapetrou.funcky.FunckyFactory;
 import io.github.thanospapapetrou.funcky.compiler.FunckyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.SneakyCompilationException;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
@@ -57,9 +56,9 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.N
 
 public class Linker {
     public static final Function<FunckyContext, FunckyFunctionType> MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
-    public static final String SCHEME_FUNCKY =
-            FunckyFactory.getParameters(FunckyEngine.LANGUAGE).getFirst().toLowerCase(Locale.ROOT);
-    public static final String SCHEME_JAVA = "java";
+    public static final String SCHEME_FUNCKY = "funcky"; // TODO language name
+    public static final String SCHEME_JAVA =
+            System.getProperty("java.vm.specification.name").split(" ")[0].toLowerCase(Locale.ROOT);
     public static final URI STDIN;
 
     private static final String DEFINITION = "%1$s\t%2$s";
@@ -89,7 +88,7 @@ public class Linker {
                 throw new IOException(String.format("No prelude library found for %1$s", file));
             }
             return Linker.class.getResource(String.format(PRELUDE_SCRIPT, file.getSchemeSpecificPart(),
-                    FunckyFactory.getParameters(FunckyEngine.PARAMETER_EXTENSIONS).getFirst()));
+                    "funcky")); // TODO extension
         }
         return file.toURL();
     }

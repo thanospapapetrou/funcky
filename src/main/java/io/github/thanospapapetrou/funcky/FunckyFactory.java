@@ -2,17 +2,18 @@ package io.github.thanospapapetrou.funcky;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Clock;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.script.ScriptEngineFactory;
 
+import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
+
 public class FunckyFactory implements ScriptEngineFactory {
-    private static final String CONFIG_ENGINE_NAME_VERSION = "Engine: %1$s %2$s";
+    private static final String CONFIG_ENGINE = "Engine: %1$s %2$s";
     private static final String CONFIG_EXTENSIONS = "Extensions: %1$s";
-    private static final String CONFIG_LANGUAGE_NAME_VERSION = "Language: %1$s %2$s";
+    private static final String CONFIG_LANGUAGE = "Language: %1$s %2$s";
     private static final String CONFIG_MIME_TYPES = "MIME Types: %1$s";
     private static final String CONFIG_NAMES = "Names: %1$s";
     private static final String CONFIG_THREADING = "Threading: %1$s";
@@ -20,6 +21,8 @@ public class FunckyFactory implements ScriptEngineFactory {
     private static final String DELIMITER_STATEMENT = "\n";
     private static final Logger LOGGER = Logger.getLogger(FunckyFactory.class.getName());
     private static final Properties PARAMETERS = new Properties();
+
+    private final Properties parameters;
 
     static {
         try (final InputStream parameters = FunckyFactory.class.getResourceAsStream("/funcky.properties")) {
@@ -29,18 +32,18 @@ public class FunckyFactory implements ScriptEngineFactory {
         }
     }
 
-    public static List<String> getParameters(final String key) {
-        final String parameters = PARAMETERS.getProperty(key);
-        return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
-    }
-
     public FunckyFactory() {
-        LOGGER.config(String.format(CONFIG_LANGUAGE_NAME_VERSION, getLanguageName(), getLanguageVersion()));
-        LOGGER.config(String.format(CONFIG_ENGINE_NAME_VERSION, getEngineName(), getEngineVersion()));
+        this(new Properties(PARAMETERS));
+        LOGGER.config(String.format(CONFIG_LANGUAGE, getLanguageName(), getLanguageVersion()));
+        LOGGER.config(String.format(CONFIG_ENGINE, getEngineName(), getEngineVersion()));
         LOGGER.config(String.format(CONFIG_NAMES, getNames()));
         LOGGER.config(String.format(CONFIG_MIME_TYPES, getMimeTypes()));
         LOGGER.config(String.format(CONFIG_EXTENSIONS, getExtensions()));
         LOGGER.config(String.format(CONFIG_THREADING, getParameter(FunckyEngine.PARAMETER_THREADING)));
+    }
+
+    private FunckyFactory(final Properties parameters) {
+        this.parameters = parameters;
     }
 
     @Override
@@ -84,6 +87,13 @@ public class FunckyFactory implements ScriptEngineFactory {
         return parameters.isEmpty() ? null : parameters.getFirst();
     }
 
+    public void setParameter(final String key, final String value) {
+        if (PARAMETERS.containsKey(key)) {
+            throw new IllegalArgumentException("Invalid key: " + key); // TODO
+        }
+        parameters.setProperty(key, value);
+    }
+
     @Override
     public String getMethodCallSyntax(final String object, final String method, final String... arguments) {
         // TODO
@@ -103,6 +113,29 @@ public class FunckyFactory implements ScriptEngineFactory {
 
     @Override
     public FunckyEngine getScriptEngine() {
-        return new FunckyEngine(this);
+        final FunckyEngine engine = new FunckyEngine(this);
+        // TODO simplify the next two
+        PARAMETERS.keySet().stream()
+                .map(String.class::cast)
+                .forEach(parameter -> engine.getBindings(FunckyContext.GLOBAL_SCOPE).put(parameter,
+                        getParameters(parameter).size() > 1 ? engine.toFuncky(getParameters(parameter))
+                                : engine.toFuncky(getParameter(parameter))));
+        parameters.keySet().stream()
+                .map(String.class::cast)
+                .forEach(parameter -> engine.getBindings(FunckyContext.ENGINE_SCOPE).put(parameter,
+                        getParameter(parameter)));
+        // TODO
+        // PARAMETER_JVM_NAME
+        // PARAMETER_JVM_VERSION
+        // PARAMETER_JVM_VENDOR
+        // PARAMETER_OS_NAME
+        // PARAMETER_OS_VERSION
+        // PARAMETER_OS_ARCHITECTURE
+        return engine;
+    }
+
+    private List<String> getParameters(final String key) {
+        final String parameters = this.parameters.getProperty(key);
+        return (parameters == null) ? List.of() : List.of(parameters.split(DELIMITER_PARAMETER));
     }
 }

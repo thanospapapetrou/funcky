@@ -12,7 +12,7 @@ import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 
-public sealed class FunckyLibrary permits Types, Numbers, Booleans, Characters, Lists, Commons, Combinators, IO {
+public sealed class FunckyLibrary permits Info, Types, Numbers, Booleans, Characters, Lists, Commons, Combinators, IO {
     private static final String ERROR_RESOLVING_NAMESPACE = "Error resolving namespace for library `%1$s`";
 
     protected final FunckyContext context;

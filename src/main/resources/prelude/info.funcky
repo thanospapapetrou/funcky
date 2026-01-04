@@ -1,0 +1,43 @@
+# Multithreaded threading mode
+# "funcky:types".String
+MULTITHREADED = "MULTITHREADED"
+
+# Thread-isolated threading mode
+# "funcky:types".String
+THREAD_ISOLATED = "THREAD-ISOLATED"
+
+# Stateless threading mode
+# "funcky:types".String
+STATELESS = "STATELESS"
+
+# Language name
+# "funcky:types".String
+languageName = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Info".languageName
+
+# Language version
+# "funcky:types".String
+languageVersion = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Info".languageVersion
+
+# Engine name
+# "funcky:types".String
+engineName = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Info".engineName
+
+# Engine version
+# "funcky:types".String
+engineVersion = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Info".engineVersion
+
+# Names
+# "funcky:types".List funcky:types".String
+names = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Info".names
+
+# MIME types
+# "funcky:types".List funcky:types".String
+mimeTypes = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Info".mimeTypes
+
+# Extensions
+# "funcky:types".List funcky:types".String
+extensions = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Info".extensions
+
+# Threading
+# funcky:types".String
+threading = "java:io.github.thanospapapetrou.funcky.runtime.prelude.Info".threading

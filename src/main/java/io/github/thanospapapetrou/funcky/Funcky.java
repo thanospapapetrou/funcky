@@ -22,8 +22,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.FunckyRuntimeExcepti
 public class Funcky {
     private static final String ERROR_READING = "Error reading %1$s";
     private static final Logger LOGGER = Logger.getLogger(Funcky.class.getName());
-    private static final String PROMPT = String.format("%n%1$s> ",
-            FunckyFactory.getParameters(FunckyEngine.LANGUAGE).getFirst());
+    private static final String PROMPT = "%n%1$s> ";
 
     private final FunckyEngine engine;
 
@@ -64,9 +63,10 @@ public class Funcky {
     }
 
     private void readEvalPrintLoop() {
+        final String prompt = String.format(PROMPT, engine.getFactory().getLanguageName());
         try (final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             String expression;
-            System.out.print(PROMPT);
+            System.out.print(prompt);
             while ((expression = reader.readLine()) != null) {
                 try {
                     Optional.ofNullable(engine.eval(expression, engine.getContext()))
@@ -75,7 +75,7 @@ public class Funcky {
                 } catch (final FunckyCompilationException | FunckyRuntimeException e) {
                     LOGGER.log(Level.WARNING, e.getMessage(), e);
                 }
-                System.out.print(PROMPT);
+                System.out.print(prompt);
             }
         } catch (final IOException e) {
             LOGGER.log(Level.SEVERE, String.format(ERROR_READING, Linker.STDIN), e);
