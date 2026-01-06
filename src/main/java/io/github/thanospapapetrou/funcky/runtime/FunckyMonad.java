@@ -50,7 +50,6 @@ public final class FunckyMonad extends FunckyValue {
 
     @Override
     public String toString() {
-        base.get().eval(context);
         return String.format(FORMAT, hashCode());
     }
 }

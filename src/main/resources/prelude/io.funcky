@@ -12,5 +12,8 @@ readCharacter = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".read
 # TODO get writer and encoding as argument
 writeCharacter = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".writeCharacter
 
+# TODO get writer and encoding as argument
+writeString = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".writeString
+
 # TODO
 # "funcky:io".bind ("funcky:io".bind "funcky:io".readCharacter ("funcky:combinators".b "funcky:io".return "funcky:characters".uppercase)) "funcky:io".writeCharacter

@@ -43,15 +43,8 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STR
 
 public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     public static final String PARAMETER_EXTENSIONS = "io.github.thanospapapetrou.funcky.extensions";
-    public static final String PARAMETER_JVM_NAME = "io.github.thanospapapetrou.funcky.jvm.name";
-    public static final String PARAMETER_JVM_VENDOR = "io.github.thanospapapetrou.funcky.jvm.vendor";
-    public static final String PARAMETER_JVM_VERSION = "io.github.thanospapapetrou.funcky.jvm.version";
     public static final String PARAMETER_MIME_TYPES = "io.github.thanospapapetrou.funcky.mime_types";
-    public static final String PARAMETER_OS_ARCHITECTURE = "io.github.thanospapapetrou.funcky.os.architecture";
-    public static final String PARAMETER_OS_NAME = "io.github.thanospapapetrou.funcky.os.name";
-    public static final String PARAMETER_OS_VERSION = "io.github.thanospapapetrou.funcky.os.version";
     public static final String PARAMETER_THREADING = "THREADING";
-    public static final String PARAMETER_USERNAME = "io.github.thanospapapetrou.funcky.username";
     private static final Logger LOGGER = Logger.getLogger(FunckyEngine.class.getName());
     private static final String MESSAGE_COMPILATION = "Compilation finished in %1$d ms";
     private static final String MESSAGE_EVALUATION = "Evaluation finished in %1$d ms";

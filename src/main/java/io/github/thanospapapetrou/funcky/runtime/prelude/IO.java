@@ -14,6 +14,7 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyMonadicType.IO;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType.UNIT;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
@@ -54,6 +55,17 @@ public final class IO extends FunckyLibrary {
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
                 java.lang.System.out.println(((FunckyCharacter) arguments.getFirst().eval(context)).getValue());
+                return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, UNIT.apply(context),
+                        List.of()));
+            });
+        }
+    };
+    public final HigherOrderFunction writeString = new HigherOrderFunction(context,
+            STRING, IO(UNIT)) {
+        @Override
+        public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
+            return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
+                java.lang.System.out.println(arguments.getFirst().eval(context).toString());
                 return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, UNIT.apply(context),
                         List.of()));
             });
