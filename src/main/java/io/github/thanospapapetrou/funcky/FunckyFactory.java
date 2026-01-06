@@ -102,7 +102,7 @@ public class FunckyFactory implements ScriptEngineFactory {
 
     @Override
     public String getOutputStatement(final String message) {
-        // TODO
+        // TODO "funcky:io".bind ("funcky:io".writeString "funcky:io".STDOUT "foo\n") ("funcky:combinators".k ("funcky:io".flush "funcky:io".STDOUT))
         throw new UnsupportedOperationException();
     }
 

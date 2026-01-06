@@ -1,3 +1,15 @@
+# Standard input
+# "funcky:types".Number
+STDIN = 0
+
+# Standard output
+# "funcky:types".Number
+STDOUT = 1
+
+# Standard error
+# "funcky:types".Number
+STDERR = 2
+
 # Construct a new IO monad with given base
 # "funcky:types".Function $_3b ("funcky:types".IO $_3b)
 return = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO"._return
@@ -13,7 +25,13 @@ readCharacter = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".read
 writeCharacter = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".writeCharacter
 
 # TODO get writer and encoding as argument
+readString = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".readString
+
+# TODO get writer and encoding as argument
 writeString = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".writeString
 
-# TODO
-# "funcky:io".bind ("funcky:io".bind "funcky:io".readCharacter ("funcky:combinators".b "funcky:io".return "funcky:characters".uppercase)) "funcky:io".writeCharacter
+# TODO get writer and encoding as argument
+flush = "java:io.github.thanospapapetrou.funcky.runtime.prelude.IO".flush
+
+# "funcky:io".bind ("funcky:io".bind ("funcky:io".readString "funcky:io".STDIN) ("funcky:io".writeString "funcky:io".STDOUT)) ("funcky:combinators".k ("funcky:io".flush "funcky:io".STDOUT))
+# "funcky:io".bind ("funcky:io".writeString "funcky:io".STDOUT "foo\n") ("funcky:combinators".k ("funcky:io".flush "funcky:io".STDOUT))
