@@ -1,5 +1,6 @@
 package io.github.thanospapapetrou.funcky
 
+import io.github.thanospapapetrou.funcky.compiler.parser.EscapeHelper
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -43,7 +44,10 @@ class FunckyFactorySpec extends Specification {
         factory.getParameter(FunckyEngine.PARAMETER_EXTENSIONS) == EXTENSIONS[0]
         factory.getParameter(FunckyEngine.PARAMETER_THREADING) == MULTITHREADED
         factory.getParameter(INVALID_PARAMETER) == null
+        // TODO test for non-global parameters
     }
+
+    // TODO test set parameters
 
     @Unroll('Test get method call syntax (arguments: #arguments)')
     def 'Test get method call syntax'(final String[] arguments) {
@@ -56,10 +60,8 @@ class FunckyFactorySpec extends Specification {
     }
 
     def 'Test get output statement'() {
-        when:
-        factory.getOutputStatement(MESSAGE)
-        then:
-        thrown(UnsupportedOperationException)
+        expect:
+        factory.getOutputStatement(MESSAGE) == "\"funcky:io\".bind (\"funcky:io\".writeString \"funcky:io\".STDOUT \"${EscapeHelper.escape(MESSAGE)}\") (\"funcky:combinators\".k (\"funcky:io\".flush \"funcky:io\".STDOUT))"
     }
 
     @Unroll('Test get program (statements: #statements)')

@@ -8,7 +8,13 @@ import java.util.logging.Logger;
 
 import javax.script.ScriptEngineFactory;
 
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
+import io.github.thanospapapetrou.funcky.runtime.prelude.Combinators;
+import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
+import io.github.thanospapapetrou.funcky.runtime.prelude.IO;
 
 public class FunckyFactory implements ScriptEngineFactory {
     private static final String CONFIG_ENGINE = "Engine: %1$s %2$s";
@@ -102,8 +108,23 @@ public class FunckyFactory implements ScriptEngineFactory {
 
     @Override
     public String getOutputStatement(final String message) {
-        // TODO "funcky:io".bind ("funcky:io".writeString "funcky:io".STDOUT "foo\n") ("funcky:combinators".k ("funcky:io".flush "funcky:io".STDOUT))
-        throw new UnsupportedOperationException();
+        final FunckyEngine engine = getScriptEngine();
+        return new FunckyApplication(
+                new FunckyApplication(
+                        new FunckyReference(engine, FunckyLibrary.getNamespace(IO.class), "bind"),
+                        new FunckyApplication(
+                                new FunckyApplication(
+                                        new FunckyReference(engine, FunckyLibrary.getNamespace(IO.class),
+                                                "writeString"),
+                                        new FunckyReference(engine, FunckyLibrary.getNamespace(IO.class), "STDOUT")),
+                                new FunckyLiteral(engine, engine.toFuncky(message))
+                        )
+                ), new FunckyApplication(
+                new FunckyReference(engine, FunckyLibrary.getNamespace(Combinators.class), "k"),
+                new FunckyApplication(
+                        new FunckyReference(engine, FunckyLibrary.getNamespace(IO.class), "flush"),
+                        new FunckyReference(engine, FunckyLibrary.getNamespace(IO.class), "STDOUT")
+                ))).toString();
     }
 
     @Override
