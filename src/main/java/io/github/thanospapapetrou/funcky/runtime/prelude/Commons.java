@@ -26,6 +26,7 @@ public final class Commons extends FunckyLibrary {
 
     private final FunckyTypeVariable a = new FunckyTypeVariable(context);
     private final FunckyTypeVariable b = new FunckyTypeVariable(context);
+    private final FunckyLiteral nil = new FunckyLiteral(context.getEngine(), new FunckyRecord(context));
     public final HigherOrderFunction equal = new HigherOrderFunction(context, context -> a, context -> a, BOOLEAN) {
         @Override
         public FunckyBoolean apply(final List<FunckyExpression> arguments, final FunckyContext context) {
@@ -77,8 +78,7 @@ public final class Commons extends FunckyLibrary {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             java.lang.System.exit(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue());
-            return new FunckyMonad(context, IO(UNIT).apply(context),
-                    () -> new FunckyLiteral(context.getEngine(), new FunckyRecord(context, List.of())));
+            return new FunckyMonad(context, IO(UNIT).apply(context), () -> nil);
         }
     };
     public final HigherOrderFunction error = new HigherOrderFunction(context, STRING, context -> a) {

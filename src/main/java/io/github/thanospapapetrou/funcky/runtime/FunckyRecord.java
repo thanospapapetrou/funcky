@@ -22,6 +22,10 @@ public final class FunckyRecord extends FunckyValue {
         this.components = components;
     }
 
+    public FunckyRecord(final FunckyContext context) {
+        this(context, List.of());
+    }
+
     public List<FunckyExpression> getComponents() {
         return components;
     }

@@ -31,6 +31,7 @@ public final class IO extends FunckyLibrary {
 
     private final FunckyTypeVariable a = new FunckyTypeVariable(context);
     private final FunckyTypeVariable b = new FunckyTypeVariable(context);
+    private final FunckyLiteral nil = new FunckyLiteral(context.getEngine(), new FunckyRecord(context));
     public final HigherOrderFunction _return = new HigherOrderFunction(context,
             context -> a, IO(context -> a)) {
         @Override
@@ -72,7 +73,7 @@ public final class IO extends FunckyLibrary {
                 try {
                     getWriter(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue())
                             .write(((FunckyCharacter) arguments.get(1).eval(context)).getValue());
-                    return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, List.of()));
+                    return nil;
                 } catch (final IOException e) {
                     throw new RuntimeException("Error writing character", e);
                 }
@@ -107,7 +108,7 @@ public final class IO extends FunckyLibrary {
                 try {
                     getWriter(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue())
                             .write(arguments.get(1).eval(context).toString());
-                    return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, List.of()));
+                    return nil;
                 } catch (final IOException e) {
                     throw new RuntimeException("Error writing string", e);
                 }
@@ -121,7 +122,7 @@ public final class IO extends FunckyLibrary {
             return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
                 try {
                     getWriter(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue()).flush();
-                    return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, List.of()));
+                    return nil;
                 } catch (final IOException e) {
                     throw new RuntimeException("Error flushing", e);
                 }
