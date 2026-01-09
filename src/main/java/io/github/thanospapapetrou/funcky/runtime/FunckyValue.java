@@ -1,6 +1,7 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
+import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
@@ -19,7 +20,9 @@ public sealed abstract class FunckyValue implements Comparable<FunckyValue>
 
     public abstract FunckyType getType();
 
-    public abstract FunckyExpression toExpression();
+    public FunckyExpression toExpression() {
+        return new FunckyLiteral(this);
+    }
 
     @Override
     public int compareTo(final FunckyValue value) {

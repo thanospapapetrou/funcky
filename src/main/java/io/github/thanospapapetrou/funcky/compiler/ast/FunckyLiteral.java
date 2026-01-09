@@ -26,8 +26,8 @@ public non-sealed class FunckyLiteral extends FunckyExpression {
         this.value = value;
     }
 
-    public FunckyLiteral(final FunckyEngine engine, final FunckyValue value) {
-        this(engine, null, -1, -1, value);
+    public FunckyLiteral(final FunckyValue value) {
+        this(value.getContext().getEngine(), null, -1, -1, value);
     }
 
     @Override

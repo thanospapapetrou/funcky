@@ -1,7 +1,6 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
 
@@ -35,11 +34,6 @@ public final class FunckyList extends FunckyValue {
     @Override
     public FunckyListType getType() {
         return type;
-    }
-
-    @Override
-    public FunckyLiteral toExpression() {
-        return new FunckyLiteral(context.getEngine(), this);
     }
 
     @Override

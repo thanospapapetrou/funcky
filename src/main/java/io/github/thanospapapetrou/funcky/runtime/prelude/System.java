@@ -42,9 +42,8 @@ public final class System extends FunckyLibrary {
 
     private FunckyValue get(final Supplier<String> value) {
         return new FunckyMonad(context, FunckyMonadicType.io(context,
-                new FunckyLiteral(context.getEngine(), FunckyListType.STRING.apply(context))),
-                () -> new FunckyLiteral(context.getEngine(),
-                        context.getEngine().toFuncky(value.get())));
+                new FunckyLiteral(FunckyListType.STRING.apply(context))),
+                () -> new FunckyLiteral(context.getEngine().toFuncky(value.get())));
     }
 
     private FunckyValue get(final String property) {

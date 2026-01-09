@@ -5,7 +5,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
@@ -36,11 +35,6 @@ public final class FunckyRecord extends FunckyValue {
                 .map(FunckyExpression::getType)
                 .map(t -> (Function<FunckyContext, FunckyType>) (c -> t))
                 .toList().toArray(new Function[0])).apply(context);
-    }
-
-    @Override
-    public FunckyLiteral toExpression() {
-        return new FunckyLiteral(context.getEngine(), this);
     }
 
     @Override

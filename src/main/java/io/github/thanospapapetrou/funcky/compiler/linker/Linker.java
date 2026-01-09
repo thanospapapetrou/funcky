@@ -353,6 +353,6 @@ public class Linker {
     private FunckyList imposeType(final FunckyListType type, final FunckyExpression head, final FunckyExpression tail) {
         return new FunckyList(engine.getContext(), type, head, (tail instanceof FunckyLiteral literal)
                 && (literal.eval(engine.getContext()) instanceof FunckyList list)
-                ? new FunckyLiteral(engine, imposeType(type, list.getHead(), list.getTail())) : tail);
+                ? new FunckyLiteral(imposeType(type, list.getHead(), list.getTail())) : tail);
     }
 }

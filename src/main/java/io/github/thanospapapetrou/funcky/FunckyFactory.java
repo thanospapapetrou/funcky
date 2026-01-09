@@ -117,7 +117,7 @@ public class FunckyFactory implements ScriptEngineFactory {
                                         new FunckyReference(engine, FunckyLibrary.getNamespace(IO.class),
                                                 "writeString"),
                                         new FunckyReference(engine, FunckyLibrary.getNamespace(IO.class), "STDOUT")),
-                                new FunckyLiteral(engine, engine.toFuncky(message))
+                                new FunckyLiteral(engine.toFuncky(message))
                         )
                 ), new FunckyApplication(
                 new FunckyReference(engine, FunckyLibrary.getNamespace(Combinators.class), "k"),

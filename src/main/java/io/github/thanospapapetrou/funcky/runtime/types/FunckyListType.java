@@ -22,7 +22,7 @@ public final class FunckyListType extends FunckyType {
 
     public static Function<FunckyContext, FunckyListType> LIST(
             final Function<FunckyContext, ? extends FunckyType> element) {
-        return context -> new FunckyListType(context, new FunckyLiteral(context.getEngine(), element.apply(context)));
+        return context -> new FunckyListType(context, new FunckyLiteral(element.apply(context)));
     }
 
     public FunckyListType(final FunckyContext context, final FunckyExpression element) {

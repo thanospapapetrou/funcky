@@ -3,7 +3,6 @@ package io.github.thanospapapetrou.funcky.runtime;
 import java.util.function.Supplier;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyMonadicType;
 
@@ -27,11 +26,6 @@ public final class FunckyMonad extends FunckyValue {
     @Override
     public FunckyMonadicType getType() {
         return type;
-    }
-
-    @Override
-    public FunckyLiteral toExpression() {
-        return new FunckyLiteral(context.getEngine(), this);
     }
 
     @Override

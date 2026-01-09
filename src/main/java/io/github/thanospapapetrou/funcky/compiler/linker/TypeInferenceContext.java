@@ -8,7 +8,6 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.github.thanospapapetrou.funcky.FunckyEngine;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
@@ -85,8 +84,8 @@ public class TypeInferenceContext {
         } else if (type instanceof FunckyRecordType rt) {
             return find(rt);
         } else if (type instanceof FunckyMonadicType mt) {
-            return new FunckyMonadicType(mt.getContext(), mt.getName(), new FunckyLiteral(mt.getContext().getEngine(),
-                    find((FunckyType) mt.getBase().eval(mt.getContext()))));
+            return new FunckyMonadicType(mt.getContext(), mt.getName(),
+                    new FunckyLiteral(find((FunckyType) mt.getBase().eval(mt.getContext()))));
         } else if (type instanceof FunckyTypeVariable) {
             final FunckyType found = findRepresentative(findSet(type));
             if (found instanceof FunckyFunctionType ft) {
@@ -101,8 +100,7 @@ public class TypeInferenceContext {
                 return find(rt);
             } else if (found instanceof FunckyMonadicType mt) {
                 return new FunckyMonadicType(mt.getContext(), mt.getName(),
-                        new FunckyLiteral(mt.getContext().getEngine(),
-                                find((FunckyType) mt.getBase().eval(mt.getContext()))));
+                        new FunckyLiteral(find((FunckyType) mt.getBase().eval(mt.getContext()))));
             }
             return found;
         }

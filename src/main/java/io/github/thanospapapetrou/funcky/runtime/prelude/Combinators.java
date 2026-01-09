@@ -14,8 +14,8 @@ public final class Combinators extends FunckyLibrary {
     private final FunckyTypeVariable a = new FunckyTypeVariable(context);
     private final FunckyTypeVariable b = new FunckyTypeVariable(context);
     private final FunckyTypeVariable c = new FunckyTypeVariable(context);
-    public final HigherOrderFunction s =
-            new HigherOrderFunction(context, FUNCTION(context -> a, context -> b, context -> c),
+    public final HigherOrderFunction s = new HigherOrderFunction(context,
+            FUNCTION(context -> a, context -> b, context -> c),
                     FUNCTION(context -> a, context -> b), context -> a, context -> c) {
         @Override
         public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {

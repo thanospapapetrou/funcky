@@ -26,7 +26,7 @@ public final class Commons extends FunckyLibrary {
 
     private final FunckyTypeVariable a = new FunckyTypeVariable(context);
     private final FunckyTypeVariable b = new FunckyTypeVariable(context);
-    private final FunckyLiteral nil = new FunckyLiteral(context.getEngine(), new FunckyRecord(context));
+    private final FunckyLiteral nil = new FunckyLiteral(new FunckyRecord(context));
     public final HigherOrderFunction equal = new HigherOrderFunction(context, context -> a, context -> a, BOOLEAN) {
         @Override
         public FunckyBoolean apply(final List<FunckyExpression> arguments, final FunckyContext context) {

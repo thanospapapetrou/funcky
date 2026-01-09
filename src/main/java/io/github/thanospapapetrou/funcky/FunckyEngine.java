@@ -59,14 +59,14 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
 
     public FunckyList toFuncky(final List<String> list) {
         return new FunckyList(context, LIST(STRING).apply(context),
-                list.isEmpty() ? null : new FunckyLiteral(this, toFuncky(list.getFirst())),
-                list.isEmpty() ? null : new FunckyLiteral(this, toFuncky(list.subList(1, list.size()))));
+                list.isEmpty() ? null : new FunckyLiteral(toFuncky(list.getFirst())),
+                list.isEmpty() ? null : new FunckyLiteral(toFuncky(list.subList(1, list.size()))));
     }
 
     public FunckyList toFuncky(final String string) {
         return new FunckyList(context, STRING.apply(context),
-                string.isEmpty() ? null : new FunckyLiteral(this, new FunckyCharacter(context, string.charAt(0))),
-                string.isEmpty() ? null : new FunckyLiteral(this, toFuncky(string.substring(1))));
+                string.isEmpty() ? null : new FunckyLiteral(new FunckyCharacter(context, string.charAt(0))),
+                string.isEmpty() ? null : new FunckyLiteral(toFuncky(string.substring(1))));
     }
 
     FunckyEngine(final FunckyFactory factory) {

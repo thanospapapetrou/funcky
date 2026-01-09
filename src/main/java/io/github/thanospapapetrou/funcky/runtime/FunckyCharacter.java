@@ -1,6 +1,5 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
-import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType;
 
@@ -21,11 +20,6 @@ public final class FunckyCharacter extends FunckyValue {
     @Override
     public FunckySimpleType getType() {
         return CHARACTER.apply(context);
-    }
-
-    @Override
-    public FunckyLiteral toExpression() {
-        return new FunckyLiteral(context.getEngine(), this);
     }
 
     @Override

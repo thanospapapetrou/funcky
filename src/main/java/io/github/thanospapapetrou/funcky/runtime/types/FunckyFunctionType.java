@@ -21,9 +21,9 @@ public final class FunckyFunctionType extends FunckyType {
 
     public static Function<FunckyContext, FunckyFunctionType> FUNCTION(
             final Function<FunckyContext, ? extends FunckyType>... types) {
-        return context -> new FunckyFunctionType(context, new FunckyLiteral(context.getEngine(),
-                types[0].apply(context)), new FunckyLiteral(context.getEngine(), (types.length == 2)
-                ? types[1].apply(context) : FUNCTION(Arrays.copyOfRange(types, 1, types.length)).apply(context)));
+        return context -> new FunckyFunctionType(context, new FunckyLiteral(types[0].apply(context)),
+                new FunckyLiteral((types.length == 2) ? types[1].apply(context)
+                        : FUNCTION(Arrays.copyOfRange(types, 1, types.length)).apply(context)));
     }
 
     public FunckyFunctionType(final FunckyContext context, final FunckyExpression domain,

@@ -22,12 +22,12 @@ public final class FunckyMonadicType extends FunckyType {
 
     public static Function<FunckyContext, FunckyMonadicType> MAYBE(
             final Function<FunckyContext, ? extends FunckyType> base) {
-        return context -> maybe(context, new FunckyLiteral(context.getEngine(), base.apply(context)));
+        return context -> maybe(context, new FunckyLiteral(base.apply(context)));
     }
 
     public static Function<FunckyContext, FunckyMonadicType> IO(
             final Function<FunckyContext, ? extends FunckyType> base) {
-        return context -> io(context, new FunckyLiteral(context.getEngine(), base.apply(context)));
+        return context -> io(context, new FunckyLiteral(base.apply(context)));
     }
 
     public static FunckyMonadicType maybe(final FunckyContext context, final FunckyExpression base) {
@@ -81,6 +81,6 @@ public final class FunckyMonadicType extends FunckyType {
     @Override
     protected FunckyMonadicType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
         return new FunckyMonadicType(context, name,
-                new FunckyLiteral(context.getEngine(), ((FunckyType) base.eval(context)).bind(bindings)));
+                new FunckyLiteral(((FunckyType) base.eval(context)).bind(bindings)));
     }
 }

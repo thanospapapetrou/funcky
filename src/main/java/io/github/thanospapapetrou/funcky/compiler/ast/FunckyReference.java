@@ -38,7 +38,7 @@ public final class FunckyReference extends FunckyExpression {
 
     public FunckyReference(final FunckyEngine engine, final URI namespace, final String name) {
         this(engine, null, -1, -1, namespace, null, namespace, name);
-    }
+    } // TODO remove engine? factory in engine?
 
     public FunckyReference(final FunckyEngine engine, final URI file, final int line, final int column,
             final URI namespace, final String prefix, final URI canonical, final String name) {
@@ -47,7 +47,7 @@ public final class FunckyReference extends FunckyExpression {
         this.prefix = prefix;
         this.canonical = canonical;
         this.name = name;
-    }
+    } // TODO make private
 
     public URI getNamespace() {
         return namespace;

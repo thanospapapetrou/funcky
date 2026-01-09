@@ -31,7 +31,7 @@ public final class IO extends FunckyLibrary {
 
     private final FunckyTypeVariable a = new FunckyTypeVariable(context);
     private final FunckyTypeVariable b = new FunckyTypeVariable(context);
-    private final FunckyLiteral nil = new FunckyLiteral(context.getEngine(), new FunckyRecord(context));
+    private final FunckyLiteral nil = new FunckyLiteral(new FunckyRecord(context));
     public final HigherOrderFunction _return = new HigherOrderFunction(context,
             context -> a, IO(context -> a)) {
         @Override
@@ -56,7 +56,7 @@ public final class IO extends FunckyLibrary {
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyMonad(context, IO(CHARACTER).apply(context), () -> {
                 try {
-                    return new FunckyLiteral(context.getEngine(), new FunckyCharacter(context,
+                    return new FunckyLiteral(new FunckyCharacter(context,
                             (char) getReader(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue())
                                     .read()));
                 } catch (final IOException e) {
@@ -93,7 +93,7 @@ public final class IO extends FunckyLibrary {
                             .read(buffer, 0, BUFFER_SIZE)) != -1) {
                         string.append(buffer, 0, read);
                     }
-                    return new FunckyLiteral(context.getEngine(), context.getEngine().toFuncky(string.toString()));
+                    return new FunckyLiteral(context.getEngine().toFuncky(string.toString()));
                 } catch (final IOException e) {
                     throw new RuntimeException("Error reading string", e);
                 }
