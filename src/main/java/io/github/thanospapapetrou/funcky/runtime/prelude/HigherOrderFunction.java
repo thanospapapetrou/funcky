@@ -2,7 +2,6 @@ package io.github.thanospapapetrou.funcky.runtime.prelude;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyApplication;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
@@ -25,8 +24,8 @@ public abstract class HigherOrderFunction extends FunckyFunction {
         this(context, type, order, expression, List.of());
     }
 
-    HigherOrderFunction(final FunckyContext context, final Function<FunckyContext, ? extends FunckyType>... types) {
-        this(context, FUNCTION(types).apply(context), types.length - 1, null); // TODO replace functions with objects
+    HigherOrderFunction(final FunckyContext context, final Object... types) {
+        this(context, FUNCTION(types).apply(context), types.length - 1, null);
     }
 
     private HigherOrderFunction(final FunckyContext context, final FunckyFunctionType type, final int order,

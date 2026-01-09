@@ -13,7 +13,6 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyMonad;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyMonadicType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
@@ -32,26 +31,20 @@ public final class IO extends FunckyLibrary {
     private final FunckyTypeVariable a = new FunckyTypeVariable(context);
     private final FunckyTypeVariable b = new FunckyTypeVariable(context);
     private final FunckyLiteral nil = new FunckyLiteral(new FunckyRecord(context));
-    public final HigherOrderFunction _return = new HigherOrderFunction(context,
-            context -> a, IO(context -> a)) {
+    public final HigherOrderFunction _return = new HigherOrderFunction(context, a, IO(a)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyMonad(context, IO(ctx -> arguments.getFirst().getType()).apply(context),
-                    arguments::getFirst);
+            return new FunckyMonad(context, IO(arguments.getFirst().getType()).apply(context), arguments::getFirst);
         }
     };
-    public final HigherOrderFunction bind = new HigherOrderFunction(context,
-            IO(context -> a),
-            FUNCTION(a, IO(context -> b)),
-            IO(context -> b)) {
+    public final HigherOrderFunction bind = new HigherOrderFunction(context, IO(a), FUNCTION(a, IO(b)), IO(b)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return (FunckyMonad) ((FunckyFunction) arguments.get(1).eval(context))
                     .apply(((FunckyMonad) arguments.getFirst().eval(context)).getBase(), context);
         }
     };
-    public final HigherOrderFunction readCharacter = new HigherOrderFunction(context,
-            NUMBER, FunckyMonadicType.IO(CHARACTER)) {
+    public final HigherOrderFunction readCharacter = new HigherOrderFunction(context, NUMBER, IO(CHARACTER)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyMonad(context, IO(CHARACTER).apply(context), () -> {
@@ -65,8 +58,7 @@ public final class IO extends FunckyLibrary {
             });
         }
     };
-    public final HigherOrderFunction writeCharacter = new HigherOrderFunction(context,
-            NUMBER, CHARACTER, IO(UNIT)) {
+    public final HigherOrderFunction writeCharacter = new HigherOrderFunction(context, NUMBER, CHARACTER, IO(UNIT)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
@@ -80,8 +72,7 @@ public final class IO extends FunckyLibrary {
             });
         }
     };
-    public final HigherOrderFunction readString = new HigherOrderFunction(context,
-            NUMBER, FunckyMonadicType.IO(STRING)) {
+    public final HigherOrderFunction readString = new HigherOrderFunction(context, NUMBER, IO(STRING)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyMonad(context, IO(STRING).apply(context), () -> {
@@ -100,8 +91,7 @@ public final class IO extends FunckyLibrary {
             });
         }
     };
-    public final HigherOrderFunction writeString = new HigherOrderFunction(context,
-            NUMBER, STRING, IO(UNIT)) {
+    public final HigherOrderFunction writeString = new HigherOrderFunction(context, NUMBER, STRING, IO(UNIT)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
@@ -115,8 +105,7 @@ public final class IO extends FunckyLibrary {
             });
         }
     };
-    public final HigherOrderFunction flush = new HigherOrderFunction(context,
-            NUMBER, IO(UNIT)) {
+    public final HigherOrderFunction flush = new HigherOrderFunction(context, NUMBER, IO(UNIT)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyMonad(context, IO(UNIT).apply(context), () -> {

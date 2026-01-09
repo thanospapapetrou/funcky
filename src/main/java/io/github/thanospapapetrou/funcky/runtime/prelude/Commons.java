@@ -27,14 +27,14 @@ public final class Commons extends FunckyLibrary {
     private final FunckyTypeVariable a = new FunckyTypeVariable(context);
     private final FunckyTypeVariable b = new FunckyTypeVariable(context);
     private final FunckyLiteral nil = new FunckyLiteral(new FunckyRecord(context));
-    public final HigherOrderFunction equal = new HigherOrderFunction(context, context -> a, context -> a, BOOLEAN) {
+    public final HigherOrderFunction equal = new HigherOrderFunction(context, a, a, BOOLEAN) {
         @Override
         public FunckyBoolean apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return (arguments.get(0).eval(context).equals(arguments.get(1).eval(context)) ? FunckyBoolean.TRUE
                     : FunckyBoolean.FALSE).apply(context);
                 }
     };
-    public final HigherOrderFunction compare = new HigherOrderFunction(context, context -> a, context -> a, NUMBER) {
+    public final HigherOrderFunction compare = new HigherOrderFunction(context, a, a, NUMBER) {
         @Override
         public FunckyNumber apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyNumber(context, new BigDecimal(Integer.compare(
@@ -42,21 +42,20 @@ public final class Commons extends FunckyLibrary {
                             .compareTo(arguments.get(1).eval(context)), 0)));
                 }
     };
-    public final HigherOrderFunction hash = new HigherOrderFunction(context, context -> a, NUMBER) {
+    public final HigherOrderFunction hash = new HigherOrderFunction(context, a, NUMBER) {
         @Override
         public FunckyNumber apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyNumber(context, new BigDecimal(arguments.getFirst().eval(context).hashCode()));
         }
     };
-    public final HigherOrderFunction _if = new HigherOrderFunction(context,
-            BOOLEAN, context -> a, context -> a, context -> a) {
+    public final HigherOrderFunction _if = new HigherOrderFunction(context, BOOLEAN, a, a, a) {
         @Override
         public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return (((FunckyBoolean) arguments.get(0).eval(context)).getValue()
                     ? arguments.get(1) : arguments.get(2)).eval(context);
         }
     };
-    public final HigherOrderFunction string = new HigherOrderFunction(context, context -> a, STRING) {
+    public final HigherOrderFunction string = new HigherOrderFunction(context, a, STRING) {
         @Override
         public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return context.getEngine().toFuncky(arguments.getFirst().eval(context).toString());
@@ -73,21 +72,20 @@ public final class Commons extends FunckyLibrary {
                 }
         }
     };
-    public final HigherOrderFunction exit = new HigherOrderFunction(context,
-            NUMBER, IO(UNIT)) {
+    public final HigherOrderFunction exit = new HigherOrderFunction(context, NUMBER, IO(UNIT)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             java.lang.System.exit(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue());
             return new FunckyMonad(context, IO(UNIT).apply(context), () -> nil);
         }
     };
-    public final HigherOrderFunction error = new HigherOrderFunction(context, STRING, context -> a) {
+    public final HigherOrderFunction error = new HigherOrderFunction(context, STRING, a) {
         @Override
         public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             throw new SneakyRuntimeException(arguments.getFirst().eval(context).toString());
         }
     };
-    public final HigherOrderFunction bottom = new HigherOrderFunction(context, context -> a, context -> b) {
+    public final HigherOrderFunction bottom = new HigherOrderFunction(context, a, b) {
         @Override
         public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return apply(arguments.getFirst(), context);

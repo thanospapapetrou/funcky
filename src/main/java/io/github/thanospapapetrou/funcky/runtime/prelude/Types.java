@@ -76,15 +76,13 @@ public final class Types extends FunckyLibrary {
             throw new SneakyRuntimeException(String.format(ERROR_ELEMENT, type));
         }
     };
-    public final HigherOrderFunction Record = new HigherOrderFunction(context,
-            LIST(TYPE), TYPE) {
+    public final HigherOrderFunction Record = new HigherOrderFunction(context, LIST(TYPE), TYPE) {
         @Override
         public FunckyRecordType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyRecordType(context, arguments.getFirst());
         }
     };
-    public final HigherOrderFunction components = new HigherOrderFunction(context, TYPE,
-            LIST(TYPE)) {
+    public final HigherOrderFunction components = new HigherOrderFunction(context, TYPE, LIST(TYPE)) {
         @Override
         public FunckyList apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             final FunckyType type = (FunckyType) arguments.getFirst().eval(context);

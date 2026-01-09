@@ -17,7 +17,7 @@ public final class Lists extends FunckyLibrary {
     private static final String ERROR_TAIL = "Can not get tail of empty list";
 
     private final FunckyTypeVariable a = new FunckyTypeVariable(context);
-    public final HigherOrderFunction head = new HigherOrderFunction(context, LIST(a), context -> a) {
+    public final HigherOrderFunction head = new HigherOrderFunction(context, LIST(a), a) {
         @Override
         public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             final FunckyExpression head = ((FunckyList) arguments.getFirst().eval(context)).getHead();
@@ -37,8 +37,7 @@ public final class Lists extends FunckyLibrary {
             return (FunckyList) tail.eval(context);
         }
     };
-    public final HigherOrderFunction prepend = new HigherOrderFunction(context,
-            LIST(a), context -> a, LIST(a)) {
+    public final HigherOrderFunction prepend = new HigherOrderFunction(context, LIST(a), a, LIST(a)) {
         @Override
         public FunckyList apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return new FunckyList(context, (FunckyListType) arguments.get(0).getType()
