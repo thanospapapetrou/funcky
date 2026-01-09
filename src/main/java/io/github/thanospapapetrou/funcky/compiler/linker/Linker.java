@@ -213,7 +213,7 @@ public class Linker {
     }
 
     private FunckyRecord canonicalize(final FunckyRecord record) {
-        return new FunckyRecord(engine.getContext(), record.getType(), record.getComponents().stream()
+        return new FunckyRecord(engine.getContext(), record.getComponents().stream()
                 .map(this::canonicalize)
                 .toList());
     }

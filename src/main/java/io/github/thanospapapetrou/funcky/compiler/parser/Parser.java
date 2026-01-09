@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Function;
 import java.util.logging.Logger;
 
 import io.github.thanospapapetrou.funcky.FunckyEngine;
@@ -26,7 +25,6 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyImport;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyReference;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyScript;
-import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.compiler.linker.Linker;
 import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.InvalidUriException;
 import io.github.thanospapapetrou.funcky.compiler.parser.exceptions.UnexpectedTokenException;
@@ -36,12 +34,10 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyCharacter;
 import io.github.thanospapapetrou.funcky.runtime.FunckyList;
 import io.github.thanospapapetrou.funcky.runtime.FunckyNumber;
 import io.github.thanospapapetrou.funcky.runtime.FunckyRecord;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
-import static io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType.RECORD;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
 
 public class Parser {
@@ -273,11 +269,8 @@ public class Parser {
         for (final FunckyExpression component : components) {
             types.add(component.getType());
         }
-        final FunckyRecordType recordType = (FunckyRecordType) RECORD(types.stream()
-                .map(t -> (Function<FunckyContext, FunckyType>) (c -> t))
-                .toList().toArray(new Function[0])).apply(engine.getContext());
         return new FunckyLiteral(engine, leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),
-                new FunckyRecord(engine.getContext(), recordType, components)); // TODO cleanup
+                new FunckyRecord(engine.getContext(), components)); // TODO cleanup
     }
 
     private Token consume(final Queue<Token> input, final Set<TokenType> expected) {

@@ -1,25 +1,24 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
 public final class FunckyRecord extends FunckyValue {
     public static final String DELIMITER = ", ";
     public static final String PREFIX = "{";
     public static final String SUFFIX = "}";
 
-    private final FunckyRecordType type;
     private final List<FunckyExpression> components;
 
-    public FunckyRecord(final FunckyContext context, final FunckyRecordType type,
-            final List<FunckyExpression> components) {
+    public FunckyRecord(final FunckyContext context, final List<FunckyExpression> components) {
         super(context);
-        this.type = type;
         this.components = components;
     }
 
@@ -29,7 +28,10 @@ public final class FunckyRecord extends FunckyValue {
 
     @Override
     public FunckyRecordType getType() {
-        return type;
+        return (FunckyRecordType) FunckyRecordType.RECORD(components.stream()
+                .map(FunckyExpression::getType)
+                .map(t -> (Function<FunckyContext, FunckyType>) (c -> t))
+                .toList().toArray(new Function[0])).apply(context);
     }
 
     @Override

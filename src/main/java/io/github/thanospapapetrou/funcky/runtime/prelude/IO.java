@@ -72,8 +72,7 @@ public final class IO extends FunckyLibrary {
                 try {
                     getWriter(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue())
                             .write(((FunckyCharacter) arguments.get(1).eval(context)).getValue());
-                    return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, UNIT.apply(context),
-                            List.of()));
+                    return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, List.of()));
                 } catch (final IOException e) {
                     throw new RuntimeException("Error writing character", e);
                 }
@@ -108,8 +107,7 @@ public final class IO extends FunckyLibrary {
                 try {
                     getWriter(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue())
                             .write(arguments.get(1).eval(context).toString());
-                    return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, UNIT.apply(context),
-                            List.of()));
+                    return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, List.of()));
                 } catch (final IOException e) {
                     throw new RuntimeException("Error writing string", e);
                 }
@@ -123,8 +121,7 @@ public final class IO extends FunckyLibrary {
             return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
                 try {
                     getWriter(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue()).flush();
-                    return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, UNIT.apply(context),
-                            List.of()));
+                    return new FunckyLiteral(context.getEngine(), new FunckyRecord(context, List.of()));
                 } catch (final IOException e) {
                     throw new RuntimeException("Error flushing", e);
                 }
