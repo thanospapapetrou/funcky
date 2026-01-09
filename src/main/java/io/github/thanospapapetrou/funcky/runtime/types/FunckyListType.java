@@ -20,9 +20,8 @@ public final class FunckyListType extends FunckyType {
 
     private final FunckyExpression element;
 
-    public static Function<FunckyContext, FunckyListType> LIST(
-            final Function<FunckyContext, ? extends FunckyType> element) {
-        return context -> new FunckyListType(context, new FunckyLiteral(element.apply(context)));
+    public static Function<FunckyContext, FunckyListType> LIST(final Object element) {
+        return context -> new FunckyListType(context, new FunckyLiteral(type(element).apply(context)));
     }
 
     public FunckyListType(final FunckyContext context, final FunckyExpression element) {
@@ -59,7 +58,6 @@ public final class FunckyListType extends FunckyType {
 
     @Override
     protected FunckyListType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return LIST(context -> ((FunckyType) element.eval(context)).bind(bindings))
-                .apply(context);
+        return LIST(((FunckyType) element.eval(context)).bind(bindings)).apply(context);
     }
 }

@@ -42,7 +42,7 @@ public final class IO extends FunckyLibrary {
     };
     public final HigherOrderFunction bind = new HigherOrderFunction(context,
             IO(context -> a),
-            FUNCTION(context -> a, IO(context -> b)),
+            FUNCTION(a, IO(context -> b)),
             IO(context -> b)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {

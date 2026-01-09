@@ -39,6 +39,7 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable.VAR;
 
 public class Parser {
     private static final String DEFINITION = "%1$sDefinition `%2$s` %3$s %4$d 1";
@@ -260,7 +261,7 @@ public class Parser {
         final FunckyLiteral tail = elements.isEmpty() ? null
                 : parseList(elements.subList(1, elements.size()), leftSquareBracket);
         return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(), leftSquareBracket.column(),
-                new FunckyList(engine.getContext(), LIST(FunckyTypeVariable::new).apply(engine.getContext()), head,
+                new FunckyList(engine.getContext(), LIST(VAR).apply(engine.getContext()), head,
                         tail));
     }
 

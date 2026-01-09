@@ -8,9 +8,9 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeException;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable.VAR;
 
 public final class FunckyApplication extends FunckyExpression {
     private static final String FORMAT_APPLICATION = "%1$s %2$s";
@@ -36,7 +36,7 @@ public final class FunckyApplication extends FunckyExpression {
     @Override
     public FunckyType getType() {
         final FunckyFunctionType type = (FunckyFunctionType) function.getType()
-                .unify(FUNCTION(engine -> argument.getType(), FunckyTypeVariable::new).apply(engine.getContext()));
+                .unify(FUNCTION(argument.getType(), VAR).apply(engine.getContext()));
         if (type == null) {
             throw new SneakyCompilationException(new IllegalApplicationException(this));
         }

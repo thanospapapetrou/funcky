@@ -53,6 +53,7 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable.VAR;
 
 public class Linker {
     public static final Function<FunckyContext, FunckyFunctionType> MAIN_TYPE = FUNCTION(LIST(STRING), NUMBER);
@@ -289,10 +290,9 @@ public class Linker {
             final FunckyExpression head = (list.getHead() == null) ? null : checkTypes(list.getHead());
             final FunckyExpression tail = (list.getTail() == null) ? null : checkTypes(list.getTail());
             final FunckyType headType = (head == null) ? new FunckyTypeVariable(engine.getContext()) : head.getType();
-            final FunckyListType tailType = (tail == null) ? LIST(FunckyTypeVariable::new).apply(engine.getContext())
+            final FunckyListType tailType = (tail == null) ? LIST(VAR).apply(engine.getContext())
                     : (FunckyListType) tail.getType();
-            final FunckyListType type = (FunckyListType) LIST(engine -> headType).apply(engine.getContext())
-                    .unify(tailType);
+            final FunckyListType type = (FunckyListType) LIST(headType).apply(engine.getContext()).unify(tailType);
             if (type == null) {
                 throw new SneakyCompilationException(new InvalidListLiteralException(head, headType, tail, tailType));
             }

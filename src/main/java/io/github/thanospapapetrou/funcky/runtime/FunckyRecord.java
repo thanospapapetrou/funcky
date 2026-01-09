@@ -1,13 +1,13 @@
 package io.github.thanospapapetrou.funcky.runtime;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
+
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyRecordType.RECORD;
 
 public final class FunckyRecord extends FunckyValue {
     public static final String DELIMITER = ", ";
@@ -31,10 +31,9 @@ public final class FunckyRecord extends FunckyValue {
 
     @Override
     public FunckyRecordType getType() {
-        return (FunckyRecordType) FunckyRecordType.RECORD(components.stream()
+        return RECORD(components.stream()
                 .map(FunckyExpression::getType)
-                .map(t -> (Function<FunckyContext, FunckyType>) (c -> t))
-                .toList().toArray(new Function[0])).apply(context);
+                .toArray()).apply(context);
     }
 
     @Override

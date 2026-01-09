@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
@@ -74,12 +73,11 @@ public class TypeInferenceContext {
         if (type instanceof FunckySimpleType) {
             return type;
         } else if (type instanceof FunckyFunctionType ft) {
-            return FUNCTION(
-                    engine -> find((FunckyType) ft.getDomain().eval(ft.getContext())),
-                    engine -> find((FunckyType) ft.getRange().eval(ft.getContext()))
+            return FUNCTION(find((FunckyType) ft.getDomain().eval(ft.getContext())),
+                    find((FunckyType) ft.getRange().eval(ft.getContext()))
             ).apply(ft.getContext());
         } else if (type instanceof FunckyListType lt) {
-            return LIST(engine -> find((FunckyType) lt.getElement().eval(lt.getContext())))
+            return LIST(find((FunckyType) lt.getElement().eval(lt.getContext())))
                     .apply(lt.getContext());
         } else if (type instanceof FunckyRecordType rt) {
             return find(rt);
@@ -89,13 +87,10 @@ public class TypeInferenceContext {
         } else if (type instanceof FunckyTypeVariable) {
             final FunckyType found = findRepresentative(findSet(type));
             if (found instanceof FunckyFunctionType ft) {
-                return FUNCTION(
-                        engine -> find((FunckyType) ft.getDomain().eval(ft.getContext())),
-                        engine -> find((FunckyType) ft.getRange().eval(ft.getContext()))
-                ).apply(ft.getContext());
+                return FUNCTION(find((FunckyType) ft.getDomain().eval(ft.getContext())),
+                        find((FunckyType) ft.getRange().eval(ft.getContext()))).apply(ft.getContext());
             } else if (found instanceof FunckyListType lt) {
-                return LIST(engine -> find((FunckyType) lt.getElement().eval(lt.getContext())))
-                        .apply(lt.getContext());
+                return LIST(find((FunckyType) lt.getElement().eval(lt.getContext()))).apply(lt.getContext());
             } else if (found instanceof FunckyRecordType rt) {
                 return find(rt);
             } else if (found instanceof FunckyMonadicType mt) {
@@ -113,9 +108,7 @@ public class TypeInferenceContext {
                 list.getTail() != null; list = (FunckyList) list.getTail().eval(type.getContext())) {
             components.add(find((FunckyType) list.getHead().eval(type.getContext())));
         }
-        return (FunckyRecordType) RECORD(components.stream()
-                .map(t -> (Function<FunckyContext, FunckyType>) (c -> t))
-                .toList().toArray(new Function[0])).apply(type.getContext());
+        return RECORD(components.toArray()).apply(type.getContext());
     }
 
     private boolean union(final FunckyType a, final FunckyType b) {

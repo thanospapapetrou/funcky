@@ -3,6 +3,7 @@ package io.github.thanospapapetrou.funcky.runtime.types;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
@@ -12,6 +13,8 @@ public final class FunckyTypeVariable extends FunckyType {
     private static final String FORMAT = "$_%1$x";
 
     private final int hash;
+
+    public static Function<FunckyContext, FunckyTypeVariable> VAR = FunckyTypeVariable::new;
 
     public FunckyTypeVariable(final FunckyContext context) {
         this(context, HASH.getAndIncrement());

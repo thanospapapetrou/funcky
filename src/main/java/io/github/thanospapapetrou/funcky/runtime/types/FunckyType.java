@@ -25,6 +25,14 @@ public sealed abstract class FunckyType extends FunckyValue
             FunckyTypeVariable.class
     );
 
+    protected static Function<FunckyContext, FunckyType> type(final Object type) {
+        return switch (type) {
+            case FunckyType t -> (c -> t);
+            case Function f -> f;
+            default -> throw new IllegalStateException("Unexpected value: " + type); // TODO
+        };
+    }
+
     private static int getOrder(final FunckyType type) {
         return IntStream.range(0, ORDERING.size())
                 .filter(i -> ORDERING.get(i).isInstance(type))

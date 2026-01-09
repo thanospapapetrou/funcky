@@ -26,13 +26,12 @@ public final class FunckyRecordType extends FunckyType {
 
     private final FunckyExpression components;
 
-    public static Function<FunckyContext, FunckyRecordType> RECORD(
-            final Function<FunckyContext, ? extends FunckyType>... components) {
+    public static Function<FunckyContext, FunckyRecordType> RECORD(final Object... components) {
         return context -> new FunckyRecordType(context, new FunckyLiteral(new FunckyList(context,
                 LIST(TYPE).apply(context),
-                (components.length > 0) ? new FunckyLiteral(components[0].apply(context)) : null,
-                (components.length > 0) ? RECORD(Arrays.copyOfRange(components,
-                1, components.length)).apply(context).components : null)));
+                (components.length > 0) ? new FunckyLiteral(type(components[0]).apply(context)) : null,
+                (components.length > 0) ? RECORD(Arrays.copyOfRange(components, 1, components.length))
+                        .apply(context).components : null)));
     }
 
     public FunckyRecordType(final FunckyContext context, final FunckyExpression components) {
@@ -79,8 +78,6 @@ public final class FunckyRecordType extends FunckyType {
                 list = (FunckyList) list.getTail().eval(context)) {
             types.add(((FunckyType) list.getHead().eval(context)).bind(bindings));
         }
-        return (FunckyRecordType) RECORD(types.stream()
-                .map(t -> (Function<FunckyContext, FunckyType>) (c -> t))
-                .toList().toArray(new Function[0])).apply(context);
+        return RECORD(types.toArray()).apply(context);
     }
 }

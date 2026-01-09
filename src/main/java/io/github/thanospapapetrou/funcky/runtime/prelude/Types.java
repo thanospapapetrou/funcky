@@ -20,6 +20,7 @@ import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.B
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.NUMBER;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.TYPE;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable.VAR;
 
 public final class Types extends FunckyLibrary {
     private static final String ERROR_BASE = "Can not get base of non-monad type `%1$s`";
@@ -115,7 +116,7 @@ public final class Types extends FunckyLibrary {
             throw new SneakyRuntimeException(String.format(ERROR_BASE, type));
         }
     };
-    public HigherOrderFunction type = new HigherOrderFunction(context, FunckyTypeVariable::new, TYPE) {
+    public HigherOrderFunction type = new HigherOrderFunction(context, VAR, TYPE) {
         @Override
         public FunckyType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             return arguments.getFirst().getType();

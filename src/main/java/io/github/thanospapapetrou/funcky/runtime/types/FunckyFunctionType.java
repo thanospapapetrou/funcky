@@ -19,10 +19,9 @@ public final class FunckyFunctionType extends FunckyType {
     private final FunckyExpression domain;
     private final FunckyExpression range;
 
-    public static Function<FunckyContext, FunckyFunctionType> FUNCTION(
-            final Function<FunckyContext, ? extends FunckyType>... types) {
-        return context -> new FunckyFunctionType(context, new FunckyLiteral(types[0].apply(context)),
-                new FunckyLiteral((types.length == 2) ? types[1].apply(context)
+    public static Function<FunckyContext, FunckyFunctionType> FUNCTION(final Object... types) {
+        return context -> new FunckyFunctionType(context, new FunckyLiteral(type(types[0]).apply(context)),
+                new FunckyLiteral((types.length == 2) ? type(types[1]).apply(context)
                         : FUNCTION(Arrays.copyOfRange(types, 1, types.length)).apply(context)));
     }
 
@@ -74,7 +73,7 @@ public final class FunckyFunctionType extends FunckyType {
 
     @Override
     protected FunckyFunctionType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return FUNCTION(context -> ((FunckyType) domain.eval(context)).bind(bindings),
-                context -> ((FunckyType) range.eval(context)).bind(bindings)).apply(context);
+        return FUNCTION(((FunckyType) domain.eval(context)).bind(bindings),
+                ((FunckyType) range.eval(context)).bind(bindings)).apply(context);
     }
 }

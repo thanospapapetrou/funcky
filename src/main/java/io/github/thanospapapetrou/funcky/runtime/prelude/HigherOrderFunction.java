@@ -11,9 +11,9 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyFunction;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable;
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType.FUNCTION;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyTypeVariable.VAR;
 
 public abstract class HigherOrderFunction extends FunckyFunction {
     private final int order;
@@ -26,7 +26,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     }
 
     HigherOrderFunction(final FunckyContext context, final Function<FunckyContext, ? extends FunckyType>... types) {
-        this(context, FUNCTION(types).apply(context), types.length - 1, null);
+        this(context, FUNCTION(types).apply(context), types.length - 1, null); // TODO replace functions with objects
     }
 
     private HigherOrderFunction(final FunckyContext context, final FunckyFunctionType type, final int order,
@@ -44,9 +44,8 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     @Override
     public FunckyValue apply(final FunckyExpression argument, final FunckyContext context) {
         final HigherOrderFunction that = this;
-        final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(
-                FUNCTION(ctx -> argument.getType(), FunckyTypeVariable::new).apply(context))).getRange()
-                .eval(this.context);
+        final FunckyType range = (FunckyType) ((FunckyFunctionType) that.type.unify(FUNCTION(argument.getType(), VAR)
+                .apply(context))).getRange().eval(this.context);
         final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
         arguments.add(argument);
         return (order > 1) ? new HigherOrderFunction(this.context, (FunckyFunctionType) range, order - 1,
