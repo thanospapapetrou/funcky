@@ -14,8 +14,8 @@ import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
 public final class FunckyMonadicType extends FunckyType {
-    private static final String IO = "IO";
-    private static final String MAYBE = "Maybe";
+    public static final String IO = "IO";
+    public static final String MAYBE = "Maybe";
 
     private final String name;
     private final FunckyExpression base;
@@ -26,14 +26,6 @@ public final class FunckyMonadicType extends FunckyType {
 
     public static Function<FunckyContext, FunckyMonadicType> IO(final Object base) {
         return context -> new FunckyMonadicType(context, IO, new FunckyLiteral(type(base).apply(context)));
-    }
-
-    public static FunckyMonadicType maybe(final FunckyContext context, final FunckyExpression base) {
-        return new FunckyMonadicType(context, MAYBE, base); // TODO remove
-    }
-
-    public static FunckyMonadicType io(final FunckyContext context, final FunckyExpression base) {
-        return new FunckyMonadicType(context, IO, base); // TODO remove
     }
 
     public FunckyMonadicType(final FunckyContext context, final String name, final FunckyExpression base) {

@@ -95,13 +95,13 @@ public final class Types extends FunckyLibrary {
     public final HigherOrderFunction Maybe = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
         public FunckyMonadicType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return FunckyMonadicType.maybe(context, arguments.getFirst());
+            return new FunckyMonadicType(context, FunckyMonadicType.MAYBE, arguments.getFirst());
         }
     };
     public final HigherOrderFunction IO = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
         public FunckyMonadicType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return FunckyMonadicType.io(context, arguments.getFirst());
+            return new FunckyMonadicType(context, FunckyMonadicType.IO, arguments.getFirst());
         }
     };
     public final HigherOrderFunction base = new HigherOrderFunction(context, TYPE, TYPE) {
