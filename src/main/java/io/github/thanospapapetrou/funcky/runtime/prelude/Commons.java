@@ -76,7 +76,7 @@ public final class Commons extends FunckyLibrary {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
             java.lang.System.exit(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue());
-            return new FunckyMonad(context, IO(UNIT).apply(context), () -> nil);
+            return new FunckyMonad(context, IO(UNIT), () -> nil);
         }
     };
     public final HigherOrderFunction error = new HigherOrderFunction(context, STRING, a) {

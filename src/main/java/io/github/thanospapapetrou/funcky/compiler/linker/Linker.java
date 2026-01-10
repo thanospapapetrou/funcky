@@ -208,7 +208,7 @@ public class Linker {
     }
 
     private FunckyList canonicalize(final FunckyList list) {
-        return new FunckyList(engine.getContext(), list.getType(),
+        return new FunckyList(engine.getContext(), list.getType().getElement().eval(list.getContext()),
                 (list.getHead() == null) ? null : canonicalize(list.getHead()),
                 (list.getTail() == null) ? null : canonicalize(list.getTail()));
     }
@@ -351,7 +351,7 @@ public class Linker {
     }
 
     private FunckyList imposeType(final FunckyListType type, final FunckyExpression head, final FunckyExpression tail) {
-        return new FunckyList(engine.getContext(), type, head, (tail instanceof FunckyLiteral literal)
+        return new FunckyList(engine.getContext(), type.getElement().eval(type.getContext()), head, (tail instanceof FunckyLiteral literal)
                 && (literal.eval(engine.getContext()) instanceof FunckyList list)
                 ? new FunckyLiteral(imposeType(type, list.getHead(), list.getTail())) : tail);
     }

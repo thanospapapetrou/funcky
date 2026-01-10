@@ -4,6 +4,7 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
 
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
 
 public final class FunckyList extends FunckyValue {
@@ -15,7 +16,12 @@ public final class FunckyList extends FunckyValue {
     private final FunckyExpression head;
     private final FunckyExpression tail;
 
-    public FunckyList(final FunckyContext context, final FunckyListType type, final FunckyExpression head,
+    public FunckyList(final FunckyContext context, final Object type, final FunckyExpression head,
+            final FunckyExpression tail) {
+        this(context, LIST(type).apply(context), head, tail);
+    }
+
+    private FunckyList(final FunckyContext context, final FunckyListType type, final FunckyExpression head,
             final FunckyExpression tail) {
         super(context);
         this.type = type;

@@ -21,19 +21,19 @@ public final class FunckyMonadicType extends FunckyType {
     private final FunckyExpression base;
 
     public static Function<FunckyContext, FunckyMonadicType> MAYBE(final Object base) {
-        return context -> maybe(context, new FunckyLiteral(type(base).apply(context)));
+        return context -> new FunckyMonadicType(context, MAYBE, new FunckyLiteral(type(base).apply(context)));
     }
 
     public static Function<FunckyContext, FunckyMonadicType> IO(final Object base) {
-        return context -> io(context, new FunckyLiteral(type(base).apply(context)));
+        return context -> new FunckyMonadicType(context, IO, new FunckyLiteral(type(base).apply(context)));
     }
 
     public static FunckyMonadicType maybe(final FunckyContext context, final FunckyExpression base) {
-        return new FunckyMonadicType(context, MAYBE, base);
+        return new FunckyMonadicType(context, MAYBE, base); // TODO remove
     }
 
     public static FunckyMonadicType io(final FunckyContext context, final FunckyExpression base) {
-        return new FunckyMonadicType(context, IO, base);
+        return new FunckyMonadicType(context, IO, base); // TODO remove
     }
 
     public FunckyMonadicType(final FunckyContext context, final String name, final FunckyExpression base) {

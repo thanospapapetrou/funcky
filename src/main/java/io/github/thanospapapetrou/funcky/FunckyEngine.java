@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import javax.print.DocFlavor;
 import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.Invocable;
@@ -40,6 +41,7 @@ import io.github.thanospapapetrou.funcky.runtime.exceptions.SneakyRuntimeExcepti
 
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.CHARACTER;
 
 public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     public static final String PARAMETER_EXTENSIONS = "io.github.thanospapapetrou.funcky.extensions";
@@ -58,13 +60,13 @@ public class FunckyEngine implements ScriptEngine, Compilable, Invocable {
     private final Clock clock;
 
     public FunckyList toFuncky(final List<String> list) {
-        return new FunckyList(context, LIST(STRING).apply(context),
+        return new FunckyList(context, STRING,
                 list.isEmpty() ? null : new FunckyLiteral(toFuncky(list.getFirst())),
                 list.isEmpty() ? null : new FunckyLiteral(toFuncky(list.subList(1, list.size()))));
     }
 
     public FunckyList toFuncky(final String string) {
-        return new FunckyList(context, STRING.apply(context),
+        return new FunckyList(context, CHARACTER,
                 string.isEmpty() ? null : new FunckyLiteral(new FunckyCharacter(context, string.charAt(0))),
                 string.isEmpty() ? null : new FunckyLiteral(toFuncky(string.substring(1))));
     }

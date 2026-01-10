@@ -27,8 +27,7 @@ public final class FunckyRecordType extends FunckyType {
     private final FunckyExpression components;
 
     public static Function<FunckyContext, FunckyRecordType> RECORD(final Object... components) {
-        return context -> new FunckyRecordType(context, new FunckyLiteral(new FunckyList(context,
-                LIST(TYPE).apply(context),
+        return context -> new FunckyRecordType(context, new FunckyLiteral(new FunckyList(context, TYPE,
                 (components.length > 0) ? new FunckyLiteral(type(components[0]).apply(context)) : null,
                 (components.length > 0) ? RECORD(Arrays.copyOfRange(components, 1, components.length))
                         .apply(context).components : null)));

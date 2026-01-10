@@ -25,7 +25,7 @@ public sealed abstract class FunckyType extends FunckyValue
             FunckyTypeVariable.class
     );
 
-    protected static Function<FunckyContext, FunckyType> type(final Object type) {
+    public static Function<FunckyContext, FunckyType> type(final Object type) {
         return switch (type) {
             case FunckyType t -> (c -> t);
             case Function f -> f;

@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import io.github.thanospapapetrou.funcky.compiler.ast.FunckyExpression;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyMonadicType;
+import io.github.thanospapapetrou.funcky.runtime.types.FunckyType;
 
 public final class FunckyMonad extends FunckyValue {
     private static final String FORMAT = "monad_%1$x";
@@ -12,10 +13,9 @@ public final class FunckyMonad extends FunckyValue {
     private final FunckyMonadicType type;
     private final Supplier<FunckyExpression> base;
 
-    public FunckyMonad(final FunckyContext context, final FunckyMonadicType type,
-            final Supplier<FunckyExpression> base) {
+    public FunckyMonad(final FunckyContext context, final Object type, final Supplier<FunckyExpression> base) {
         super(context);
-        this.type = type;
+        this.type = (FunckyMonadicType) FunckyType.type(type).apply(context);
         this.base = base;
     }
 

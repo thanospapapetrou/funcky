@@ -242,7 +242,7 @@ public class Parser {
 
     private FunckyLiteral parseString(final String string, final Token token) {
         return new FunckyLiteral(engine, token.file(), token.line(), token.column(), new FunckyList(engine.getContext(),
-                LIST(CHARACTER).apply(engine.getContext()), string.isEmpty() ? null
+                CHARACTER, string.isEmpty() ? null
                 : new FunckyLiteral(engine, token.file(), token.line(), token.column(),
                         new FunckyCharacter(engine.getContext(), string.charAt(0))),
                 string.isEmpty() ? null : parseString(string.substring(1), token)));
@@ -261,8 +261,7 @@ public class Parser {
         final FunckyLiteral tail = elements.isEmpty() ? null
                 : parseList(elements.subList(1, elements.size()), leftSquareBracket);
         return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(), leftSquareBracket.column(),
-                new FunckyList(engine.getContext(), LIST(VAR).apply(engine.getContext()), head,
-                        tail));
+                new FunckyList(engine.getContext(), VAR, head, tail));
     }
 
     private FunckyLiteral parseRecord(final List<FunckyExpression> components, final Token leftCurlyBracket) {

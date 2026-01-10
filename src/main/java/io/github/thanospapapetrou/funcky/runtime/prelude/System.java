@@ -10,8 +10,9 @@ import io.github.thanospapapetrou.funcky.compiler.ast.FunckyLiteral;
 import io.github.thanospapapetrou.funcky.compiler.linker.FunckyContext;
 import io.github.thanospapapetrou.funcky.runtime.FunckyMonad;
 import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
-import io.github.thanospapapetrou.funcky.runtime.types.FunckyListType;
 import io.github.thanospapapetrou.funcky.runtime.types.FunckyMonadicType;
+
+import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.STRING;
 
 public final class System extends FunckyLibrary {
     private static final String PROPERTY_JVM_NAME = "java.vm.name";
@@ -41,9 +42,7 @@ public final class System extends FunckyLibrary {
     }
 
     private FunckyValue get(final Supplier<String> value) {
-        return new FunckyMonad(context, FunckyMonadicType.io(context,
-                new FunckyLiteral(FunckyListType.STRING.apply(context))),
-                () -> new FunckyLiteral(context.getEngine().toFuncky(value.get())));
+        return new FunckyMonad(context, FunckyMonadicType.IO(STRING), () -> new FunckyLiteral(context.getEngine().toFuncky(value.get())));
     }
 
     private FunckyValue get(final String property) {

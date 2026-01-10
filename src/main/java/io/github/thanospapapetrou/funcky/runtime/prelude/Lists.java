@@ -40,9 +40,9 @@ public final class Lists extends FunckyLibrary {
     public final HigherOrderFunction prepend = new HigherOrderFunction(context, LIST(a), a, LIST(a)) {
         @Override
         public FunckyList apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyList(context, (FunckyListType) arguments.get(0).getType()
-                    .unify(LIST(arguments.get(1).getType()).apply(context)), arguments.get(1),
-                    arguments.get(0));
+            return new FunckyList(context, ((FunckyListType) arguments.get(0).getType()
+                    .unify(LIST(arguments.get(1).getType()).apply(context))).getElement().eval(context),
+                    arguments.get(1), arguments.get(0));
         }
     };
 

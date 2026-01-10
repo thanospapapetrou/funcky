@@ -34,7 +34,7 @@ public final class IO extends FunckyLibrary {
     public final HigherOrderFunction _return = new HigherOrderFunction(context, a, IO(a)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyMonad(context, IO(arguments.getFirst().getType()).apply(context), arguments::getFirst);
+            return new FunckyMonad(context, IO(arguments.getFirst().getType()), arguments::getFirst);
         }
     };
     public final HigherOrderFunction bind = new HigherOrderFunction(context, IO(a), FUNCTION(a, IO(b)), IO(b)) {
@@ -47,7 +47,7 @@ public final class IO extends FunckyLibrary {
     public final HigherOrderFunction readCharacter = new HigherOrderFunction(context, NUMBER, IO(CHARACTER)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyMonad(context, IO(CHARACTER).apply(context), () -> {
+            return new FunckyMonad(context, IO(CHARACTER), () -> {
                 try {
                     return new FunckyLiteral(new FunckyCharacter(context,
                             (char) getReader(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue())
@@ -61,7 +61,7 @@ public final class IO extends FunckyLibrary {
     public final HigherOrderFunction writeCharacter = new HigherOrderFunction(context, NUMBER, CHARACTER, IO(UNIT)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
+            return new FunckyMonad(context, IO(UNIT), () -> {
                 try {
                     getWriter(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue())
                             .write(((FunckyCharacter) arguments.get(1).eval(context)).getValue());
@@ -75,7 +75,7 @@ public final class IO extends FunckyLibrary {
     public final HigherOrderFunction readString = new HigherOrderFunction(context, NUMBER, IO(STRING)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyMonad(context, IO(STRING).apply(context), () -> {
+            return new FunckyMonad(context, IO(STRING), () -> {
                 final StringBuilder string = new StringBuilder();
                 final char[] buffer = new char[BUFFER_SIZE];
                 int read;
@@ -94,7 +94,7 @@ public final class IO extends FunckyLibrary {
     public final HigherOrderFunction writeString = new HigherOrderFunction(context, NUMBER, STRING, IO(UNIT)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
+            return new FunckyMonad(context, IO(UNIT), () -> {
                 try {
                     getWriter(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue())
                             .write(arguments.get(1).eval(context).toString());
@@ -108,7 +108,7 @@ public final class IO extends FunckyLibrary {
     public final HigherOrderFunction flush = new HigherOrderFunction(context, NUMBER, IO(UNIT)) {
         @Override
         public FunckyMonad apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyMonad(context, IO(UNIT).apply(context), () -> {
+            return new FunckyMonad(context, IO(UNIT), () -> {
                 try {
                     getWriter(((FunckyNumber) arguments.getFirst().eval(context)).getValue().intValue()).flush();
                     return nil;
