@@ -21,14 +21,18 @@ public final class FunckyMonadicType extends FunckyType {
     private final FunckyExpression base;
 
     public static Function<FunckyContext, FunckyMonadicType> MAYBE(final Object base) {
-        return context -> new FunckyMonadicType(context, MAYBE, new FunckyLiteral(type(base).apply(context)));
+        return context -> new FunckyMonadicType(MAYBE, new FunckyLiteral(type(base).apply(context)));
     }
 
     public static Function<FunckyContext, FunckyMonadicType> IO(final Object base) {
-        return context -> new FunckyMonadicType(context, IO, new FunckyLiteral(type(base).apply(context)));
+        return context -> new FunckyMonadicType(IO, new FunckyLiteral(type(base).apply(context)));
     }
 
-    public FunckyMonadicType(final FunckyContext context, final String name, final FunckyExpression base) {
+    public FunckyMonadicType(final String name, final FunckyExpression base) {
+        this(base.getEngine().getContext(), name, base);
+    }
+
+    private FunckyMonadicType(final FunckyContext context, final String name, final FunckyExpression base) {
         super(context);
         this.name = name;
         this.base = base;
@@ -70,7 +74,6 @@ public final class FunckyMonadicType extends FunckyType {
 
     @Override
     protected FunckyMonadicType bind(final Map<FunckyTypeVariable, FunckyType> bindings) {
-        return new FunckyMonadicType(context, name,
-                new FunckyLiteral(((FunckyType) base.eval(context)).bind(bindings)));
+        return new FunckyMonadicType(name, new FunckyLiteral(((FunckyType) base.eval(context)).bind(bindings)));
     }
 }

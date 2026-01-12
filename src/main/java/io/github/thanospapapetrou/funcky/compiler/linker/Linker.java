@@ -184,7 +184,7 @@ public class Linker {
     }
 
     private FunckyLiteral canonicalize(final FunckyLiteral literal) {
-        return new FunckyLiteral(engine, literal.getFile(), literal.getLine(), literal.getColumn(),
+        return new FunckyLiteral(literal.getFile(), literal.getLine(), literal.getColumn(),
                 canonicalize(literal.eval(engine.getContext())));
     }
 
@@ -258,7 +258,7 @@ public class Linker {
     }
 
     private FunckyLiteral checkTypes(final FunckyLiteral literal) {
-        return new FunckyLiteral(engine, literal.getFile(), literal.getLine(), literal.getColumn(),
+        return new FunckyLiteral(literal.getFile(), literal.getLine(), literal.getColumn(),
                 checkTypes(literal.eval(engine.getContext())));
     }
 
@@ -314,7 +314,7 @@ public class Linker {
                 if (!constructor.canAccess(null)) {
                     throw new SneakyCompilationException(new NativeConstructorNotFoundException(reference));
                 }
-                return new FunckyLiteral(engine, reference.getFile(), reference.getLine(), reference.getColumn(),
+                return new FunckyLiteral(reference.getFile(), reference.getLine(), reference.getColumn(),
                         loadNative(definition, (FunckyValue) field.get(
                                 clazz.getDeclaredConstructor(FunckyContext.class).newInstance(engine.getContext()))));
             } else {

@@ -8,7 +8,7 @@ public non-sealed abstract class FunckyFunction extends FunckyValue {
     protected final FunckyFunctionType type;
 
     protected FunckyFunction(final FunckyContext context, final FunckyFunctionType type) {
-        super(context);
+        super(context); // TODO remove context?
         this.type = type;
     }
 

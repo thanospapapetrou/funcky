@@ -37,7 +37,7 @@ public final class Types extends FunckyLibrary {
     public final HigherOrderFunction Function = new HigherOrderFunction(context, TYPE, TYPE, TYPE) {
         @Override
         public FunckyFunctionType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyFunctionType(context, arguments.get(0), arguments.get(1));
+            return new FunckyFunctionType(arguments.get(0), arguments.get(1));
         }
     };
     public final HigherOrderFunction domain = new HigherOrderFunction(context, TYPE, TYPE) {
@@ -63,7 +63,7 @@ public final class Types extends FunckyLibrary {
     public final HigherOrderFunction List = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
         public FunckyListType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyListType(context, arguments.getFirst());
+            return new FunckyListType(arguments.getFirst());
         }
     };
     public final HigherOrderFunction element = new HigherOrderFunction(context, TYPE, TYPE) {
@@ -79,7 +79,7 @@ public final class Types extends FunckyLibrary {
     public final HigherOrderFunction Record = new HigherOrderFunction(context, LIST(TYPE), TYPE) {
         @Override
         public FunckyRecordType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyRecordType(context, arguments.getFirst());
+            return new FunckyRecordType(arguments.getFirst());
         }
     };
     public final HigherOrderFunction components = new HigherOrderFunction(context, TYPE, LIST(TYPE)) {
@@ -95,13 +95,13 @@ public final class Types extends FunckyLibrary {
     public final HigherOrderFunction Maybe = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
         public FunckyMonadicType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyMonadicType(context, FunckyMonadicType.MAYBE, arguments.getFirst());
+            return new FunckyMonadicType(FunckyMonadicType.MAYBE, arguments.getFirst());
         }
     };
     public final HigherOrderFunction IO = new HigherOrderFunction(context, TYPE, TYPE) {
         @Override
         public FunckyMonadicType apply(final List<FunckyExpression> arguments, final FunckyContext context) {
-            return new FunckyMonadicType(context, FunckyMonadicType.IO, arguments.getFirst());
+            return new FunckyMonadicType(FunckyMonadicType.IO, arguments.getFirst());
         }
     };
     public final HigherOrderFunction base = new HigherOrderFunction(context, TYPE, TYPE) {

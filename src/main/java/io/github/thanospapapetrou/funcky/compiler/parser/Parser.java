@@ -169,18 +169,18 @@ public class Parser {
             case BINARY_NUMBER:
             case OCTAL_NUMBER:
             case HEXADECIMAL_NUMBER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                return new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyNumber(engine.getContext(), new BigDecimal(new BigInteger(token.signedValue(),
                                 token.type().getRadix().getRadix()))));
             case DECIMAL_NUMBER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                return new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyNumber(engine.getContext(), new BigDecimal(token.value())));
             case CHARACTER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                return new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyCharacter(engine.getContext(), token.stringValue().charAt(0)));
             case OCTAL_CHARACTER:
             case HEXADECIMAL_CHARACTER:
-                return new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                return new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyCharacter(engine.getContext(),
                         (char) Integer.parseInt(token.unsignedValue(), token.type().getRadix().getRadix())));
             case STRING:
@@ -197,7 +197,7 @@ public class Parser {
                             consume(input, TokenType.SYMBOL).value());
                 }
                 return token.value().equals(TYPE_VARIABLE)
-                        ? new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                        ? new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyTypeVariable(engine.getContext()))
                         : new FunckyReference(engine, token.file(), token.line(), token.column(), token.value());
             case LEFT_PARENTHESIS:
@@ -241,9 +241,9 @@ public class Parser {
     }
 
     private FunckyLiteral parseString(final String string, final Token token) {
-        return new FunckyLiteral(engine, token.file(), token.line(), token.column(), new FunckyList(engine.getContext(),
+        return new FunckyLiteral(token.file(), token.line(), token.column(), new FunckyList(engine.getContext(),
                 CHARACTER, string.isEmpty() ? null
-                : new FunckyLiteral(engine, token.file(), token.line(), token.column(),
+                : new FunckyLiteral(token.file(), token.line(), token.column(),
                         new FunckyCharacter(engine.getContext(), string.charAt(0))),
                 string.isEmpty() ? null : parseString(string.substring(1), token)));
     }
@@ -260,7 +260,7 @@ public class Parser {
         final FunckyExpression head = elements.isEmpty() ? null : elements.getFirst();
         final FunckyLiteral tail = elements.isEmpty() ? null
                 : parseList(elements.subList(1, elements.size()), leftSquareBracket);
-        return new FunckyLiteral(engine, leftSquareBracket.file(), leftSquareBracket.line(), leftSquareBracket.column(),
+        return new FunckyLiteral(leftSquareBracket.file(), leftSquareBracket.line(), leftSquareBracket.column(),
                 new FunckyList(engine.getContext(), VAR, head, tail));
     }
 
@@ -269,7 +269,7 @@ public class Parser {
         for (final FunckyExpression component : components) {
             types.add(component.getType());
         }
-        return new FunckyLiteral(engine, leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),
+        return new FunckyLiteral(leftCurlyBracket.file(), leftCurlyBracket.line(), leftCurlyBracket.column(),
                 new FunckyRecord(engine.getContext(), components)); // TODO cleanup
     }
 

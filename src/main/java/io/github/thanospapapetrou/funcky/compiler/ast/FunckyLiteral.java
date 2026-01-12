@@ -20,14 +20,19 @@ public non-sealed class FunckyLiteral extends FunckyExpression {
 
     private final FunckyValue value;
 
-    public FunckyLiteral(final FunckyEngine engine, final URI file, final int line, final int column,
+    public FunckyLiteral(final URI file, final int line, final int column,
             final FunckyValue value) {
-        super(engine, file, line, column);
-        this.value = value;
+        this(value.getContext().getEngine(), file, line, column, value);
     }
 
     public FunckyLiteral(final FunckyValue value) {
-        this(value.getContext().getEngine(), null, -1, -1, value);
+        this(null, -1, -1, value);
+    }
+
+    private FunckyLiteral(final FunckyEngine engine, final URI file, final int line, final int column,
+            final FunckyValue value) {
+        super(engine, file, line, column);
+        this.value = value;
     }
 
     @Override

@@ -82,7 +82,7 @@ public class TypeInferenceContext {
         } else if (type instanceof FunckyRecordType rt) {
             return find(rt);
         } else if (type instanceof FunckyMonadicType mt) {
-            return new FunckyMonadicType(mt.getContext(), mt.getName(),
+            return new FunckyMonadicType(mt.getName(),
                     new FunckyLiteral(find((FunckyType) mt.getBase().eval(mt.getContext()))));
         } else if (type instanceof FunckyTypeVariable) {
             final FunckyType found = findRepresentative(findSet(type));
@@ -94,7 +94,7 @@ public class TypeInferenceContext {
             } else if (found instanceof FunckyRecordType rt) {
                 return find(rt);
             } else if (found instanceof FunckyMonadicType mt) {
-                return new FunckyMonadicType(mt.getContext(), mt.getName(),
+                return new FunckyMonadicType(mt.getName(),
                         new FunckyLiteral(find((FunckyType) mt.getBase().eval(mt.getContext()))));
             }
             return found;

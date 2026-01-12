@@ -20,12 +20,17 @@ public final class FunckyFunctionType extends FunckyType {
     private final FunckyExpression range;
 
     public static Function<FunckyContext, FunckyFunctionType> FUNCTION(final Object... types) {
-        return context -> new FunckyFunctionType(context, new FunckyLiteral(type(types[0]).apply(context)),
+        return context -> new FunckyFunctionType(new FunckyLiteral(type(types[0]).apply(context)),
                 new FunckyLiteral((types.length == 2) ? type(types[1]).apply(context)
                         : FUNCTION(Arrays.copyOfRange(types, 1, types.length)).apply(context)));
     }
 
-    public FunckyFunctionType(final FunckyContext context, final FunckyExpression domain,
+    public FunckyFunctionType(final FunckyExpression domain,
+            final FunckyExpression range) {
+        this(domain.getEngine().getContext(), domain, range);
+    }
+
+    private FunckyFunctionType(final FunckyContext context, final FunckyExpression domain,
             final FunckyExpression range) {
         super(context);
         this.domain = domain;

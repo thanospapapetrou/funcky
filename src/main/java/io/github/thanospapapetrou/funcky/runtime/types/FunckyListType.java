@@ -21,10 +21,14 @@ public final class FunckyListType extends FunckyType {
     private final FunckyExpression element;
 
     public static Function<FunckyContext, FunckyListType> LIST(final Object element) {
-        return context -> new FunckyListType(context, new FunckyLiteral(type(element).apply(context)));
+        return context -> new FunckyListType(new FunckyLiteral(type(element).apply(context)));
     }
 
-    public FunckyListType(final FunckyContext context, final FunckyExpression element) {
+    public FunckyListType(final FunckyExpression element) {
+        this(element.getEngine().getContext(), element);
+    }
+
+    private FunckyListType(final FunckyContext context, final FunckyExpression element) {
         super(context);
         this.element = element;
     }

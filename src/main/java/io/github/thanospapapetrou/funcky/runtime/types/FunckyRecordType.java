@@ -18,7 +18,6 @@ import io.github.thanospapapetrou.funcky.runtime.FunckyValue;
 import io.github.thanospapapetrou.funcky.runtime.prelude.FunckyLibrary;
 import io.github.thanospapapetrou.funcky.runtime.prelude.Types;
 
-import static io.github.thanospapapetrou.funcky.runtime.types.FunckyListType.LIST;
 import static io.github.thanospapapetrou.funcky.runtime.types.FunckySimpleType.TYPE;
 
 public final class FunckyRecordType extends FunckyType {
@@ -27,13 +26,17 @@ public final class FunckyRecordType extends FunckyType {
     private final FunckyExpression components;
 
     public static Function<FunckyContext, FunckyRecordType> RECORD(final Object... components) {
-        return context -> new FunckyRecordType(context, new FunckyLiteral(new FunckyList(context, TYPE,
+        return context -> new FunckyRecordType(new FunckyLiteral(new FunckyList(context, TYPE,
                 (components.length > 0) ? new FunckyLiteral(type(components[0]).apply(context)) : null,
                 (components.length > 0) ? RECORD(Arrays.copyOfRange(components, 1, components.length))
                         .apply(context).components : null)));
     }
 
-    public FunckyRecordType(final FunckyContext context, final FunckyExpression components) {
+    public FunckyRecordType(final FunckyExpression components) {
+        this(components.getEngine().getContext(), components);
+    }
+
+    private FunckyRecordType(final FunckyContext context, final FunckyExpression components) {
         super(context);
         this.components = components;
     }
