@@ -333,7 +333,7 @@ public class Linker {
 
     private FunckyValue loadNative(final FunckyDefinition definition, final FunckyValue value) {
         return (value instanceof HigherOrderFunction function)
-                ? new HigherOrderFunction(engine.getContext(), function.getType(), function.getOrder(),
+                ? new HigherOrderFunction(function.getType(), function.getOrder(),
                 new FunckyReference(engine, definition.file(), definition.name())) {
             @Override
             public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {

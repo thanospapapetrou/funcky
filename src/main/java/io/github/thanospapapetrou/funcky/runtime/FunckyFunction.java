@@ -7,8 +7,12 @@ import io.github.thanospapapetrou.funcky.runtime.types.FunckyFunctionType;
 public non-sealed abstract class FunckyFunction extends FunckyValue {
     protected final FunckyFunctionType type;
 
-    protected FunckyFunction(final FunckyContext context, final FunckyFunctionType type) {
-        super(context); // TODO remove context?
+    protected FunckyFunction(final FunckyFunctionType type) {
+        this(type.getContext(), type);
+    }
+
+    private FunckyFunction(final FunckyContext context, final FunckyFunctionType type) {
+        super(context);
         this.type = type;
     }
 

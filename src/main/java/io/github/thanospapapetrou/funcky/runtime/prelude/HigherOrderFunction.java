@@ -19,18 +19,18 @@ public abstract class HigherOrderFunction extends FunckyFunction {
     private final FunckyExpression expression;
     private final List<FunckyExpression> arguments;
 
-    public HigherOrderFunction(final FunckyContext context, final FunckyFunctionType type, final int order,
+    public HigherOrderFunction(final FunckyFunctionType type, final int order,
             final FunckyExpression expression) {
-        this(context, type, order, expression, List.of());
+        this(type, order, expression, List.of());
     }
 
     HigherOrderFunction(final FunckyContext context, final Object... types) {
-        this(context, FUNCTION(types).apply(context), types.length - 1, null);
+        this(FUNCTION(types).apply(context), types.length - 1, null);
     }
 
-    private HigherOrderFunction(final FunckyContext context, final FunckyFunctionType type, final int order,
+    private HigherOrderFunction(final FunckyFunctionType type, final int order,
             final FunckyExpression expression, final List<FunckyExpression> arguments) {
-        super(context, type);
+        super(type);
         this.order = order;
         this.expression = expression;
         this.arguments = arguments;
@@ -47,7 +47,7 @@ public abstract class HigherOrderFunction extends FunckyFunction {
                 .apply(context))).getRange().eval(this.context);
         final List<FunckyExpression> arguments = new ArrayList<>(this.arguments);
         arguments.add(argument);
-        return (order > 1) ? new HigherOrderFunction(this.context, (FunckyFunctionType) range, order - 1,
+        return (order > 1) ? new HigherOrderFunction((FunckyFunctionType) range, order - 1,
                 new FunckyApplication(that.toExpression(), argument), arguments) {
                 @Override
                 public FunckyValue apply(final List<FunckyExpression> arguments, final FunckyContext context) {
