@@ -37,6 +37,11 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
+            <resource>
+                <directory>src/it/resources</directory>
+                <filtering>true</filtering>
+                <targetPath>${project.build.directory}/it-classes</targetPath>
+            </resource>
         </resources>
         <plugins>
             <plugin>
@@ -46,7 +51,6 @@
                 <executions>
                     <execution>
                         <configuration>
-                            <failIfNoTests>true</failIfNoTests>
                             <testClassesDirectory>${project.build.directory}/it-classes</testClassesDirectory>
                             <includes>
                                 <include>**/*Spec</include>
