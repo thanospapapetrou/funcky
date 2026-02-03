@@ -41,6 +41,26 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.5.4</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <failIfNoTests>true</failIfNoTests>
+                            <testClassesDirectory>${project.build.directory}/it-classes</testClassesDirectory>
+                            <includes>
+                                <include>**/*Spec</include>
+                            </includes>
+                        </configuration>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.5.0</version>
                 <configuration>
@@ -71,6 +91,21 @@
                             <goal>compileTests</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>it</id>
+                        <configuration>
+                            <testSources>
+                                <testSource>
+                                    <directory>${project.basedir}/src/it/groovy</directory>
+                                </testSource>
+                            </testSources>
+                            <testOutputDirectory>${project.build.directory}/it-classes</testOutputDirectory>
+                        </configuration>
+                        <goals>
+                            <goal>addTestSources</goal>
+                            <goal>compileTests</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -82,12 +117,14 @@
                         <id>default-prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
+                            <goal>prepare-agent-integration</goal>
                         </goals>
                     </execution>
                     <execution>
                         <id>default-report</id>
                         <goals>
                             <goal>report</goal>
+                            <goal>report-integration</goal>
                         </goals>
                     </execution>
                 </executions>
